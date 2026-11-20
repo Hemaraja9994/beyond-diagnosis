@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
-import { MarkRail } from "@/components/mark-rail";
+import { AnnouncementRail } from "@/components/announcement-rail";
 import { nav, programme } from "@/lib/programme";
 
 export function SiteHeader() {
@@ -77,7 +77,7 @@ export function SiteHeader() {
           </ul>
         </nav>
       ) : null}
-      <MarkRail />
+      <AnnouncementRail />
     </header>
   );
 }

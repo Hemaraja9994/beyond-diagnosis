@@ -1,11 +1,13 @@
 import Image from "next/image";
 import Link from "next/link";
+import { MarkRail } from "@/components/mark-rail";
 import { departmentUrl } from "@/lib/department";
 import { committee, programme } from "@/lib/programme";
 
 export function SiteFooter() {
   return (
     <footer className="no-print bg-deep pb-20 text-mint md:pb-0">
+      <MarkRail />
       <div className="mx-auto grid max-w-6xl gap-8 px-4 py-10 sm:grid-cols-2 lg:grid-cols-3">
         <div>
           <Image

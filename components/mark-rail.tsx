@@ -50,8 +50,7 @@ function MarkSet({ hidden = false }: { hidden?: boolean }) {
 
 export function MarkRail() {
   return (
-    <div className="mark-rail" aria-label="RCI CRE status and official marks">
-      <p className="approval-flag">RCI CRE approval awaited</p>
+    <div className="mark-rail" aria-label="Official marks">
       <div className="mark-viewport">
         <div className="mark-track">
           <MarkSet />

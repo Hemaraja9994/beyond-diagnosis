@@ -495,42 +495,68 @@ body {
 .mark-rail {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  overflow: hidden;
   border-top: 1px solid var(--color-line);
   background: #ffffff;
-  padding: 0.4rem 1rem;
+  padding: 0.4rem 0;
 }
 
-.approval-flag {
-  flex: none;
-  margin: 0;
-  border-radius: 999px;
-  background: #c2410c;
-  color: #ffffff;
-  font-size: 0.72rem;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  line-height: 1;
-  text-transform: uppercase;
-  padding: 0.55rem 0.85rem;
-  white-space: nowrap;
+.announce-rail {
+  overflow: hidden;
+  border-top: 1px solid var(--color-line);
+  background: #ffffff;
+  padding: 0.4rem 0;
 }
 
+.announce-viewport,
 .mark-viewport {
   min-width: 0;
   flex: 1;
   overflow: hidden;
 }
 
+.announce-track,
 .mark-track {
   display: flex;
   width: max-content;
   animation: mark-scroll 42s linear infinite;
 }
 
+.announce-viewport:hover .announce-track,
+.announce-viewport:focus-within .announce-track,
 .mark-viewport:hover .mark-track,
 .mark-viewport:focus-within .mark-track {
   animation-play-state: paused;
+}
+
+.announce-set {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding-right: 0.55rem;
+  padding-left: 0.55rem;
+}
+
+.announce-chip {
+  flex: none;
+  border-radius: 999px;
+  border: 1px solid var(--color-line);
+  background: #ffffff;
+  color: var(--color-navy);
+  font-size: 0.78rem;
+  font-weight: 600;
+  line-height: 1;
+  padding: 0.45rem 0.8rem;
+  white-space: nowrap;
+}
+
+.announce-alert {
+  border-color: transparent;
+  background: #c2410c;
+  color: #ffffff;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 .mark-set {
@@ -574,18 +600,6 @@ body {
   }
 }
 
-@media (max-width: 720px) {
-  .mark-rail {
-    align-items: stretch;
-    flex-direction: column;
-    gap: 0.45rem;
-  }
-
-  .approval-flag {
-    text-align: center;
-  }
-}
-
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
@@ -599,15 +613,18 @@ body {
   .orb-a,
   .orb-b,
   .orb-c,
-  .mark-track {
+  .mark-track,
+  .announce-track {
     animation: none;
   }
 
-  .mark-viewport {
+  .mark-viewport,
+  .announce-viewport {
     overflow-x: auto;
   }
 
-  .mark-set[aria-hidden="true"] {
+  .mark-set[aria-hidden="true"],
+  .announce-set[aria-hidden="true"] {
     display: none;
   }
 }
