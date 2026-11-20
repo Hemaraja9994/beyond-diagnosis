@@ -11,7 +11,7 @@ export default function FacultyPage() {
       <PageBanner
         kicker="Resource persons"
         title="Who is teaching"
-        lede="Names and CRR numbers are those given for this programme. Dr. Shwetha Prabhu’s portrait is the one published by Yenepoya Medical College. The other portraits follow when a consented photograph is available."
+        lede="Names and CRR numbers are those given for this programme. Dr. Shwetha Prabhu’s portrait is the one published by Yenepoya Medical College. Dr. Goswami’s portrait is the photograph supplied for this programme."
       />
       <ul className="mx-auto grid max-w-6xl gap-5 px-4 py-10 sm:grid-cols-2">
         {sessions.map((session) => {

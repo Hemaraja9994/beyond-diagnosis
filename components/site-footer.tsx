@@ -26,7 +26,10 @@ export function SiteFooter() {
           <p className="text-sm font-semibold uppercase tracking-[0.14em] text-white">Programme</p>
           <ul className="mt-3 grid gap-2 text-sm">
             <li>
-              <Link href="/department">Department and staff</Link>
+              <Link href="/department">Department faculties</Link>
+            </li>
+            <li>
+              <Link href="/install">Install on your phone</Link>
             </li>
             <li>
               <a href={departmentUrl}>College department page</a>

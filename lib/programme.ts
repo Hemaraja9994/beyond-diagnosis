@@ -130,7 +130,7 @@ export const sessions = [
     person: "Dr. Satyapal Puri Goswami",
     crr: "A00260",
     initials: "SG",
-    photo: null,
+    photo: "/faculty/satyapal-goswami.jpg",
     relevance:
       "Turns to communication disorders and the legal and legislative work audiologists and speech-language pathologists are asked to do.",
   },
