@@ -3,7 +3,7 @@ import { programme } from "@/lib/programme";
 
 export function OfficialMarks() {
   return (
-    <section className="mx-auto grid max-w-6xl gap-4 px-4 py-8 md:grid-cols-3" aria-label="Organisers and official references">
+    <section className="mx-auto grid max-w-6xl gap-4 px-4 py-8 sm:grid-cols-2 xl:grid-cols-4" aria-label="Organisers and official references">
       <figure className="flex flex-col items-center rounded-3xl bg-card/90 p-5 text-center ring-1 ring-line backdrop-blur">
         <Image
           src="/brand/yenepoya-medical-college.png"
@@ -19,18 +19,31 @@ export function OfficialMarks() {
       </figure>
       <figure className="overflow-hidden rounded-3xl bg-card shadow-lg ring-1 ring-line">
         <Image
-          src="/brand/udid-card.png"
-          alt="Sample Unique Disability ID card issued by the Government of India. Personal details are obscured."
-          width={484}
-          height={240}
-          className="h-44 w-full object-cover object-left"
+          src="/brand/udid-sample.svg"
+          alt="Sample drawing of a Unique Disability ID card. It is not a real card."
+          width={640}
+          height={400}
+          className="h-52 w-full bg-navy object-cover"
+          unoptimized
         />
         <figcaption className="p-4 text-sm leading-6 text-muted">
-          The sessions follow this card from assessment to entitlements. Apply and verify a card on the{" "}
+          Sample drawing of the Unique Disability ID. The sessions are about the certificate and the entitlements that follow it. This drawing is not a real card.
+        </figcaption>
+      </figure>
+      <figure className="overflow-hidden rounded-3xl bg-card shadow-lg ring-1 ring-line">
+        <Image
+          src="/brand/udid-card.png"
+          alt="Unique Disability ID card issued by the Government of India. Personal details are obscured."
+          width={484}
+          height={240}
+          className="h-52 w-full bg-white object-contain p-3"
+        />
+        <figcaption className="p-4 text-sm leading-6 text-muted">
+          A real Unique Disability ID card. Names, numbers, and the photograph are hidden. Apply and verify a card on the{" "}
           <a className="font-semibold text-green" href="https://swavlambancard.gov.in/">
             Swavlamban Card portal
           </a>
-          . This picture is a sample, not a participant’s card.
+          . This is not a participant’s card.
         </figcaption>
       </figure>
       <figure className="overflow-hidden rounded-3xl bg-card ring-1 ring-line">

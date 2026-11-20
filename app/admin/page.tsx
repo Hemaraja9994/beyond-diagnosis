@@ -38,7 +38,7 @@ export default async function AdminPage() {
       />
       <div className="mx-auto grid max-w-6xl gap-6 px-4 py-8">
         {mode === "local" ? (
-          <p className="rounded-2xl bg-mint px-4 py-3 text-sm leading-6 text-green-dark">
+          <p className="rounded-2xl bg-navy/5 px-4 py-3 text-sm leading-6 text-green-dark">
             This copy is using a temporary database on the machine that is running it. A published deployment stores registrations in its own database or in the connected file store.
           </p>
         ) : null}

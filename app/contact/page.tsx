@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { PageBanner } from "@/components/page-banner";
 import { QueryForm } from "@/components/query-form";
+import { departmentUrl } from "@/lib/department";
 import { programme } from "@/lib/programme";
 
 export const metadata: Metadata = { title: "Contact" };
@@ -31,6 +33,15 @@ export default function ContactPage() {
             This is the department number, not a separate CRE helpline.
           </p>
           <p className="mt-4 text-sm leading-6 text-mint">{programme.address}</p>
+          <p className="mt-4 text-sm">
+            <Link className="underline" href="/department">
+              Department and staff
+            </Link>
+            <span className="mx-2">·</span>
+            <a className="underline" href={departmentUrl}>
+              College page
+            </a>
+          </p>
         </aside>
         <QueryForm />
       </div>

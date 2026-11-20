@@ -12,7 +12,7 @@ export function CopyLink({ path, label }: { path: string; label: string }) {
   }
 
   return (
-    <div className="rounded-2xl bg-paper px-4 py-3">
+    <div className="rounded-2xl bg-navy/5 px-4 py-3">
       <p className="text-sm font-semibold text-navy">{label}</p>
       <p className="mt-1 break-all text-sm text-muted">
         <span data-path={path}>{path}</span>

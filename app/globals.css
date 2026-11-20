@@ -3,18 +3,18 @@
 @theme {
   --font-sans: var(--font-outfit), "Segoe UI", sans-serif;
   --font-serif: var(--font-fraunces), Georgia, serif;
-  --color-ink: #1c140f;
+  --color-ink: #111827;
   --color-navy: #0c2340;
   --color-deep: #071526;
   --color-green: #c2410c;
   --color-green-dark: #9a3412;
-  --color-mint: #ffe8d6;
-  --color-paper: #fff4ec;
-  --color-card: #fffdfb;
-  --color-line: #f0d2c2;
+  --color-mint: #ffffff;
+  --color-paper: #ffffff;
+  --color-card: #ffffff;
+  --color-line: #e5e7eb;
   --color-brass: #e4570b;
   --color-flare: #ff7a1a;
-  --color-muted: #5c463c;
+  --color-muted: #4b5563;
 }
 
 html {
@@ -22,15 +22,196 @@ html {
 }
 
 body {
-  background-color: var(--color-paper);
-  background-image:
-    linear-gradient(180deg, rgba(255, 244, 236, 0.9), rgba(255, 244, 236, 0.94)),
-    url("/brand/wallpaper.svg");
-  background-attachment: fixed;
-  background-position: center top;
-  background-size: auto, cover;
+  background-color: #ffffff;
   color: var(--color-ink);
   font-family: var(--font-sans);
+}
+
+.backdrop {
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  position: fixed;
+  z-index: 0;
+}
+
+.drift,
+.gov-float,
+.orb {
+  position: absolute;
+  will-change: transform;
+}
+
+.drift {
+  height: auto;
+  filter: drop-shadow(0 24px 40px rgba(12, 35, 64, 0.16));
+}
+
+.drift-a {
+  width: min(78vw, 720px);
+  top: -4%;
+  left: -12%;
+  opacity: 0.28;
+  animation: drift-a 14s ease-in-out infinite;
+}
+
+.drift-b {
+  width: min(64vw, 620px);
+  top: 34%;
+  right: -16%;
+  opacity: 0.22;
+  animation: drift-b 18s ease-in-out infinite;
+}
+
+.drift-c {
+  width: min(84vw, 780px);
+  bottom: -16%;
+  left: 8%;
+  opacity: 0.18;
+  animation: drift-c 16s ease-in-out infinite;
+}
+
+.gov-float {
+  width: min(62vw, 560px);
+  overflow: hidden;
+  border-radius: 28px;
+  background: white;
+  box-shadow: 0 24px 50px rgba(12, 35, 64, 0.12);
+  opacity: 0.55;
+}
+
+.gov-float p {
+  margin: 0;
+  padding: 1.4rem 1.6rem 1.8rem;
+  color: #0c2340;
+  font-family: Georgia, serif;
+  font-size: clamp(1.6rem, 4vw, 2.6rem);
+}
+
+.band {
+  display: block;
+  height: 14px;
+}
+
+.band.saffron {
+  background: #ff9933;
+}
+
+.band.white {
+  background: #ffffff;
+  box-shadow: inset 0 0 0 1px #ececec;
+}
+
+.band.green {
+  background: #138808;
+}
+
+.drift-d {
+  top: 18%;
+  right: -8%;
+  animation: drift-d 20s ease-in-out infinite;
+}
+
+.drift-e {
+  bottom: 8%;
+  left: -10%;
+  width: min(48vw, 420px);
+  opacity: 0.4;
+  animation: drift-e 15s ease-in-out infinite;
+}
+
+.orb {
+  border-radius: 999px;
+}
+
+.orb-a {
+  width: min(46vw, 420px);
+  height: min(46vw, 420px);
+  top: -8%;
+  right: 8%;
+  background: #0c2340;
+  opacity: 0.06;
+  animation: orb-pulse 9s ease-in-out infinite;
+}
+
+.orb-b {
+  width: min(54vw, 520px);
+  height: min(54vw, 520px);
+  bottom: -12%;
+  left: -8%;
+  background: #0c2340;
+  opacity: 0.1;
+  animation: orb-pulse 12s ease-in-out infinite reverse;
+}
+
+.orb-c {
+  width: min(28vw, 260px);
+  height: min(28vw, 260px);
+  top: 46%;
+  left: 38%;
+  background: #0c2340;
+  opacity: 0.05;
+  animation: orb-pulse 11s ease-in-out infinite;
+}
+
+@keyframes drift-a {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) rotate(-16deg) scale(1);
+  }
+  50% {
+    transform: translate3d(9vw, 8vh, 0) rotate(6deg) scale(1.12);
+  }
+}
+
+@keyframes drift-b {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) rotate(12deg) scale(1.05);
+  }
+  50% {
+    transform: translate3d(-8vw, 10vh, 0) rotate(-8deg) scale(0.92);
+  }
+}
+
+@keyframes drift-c {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) rotate(-6deg);
+  }
+  50% {
+    transform: translate3d(7vw, -9vh, 0) rotate(10deg) scale(1.1);
+  }
+}
+
+@keyframes drift-d {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) rotate(8deg);
+  }
+  50% {
+    transform: translate3d(-6vw, -7vh, 0) rotate(-6deg) scale(1.08);
+  }
+}
+
+@keyframes drift-e {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) rotate(-10deg);
+  }
+  50% {
+    transform: translate3d(10vw, -6vh, 0) rotate(8deg) scale(1.14);
+  }
+}
+
+@keyframes orb-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.28);
+  }
 }
 
 :focus-visible {
@@ -62,7 +243,7 @@ body {
 }
 
 .pass-cut {
-  border-top: 1px dashed #f0b48a;
+  border-top: 1px dashed #d1d5db;
   margin: 0.9rem 0 0.8rem;
 }
 
@@ -82,7 +263,7 @@ body {
 }
 
 .timeline::before {
-  background: #f3c2a4;
+  background: #d1d5db;
   content: "";
   left: 4.4rem;
   position: absolute;
@@ -100,6 +281,17 @@ body {
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
+  }
+
+  .drift-a,
+  .drift-b,
+  .drift-c,
+  .drift-d,
+  .drift-e,
+  .orb-a,
+  .orb-b,
+  .orb-c {
+    animation: none;
   }
 }
 

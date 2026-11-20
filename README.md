@@ -27,6 +27,7 @@ Open http://127.0.0.1:3457. Without those two variables the public site still ru
 | `/` | Programme pass, invitation, schedule, faculty |
 | `/programme` | The four sessions |
 | `/faculty` | Resource persons |
+| `/department` | Organising department, services, and current staff |
 | `/registration` | On-site registration |
 | `/attend` | Single link for an RCI listing: register or join |
 | `/join` | Opens the Cisco Webex session |
@@ -48,7 +49,7 @@ To let another organiser email in, set `ADMIN_EMAILS` to a comma-separated list.
 ## Photographs and the emblem
 
 - Put the university emblem, supplied by Yenepoya, at `public/brand/yenepoya-emblem.svg`.
-- Put consented headshots at `public/faculty/`. The cards currently show initials. Do not download portraits from the web.
+- Department portraits in `public/department/` are the photographs published on the Yenepoya Medical College department page. Placeholder silhouettes were left out. Resource persons who are not on that page still show initials until a consented headshot is supplied.
 
 The site does not invent degrees, posts, credit hours, or a fee. The fee is whatever Razorpay shows.
 

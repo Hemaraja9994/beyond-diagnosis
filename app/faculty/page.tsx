@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { PageBanner } from "@/components/page-banner";
+import { Portrait } from "@/components/portrait";
 import { facultyProfile, sessions } from "@/lib/programme";
 
 export const metadata: Metadata = { title: "Faculty" };
@@ -10,7 +11,7 @@ export default function FacultyPage() {
       <PageBanner
         kicker="Resource persons"
         title="Who is teaching"
-        lede="Names and CRR numbers are those given for this programme. The psychologist’s card includes her public profile. Portraits follow when the department supplies a consented photograph."
+        lede="Names and CRR numbers are those given for this programme. Dr. Shwetha Prabhu’s portrait is the one published by Yenepoya Medical College. The other portraits follow when a consented photograph is available."
       />
       <ul className="mx-auto grid max-w-6xl gap-5 px-4 py-10 sm:grid-cols-2">
         {sessions.map((session) => {
@@ -18,13 +19,12 @@ export default function FacultyPage() {
           return (
             <li key={session.crr} className="rounded-3xl bg-card p-5 ring-1 ring-line">
               <div className="flex gap-4">
-                <div
-                  className="grid h-20 w-20 shrink-0 place-items-center rounded-3xl bg-navy font-serif text-2xl text-mint"
-                  role="img"
-                  aria-label={`Photograph of ${session.person} to follow`}
-                >
-                  {session.initials}
-                </div>
+                <Portrait
+                  name={session.person}
+                  initials={session.initials}
+                  photo={session.photo}
+                  className="h-20 w-20 shrink-0 overflow-hidden rounded-3xl text-2xl"
+                />
                 <div>
                   <h2 className="font-serif text-2xl text-navy">{session.person}</h2>
                   {profile ? <p className="text-sm text-muted">{profile.fullName}</p> : null}

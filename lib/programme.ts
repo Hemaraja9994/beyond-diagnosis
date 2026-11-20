@@ -95,6 +95,7 @@ export const sessions = [
     person: "Ms. Shwetha G Prabhu",
     crr: "A18456",
     initials: "SP",
+    photo: "/department/shwetha-prabhu.jpg",
     relevance:
       "Opens the Act: the rights it names, the duties it places on institutions, and how far those duties reach into rehabilitation practice.",
   },
@@ -105,6 +106,7 @@ export const sessions = [
     person: "Ms. Swathi C",
     crr: "A81760",
     initials: "SC",
+    photo: null,
     relevance:
       "Walks through the specified disabilities a certificate can name, so assessment is matched to the schedule of the Act rather than to habit.",
   },
@@ -116,6 +118,7 @@ export const sessions = [
     person: "Ms. Vasudha K G",
     crr: "A85535",
     initials: "VK",
+    photo: null,
     relevance:
       "Takes learning disability, intellectual disability, and autism spectrum disorder from a psychologist’s side of certification, rights, and entitlements.",
   },
@@ -127,6 +130,7 @@ export const sessions = [
     person: "Dr. Satyapal Puri Goswami",
     crr: "A00260",
     initials: "SG",
+    photo: null,
     relevance:
       "Turns to communication disorders and the legal and legislative work audiologists and speech-language pathologists are asked to do.",
   },
@@ -208,6 +212,11 @@ export const states = [
 
 export const officialLinks = [
   {
+    title: "Department of Audiology and Speech Language Pathology, Yenepoya Medical College",
+    href: "https://www.ymc.yenepoya.edu.in/audiology-speech-department.php",
+    note: "The organising department: the BASLP course, clinical services, and the college staff page.",
+  },
+  {
     title: "Rehabilitation Council of India",
     href: "https://rehabcouncil.nic.in/",
     note: "The statutory council for rehabilitation education and the Central Rehabilitation Register.",
@@ -263,6 +272,7 @@ export const nav = [
   { href: "/", label: "Home" },
   { href: "/programme", label: "Programme" },
   { href: "/faculty", label: "Faculty" },
+  { href: "/department", label: "Department" },
   { href: "/inauguration", label: "Inauguration" },
   { href: "/attend", label: "Attend" },
   { href: "/general", label: "Information" },

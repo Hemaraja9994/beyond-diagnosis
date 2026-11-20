@@ -162,7 +162,7 @@ export function RegisterForm({ source }: { source: ArrivalSource }) {
         </label>
       </div>
       {error ? (
-        <p className="rounded-2xl bg-mint px-4 py-3 text-green-dark" role="alert">
+        <p className="rounded-2xl bg-navy/5 px-4 py-3 text-green-dark" role="alert">
           {error}
         </p>
       ) : null}

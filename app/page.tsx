@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { OfficialMarks } from "@/components/official-marks";
 import { PassCard } from "@/components/pass-card";
+import { Portrait } from "@/components/portrait";
+import { departmentStaff, departmentUrl } from "@/lib/department";
 import { audience, facultyProfile, invitation, objectives, programme, sessions } from "@/lib/programme";
 
 export default function HomePage() {
@@ -28,7 +30,7 @@ export default function HomePage() {
 
       <OfficialMarks />
 
-      <section className="border-y border-line bg-white/80" aria-label="At a glance">
+      <section className="border-y border-line bg-white" aria-label="At a glance">
         <dl className="mx-auto grid max-w-6xl grid-cols-2 gap-px bg-line sm:grid-cols-4">
           {[
             ["One day", programme.dateLabel],
@@ -74,6 +76,9 @@ export default function HomePage() {
             <br />
             {programme.organiser}
           </p>
+          <a className="mt-4 inline-flex font-semibold text-mint underline" href={departmentUrl}>
+            College department page
+          </a>
         </article>
         <div>
           <div className="flex items-end justify-between gap-4">
@@ -102,7 +107,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="bg-mint">
+      <section className="bg-white">
         <div className="mx-auto max-w-6xl px-4 py-12">
           <div className="flex items-end justify-between gap-4">
             <h2 className="font-serif text-3xl text-navy">Faculty</h2>
@@ -113,13 +118,12 @@ export default function HomePage() {
           <ul className="mt-6 flex gap-4 overflow-x-auto pb-2">
             {sessions.map((session) => (
               <li key={session.crr} className="w-64 shrink-0 rounded-3xl bg-card p-4 ring-1 ring-line">
-                <div
-                  className="grid h-16 w-16 place-items-center rounded-2xl bg-navy font-serif text-xl text-mint"
-                  role="img"
-                  aria-label={`Photograph of ${session.person} to follow`}
-                >
-                  {session.initials}
-                </div>
+                <Portrait
+                  name={session.person}
+                  initials={session.initials}
+                  photo={session.photo}
+                  className="h-16 w-16 overflow-hidden rounded-2xl text-xl"
+                />
                 <p className="mt-4 font-serif text-xl text-navy">{session.person}</p>
                 <p className="text-sm text-muted">CRR {session.crr}</p>
                 {facultyProfile(session.crr) ? (
@@ -130,6 +134,29 @@ export default function HomePage() {
             ))}
           </ul>
         </div>
+      </section>
+
+      <section className="mx-auto max-w-6xl px-4 py-12">
+        <div className="flex items-end justify-between gap-4">
+          <h2 className="font-serif text-3xl text-navy">The department</h2>
+          <Link href="/department" className="text-sm font-semibold text-green">
+            Staff and services
+          </Link>
+        </div>
+        <p className="mt-3 max-w-3xl leading-7 text-muted">
+          {programme.organiser} at {programme.university}. Portraits are from the college page. Ms. Ananya Shettigar has joined; Ms. Niha Kuraisha and Ms. Praneetha are no longer listed.
+        </p>
+        <ul className="mt-6 flex gap-4 overflow-x-auto pb-2">
+          {departmentStaff.map((person) => (
+            <li key={person.name} className="w-44 shrink-0 overflow-hidden rounded-3xl bg-card ring-1 ring-line">
+              <Portrait name={person.name} initials={person.initials} photo={person.photo} className="aspect-square w-full text-2xl" />
+              <div className="p-3">
+                <p className="font-serif text-lg leading-snug text-navy">{person.name}</p>
+                <p className="mt-1 text-xs leading-5 text-muted">{person.role}</p>
+              </div>
+            </li>
+          ))}
+        </ul>
       </section>
 
       <section className="mx-auto grid max-w-6xl gap-8 px-4 py-12 lg:grid-cols-2">

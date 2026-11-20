@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { departmentUrl } from "@/lib/department";
 import { programme } from "@/lib/programme";
 
 export function SiteFooter() {
@@ -24,6 +25,12 @@ export function SiteFooter() {
         <div>
           <p className="text-sm font-semibold uppercase tracking-[0.14em] text-white">Programme</p>
           <ul className="mt-3 grid gap-2 text-sm">
+            <li>
+              <Link href="/department">Department and staff</Link>
+            </li>
+            <li>
+              <a href={departmentUrl}>College department page</a>
+            </li>
             <li>
               <Link href="/programme">Schedule</Link>
             </li>

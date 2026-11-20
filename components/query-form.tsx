@@ -34,7 +34,7 @@ export function QueryForm() {
 
   if (done) {
     return (
-      <p className="rounded-3xl bg-mint px-5 py-4 leading-7 text-green-dark" role="status">
+      <p className="rounded-3xl bg-navy/5 px-5 py-4 leading-7 text-green-dark" role="status">
         The query is with the organising team. They reply from the conference email. This page does not send an automatic acknowledgement.
       </p>
     );

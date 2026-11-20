@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Fraunces, Outfit } from "next/font/google";
+import { Backdrop } from "@/components/backdrop";
 import { BottomNav } from "@/components/bottom-nav";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
@@ -30,13 +31,16 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   return (
     <html lang="en">
       <body className={`${outfit.variable} ${fraunces.variable} antialiased`}>
-        <a className="skip" href="#content">
-          Skip to content
-        </a>
-        <SiteHeader />
-        <main id="content">{children}</main>
-        <SiteFooter />
-        <BottomNav />
+        <Backdrop />
+        <div className="relative z-10">
+          <a className="skip" href="#content">
+            Skip to content
+          </a>
+          <SiteHeader />
+          <main id="content">{children}</main>
+          <SiteFooter />
+          <BottomNav />
+        </div>
       </body>
     </html>
   );
