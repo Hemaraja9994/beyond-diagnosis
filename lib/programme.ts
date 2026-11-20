@@ -248,9 +248,9 @@ export const officialLinks = [
     note: "Index of national institutes under the department.",
   },
   {
-    title: "Unique Disability ID",
-    href: "https://www.swavlambancard.gov.in/",
-    note: "Portal for disability certificates and UDID cards.",
+    title: "Swavlamban Card (Unique Disability ID)",
+    href: "https://swavlambancard.gov.in/",
+    note: "The government portal that issues the disability certificate and the UDID card.",
   },
   {
     title: "Indian Speech and Hearing Association",

@@ -17,21 +17,20 @@ export function OfficialMarks() {
           Yenepoya Medical College, a constituent college of {programme.university}.
         </figcaption>
       </figure>
-      <figure className="overflow-hidden rounded-3xl bg-navy p-5 text-mint shadow-lg ring-1 ring-navy">
-        <div className="flex gap-3">
-          <div className="grid h-20 w-16 shrink-0 place-items-center rounded-xl bg-mint text-xs font-semibold text-navy">Photo</div>
-          <div>
-            <p className="font-serif text-3xl text-white">UDID</p>
-            <p className="text-sm">Unique Disability ID</p>
-          </div>
-        </div>
-        <div className="mt-4 grid gap-2">
-          <span className="h-2 w-3/4 rounded-full bg-white/70" />
-          <span className="h-2 w-1/2 rounded-full bg-white/40" />
-          <span className="h-2 w-2/3 rounded-full bg-flare/90" />
-        </div>
-        <figcaption className="mt-4 text-sm leading-6 text-mint">
-          The sessions are about the certificate and the entitlements that follow it. This drawing is not a real card.
+      <figure className="overflow-hidden rounded-3xl bg-card shadow-lg ring-1 ring-line">
+        <Image
+          src="/brand/udid-card.png"
+          alt="Sample Unique Disability ID card issued by the Government of India. Personal details are obscured."
+          width={484}
+          height={240}
+          className="h-44 w-full object-cover object-left"
+        />
+        <figcaption className="p-4 text-sm leading-6 text-muted">
+          The sessions follow this card from assessment to entitlements. Apply and verify a card on the{" "}
+          <a className="font-semibold text-green" href="https://swavlambancard.gov.in/">
+            Swavlamban Card portal
+          </a>
+          . This picture is a sample, not a participant’s card.
         </figcaption>
       </figure>
       <figure className="overflow-hidden rounded-3xl bg-card ring-1 ring-line">
