@@ -10,7 +10,7 @@ export default function FacultyPage() {
       <PageBanner
         kicker="Resource persons"
         title="Who is teaching"
-        lede="Names and CRR numbers are those given for this programme. The note on Ms. Vasudha K. G. is from her public profile. Portraits will be added when the department has a consented photograph for each person."
+        lede="Names and CRR numbers are those given for this programme. The psychologist’s card includes her public profile. Portraits follow when the department supplies a consented photograph."
       />
       <ul className="mx-auto grid max-w-6xl gap-5 px-4 py-10 sm:grid-cols-2">
         {sessions.map((session) => {
