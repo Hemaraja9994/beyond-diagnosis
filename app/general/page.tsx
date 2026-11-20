@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { OfficialMarks } from "@/components/official-marks";
 import { PageBanner } from "@/components/page-banner";
 import { officialLinks, programme, sessions } from "@/lib/programme";
 
@@ -12,6 +13,7 @@ export default function GeneralPage() {
         title="The Act, the guidelines, and the papers for the day"
         lede="Official texts stay on the government sites that publish them. The schedule, checklist, and certificate note below are handouts for this CRE only."
       />
+      <OfficialMarks />
       <section className="mx-auto max-w-6xl px-4 py-10">
         <h2 className="font-serif text-3xl text-navy">Official channels</h2>
         <ul className="mt-5 grid gap-3">

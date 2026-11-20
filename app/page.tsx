@@ -1,11 +1,12 @@
 import Link from "next/link";
+import { OfficialMarks } from "@/components/official-marks";
 import { PassCard } from "@/components/pass-card";
 import { audience, invitation, objectives, programme, sessions } from "@/lib/programme";
 
 export default function HomePage() {
   return (
     <div className="pb-20 md:pb-0">
-      <section className="bg-paper">
+      <section>
         <div className="mx-auto grid max-w-6xl items-center gap-10 px-4 py-12 lg:grid-cols-[1.2fr_0.8fr] lg:py-16">
           <div>
             <p className="text-sm font-semibold uppercase tracking-[0.18em] text-green">Zonal CRE · Online · English</p>
@@ -25,7 +26,9 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section className="border-y border-line bg-white" aria-label="At a glance">
+      <OfficialMarks />
+
+      <section className="border-y border-line bg-white/80" aria-label="At a glance">
         <dl className="mx-auto grid max-w-6xl grid-cols-2 gap-px bg-line sm:grid-cols-4">
           {[
             ["One day", programme.dateLabel],

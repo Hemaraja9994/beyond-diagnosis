@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { programme } from "@/lib/programme";
 
@@ -6,7 +7,8 @@ export function SiteFooter() {
     <footer className="no-print bg-deep pb-20 text-mint md:pb-0">
       <div className="mx-auto grid max-w-6xl gap-8 px-4 py-10 sm:grid-cols-2 lg:grid-cols-3">
         <div>
-          <p className="font-serif text-2xl text-white">Yenepoya</p>
+          <Image src="/brand/yenepoya-logo.png" alt="" width={720} height={623} className="h-16 w-auto bg-white/95 p-1" />
+          <p className="mt-3 font-serif text-2xl text-white">Yenepoya</p>
           <p className="mt-2 text-sm leading-6">
             {programme.organiser}, {programme.university}, {programme.city}.
           </p>

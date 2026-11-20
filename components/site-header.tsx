@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { nav, programme } from "@/lib/programme";
@@ -20,10 +21,20 @@ export function SiteHeader() {
         </div>
       </div>
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3">
-        <Link href="/" className="min-w-0" onClick={() => setOpen(false)}>
-          <span className="block font-serif text-xl leading-none text-navy">Yenepoya</span>
-          <span className="mt-1 block truncate text-xs text-muted sm:text-sm">
-            Audiology and Speech Language Pathology
+        <Link href="/" className="flex min-w-0 items-center gap-3" onClick={() => setOpen(false)}>
+          <Image
+            src="/brand/yenepoya-logo.png"
+            alt=""
+            width={720}
+            height={623}
+            className="h-12 w-auto sm:h-14"
+            priority
+          />
+          <span className="min-w-0">
+            <span className="block font-serif text-xl leading-none text-navy">Yenepoya</span>
+            <span className="mt-1 block truncate text-xs text-muted sm:text-sm">
+              Audiology and Speech Language Pathology
+            </span>
           </span>
         </Link>
         <nav className="hidden items-center gap-4 text-sm font-semibold text-navy lg:flex" aria-label="Primary">

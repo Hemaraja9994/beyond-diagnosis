@@ -1,19 +1,20 @@
 @import "tailwindcss";
 
 @theme {
-  --font-sans: var(--font-source), "Segoe UI", sans-serif;
-  --font-serif: var(--font-newsreader), Georgia, serif;
-  --color-ink: #14232c;
-  --color-navy: #0e3a56;
-  --color-deep: #082636;
-  --color-green: #146b52;
-  --color-green-dark: #0c5340;
-  --color-mint: #e6f3ee;
-  --color-paper: #f6f3ee;
-  --color-card: #fffcf8;
-  --color-line: #e3dbd0;
-  --color-brass: #8a6430;
-  --color-muted: #3e4c54;
+  --font-sans: var(--font-outfit), "Segoe UI", sans-serif;
+  --font-serif: var(--font-fraunces), Georgia, serif;
+  --color-ink: #1c140f;
+  --color-navy: #0c2340;
+  --color-deep: #071526;
+  --color-green: #c2410c;
+  --color-green-dark: #9a3412;
+  --color-mint: #ffe8d6;
+  --color-paper: #fff4ec;
+  --color-card: #fffdfb;
+  --color-line: #f0d2c2;
+  --color-brass: #e4570b;
+  --color-flare: #ff7a1a;
+  --color-muted: #5c463c;
 }
 
 html {
@@ -21,7 +22,13 @@ html {
 }
 
 body {
-  background: var(--color-paper);
+  background-color: var(--color-paper);
+  background-image:
+    linear-gradient(180deg, rgba(255, 244, 236, 0.9), rgba(255, 244, 236, 0.94)),
+    url("/brand/wallpaper.svg");
+  background-attachment: fixed;
+  background-position: center top;
+  background-size: auto, cover;
   color: var(--color-ink);
   font-family: var(--font-sans);
 }
@@ -49,13 +56,13 @@ body {
 .pass {
   background: var(--color-card);
   border-radius: 1.5rem;
-  box-shadow: 0 24px 50px rgba(8, 38, 54, 0.16);
+  box-shadow: 0 24px 50px rgba(12, 35, 64, 0.18);
   color: var(--color-ink);
   overflow: hidden;
 }
 
 .pass-cut {
-  border-top: 1px dashed #d9c7a6;
+  border-top: 1px dashed #f0b48a;
   margin: 0.9rem 0 0.8rem;
 }
 
@@ -75,7 +82,7 @@ body {
 }
 
 .timeline::before {
-  background: #d5e4de;
+  background: #f3c2a4;
   content: "";
   left: 4.4rem;
   position: absolute;
