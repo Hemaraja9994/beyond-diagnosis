@@ -132,6 +132,26 @@ export const sessions = [
   },
 ] as const;
 
+export const facultyProfiles = {
+  A85535: {
+    fullName: "Vasudha Kadikadka Gangadhara",
+    role: "Assistant Professor and Consultant Clinical Psychologist",
+    affiliation:
+      "Department of Psychiatry, Kasturba Medical College, Mangaluru (Manipal Academy of Higher Education)",
+    focus:
+      "Clinical psychology, mental health, social and emotional learning, stress and coping, relationship dynamics, and cognitive and psychological well-being.",
+    profileUrl: "https://scholar.google.com/citations?user=d-N4iWYAAAAJ&hl=en",
+    profileLabel: "Google Scholar",
+  },
+} as const;
+
+export function facultyProfile(crr: string) {
+  if (crr in facultyProfiles) {
+    return facultyProfiles[crr as keyof typeof facultyProfiles];
+  }
+  return null;
+}
+
 export const objectives = [
   "Explain the rights, responsibilities, and reach of the RPwD Act, 2016.",
   "Identify the 21 specified disabilities and why the list matters for certification.",

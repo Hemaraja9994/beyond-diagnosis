@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { OfficialMarks } from "@/components/official-marks";
 import { PassCard } from "@/components/pass-card";
-import { audience, invitation, objectives, programme, sessions } from "@/lib/programme";
+import { audience, facultyProfile, invitation, objectives, programme, sessions } from "@/lib/programme";
 
 export default function HomePage() {
   return (
@@ -122,6 +122,9 @@ export default function HomePage() {
                 </div>
                 <p className="mt-4 font-serif text-xl text-navy">{session.person}</p>
                 <p className="text-sm text-muted">CRR {session.crr}</p>
+                {facultyProfile(session.crr) ? (
+                  <p className="mt-1 text-sm leading-6 text-muted">{facultyProfile(session.crr)?.role}</p>
+                ) : null}
                 <p className="mt-2 text-sm leading-6">{session.time} {session.meridiem} IST</p>
               </li>
             ))}
