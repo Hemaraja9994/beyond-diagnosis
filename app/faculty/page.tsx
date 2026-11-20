@@ -11,7 +11,7 @@ export default function FacultyPage() {
       <PageBanner
         kicker="Resource persons"
         title="Who is teaching"
-        lede="Names and CRR numbers are those given for this programme. Portraits are shown for Dr. Shwetha Prabhu, Vasudha K G, and Dr. Goswami."
+        lede="Names and CRR numbers are those given for this programme. Portraits are shown for Dr. Shwetha Prabhu, Ms. Swathi C, Vasudha K G, and Dr. Goswami."
       />
       <ul className="mx-auto grid max-w-6xl gap-5 px-4 py-10 sm:grid-cols-2">
         {sessions.map((session) => {

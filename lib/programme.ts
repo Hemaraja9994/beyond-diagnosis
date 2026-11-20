@@ -106,7 +106,7 @@ export const sessions = [
     person: "Ms. Swathi C",
     crr: "A81760",
     initials: "SC",
-    photo: null,
+    photo: "/faculty/swathi-c.jpg",
     relevance:
       "Walks through the specified disabilities a certificate can name, so assessment is matched to the schedule of the Act rather than to habit.",
   },
