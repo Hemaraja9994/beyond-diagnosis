@@ -8,10 +8,10 @@ export function SiteFooter() {
       <div className="mx-auto grid max-w-6xl gap-8 px-4 py-10 sm:grid-cols-2 lg:grid-cols-3">
         <div>
           <Image
-            src="/brand/yenepoya-medical-college.svg"
+            src="/brand/yenepoya-medical-college.png"
             alt="Yenepoya Medical College"
-            width={555}
-            height={302}
+            width={474}
+            height={257}
             className="h-20 w-auto bg-white p-2"
             unoptimized
           />

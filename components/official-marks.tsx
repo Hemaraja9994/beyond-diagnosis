@@ -6,10 +6,10 @@ export function OfficialMarks() {
     <section className="mx-auto grid max-w-6xl gap-4 px-4 py-8 md:grid-cols-3" aria-label="Organisers and official references">
       <figure className="flex flex-col items-center rounded-3xl bg-card/90 p-5 text-center ring-1 ring-line backdrop-blur">
         <Image
-          src="/brand/yenepoya-medical-college.svg"
+          src="/brand/yenepoya-medical-college.png"
           alt="Yenepoya Medical College"
-          width={555}
-          height={302}
+          width={474}
+          height={257}
           className="h-28 w-auto"
           unoptimized
         />

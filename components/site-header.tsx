@@ -23,10 +23,10 @@ export function SiteHeader() {
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3">
         <Link href="/" className="flex min-w-0 items-center gap-3" onClick={() => setOpen(false)}>
           <Image
-            src="/brand/yenepoya-medical-college.svg"
+            src="/brand/yenepoya-medical-college.png"
             alt="Yenepoya Medical College"
-            width={555}
-            height={302}
+            width={474}
+            height={257}
             className="h-14 w-auto sm:h-16"
             priority
             unoptimized
