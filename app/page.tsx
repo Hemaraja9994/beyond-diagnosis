@@ -33,16 +33,23 @@ export default function HomePage() {
       </section>
 
       <section id="brochure" className="mx-auto grid max-w-6xl items-center gap-8 px-4 py-12 lg:grid-cols-[280px_1fr]">
-        <img
-          src={programme.brochureImage}
-          alt="Brochure for Beyond the Diagnosis, Saturday 19 December 2026."
-          className="w-full rounded-3xl shadow-lg ring-1 ring-line"
-        />
+        <div className="grid gap-3">
+          <img
+            src={programme.brochureImage}
+            alt="Flyer page 1: the programme, with the four speakers and their topics."
+            className="w-full rounded-3xl shadow-lg ring-1 ring-line"
+          />
+          <img
+            src={programme.brochureImageBack}
+            alt="Flyer page 2: the organising team, who it is for, and how to join."
+            className="w-full rounded-3xl shadow-lg ring-1 ring-line"
+          />
+        </div>
         <div>
           <p className="text-sm font-semibold uppercase tracking-[0.16em] text-green">Brochure</p>
           <h2 className="mt-2 font-serif text-3xl text-navy">Download it, or send it on WhatsApp</h2>
           <p className="mt-3 max-w-xl leading-7 text-muted">
-            One page with the date, the four sessions, and the organising team. The picture is the flyer. The download is the same page as a PDF.
+            Two pages. The first has the four sessions, the speakers, and the topics. The second has the organising team and how to join. The download is that flyer as a PDF.
           </p>
           <div className="mt-5">
             <BrochureActions />

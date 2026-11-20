@@ -23,7 +23,7 @@ export function BrochureActions() {
         href={programme.brochurePdf}
         download="beyond-the-diagnosis-brochure.pdf"
       >
-        Download the brochure
+        Download the PDF
       </a>
       <button
         type="button"
