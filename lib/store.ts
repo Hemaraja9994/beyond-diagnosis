@@ -2,6 +2,7 @@ import { createHash, randomBytes, randomUUID } from "node:crypto";
 import { get, list, put } from "@vercel/blob";
 import { sql, storageMode } from "@/lib/db";
 import type { ArrivalSource, Profession } from "@/lib/programme";
+import type { ProofFile } from "@/lib/proof";
 import type { QueryDraft, RegistrationDraft } from "@/lib/validate";
 
 export { storageMode };
@@ -19,6 +20,7 @@ export type Registration = {
   institution: string;
   stateName: string;
   paymentReference: string;
+  paymentProof: string;
   accessNeeds: string;
   source: ArrivalSource;
   consent: boolean;
@@ -37,7 +39,9 @@ type StoreError = { error: string; status: number };
 const duplicateMessage = "Registration could not be completed with these details.";
 const capacityMessage = "Registration is full. Write to the conference email and the organising team will help.";
 const pauseMessage = "Registration is paused for a short while. Try again later or write to the conference email.";
-const paymentMessage = "That payment note could not be saved.";
+const paymentMessage = "That payment could not be saved. Use the email from the registration.";
+const paymentLocked = "A payment id is already saved for this registration.";
+let columnsReady = false;
 const hourlyCap = 40;
 const pace: Record<"registrations" | "queries", number[]> = { registrations: [], queries: [] };
 
@@ -48,27 +52,64 @@ export async function createRegistration(draft: RegistrationDraft): Promise<{ re
 
 export async function listRegistrations(): Promise<Registration[]> {
   if (storageMode() === "blob") return listJson("registrations/", parseRegistration);
+  await ensurePaymentColumns();
   const rows = await sql<Record<string, unknown>>(
-    "select id, reference, created_at, full_name, email, mobile, crr_number, profession, designation, institution, state_name, payment_reference, access_needs, source, consent from registrations order by created_at desc",
+    "select id, reference, created_at, full_name, email, mobile, crr_number, profession, designation, institution, state_name, payment_reference, payment_proof, access_needs, source, consent from registrations order by created_at desc",
   );
   return rows.map(registrationFromRow);
 }
 
-export async function addPaymentReference(
+export async function addPayment(
   reference: string,
   email: string,
   paymentReference: string,
+  proof: ProofFile | null,
 ): Promise<{ ok: true } | StoreError> {
-  if (storageMode() === "blob") return addPaymentBlob(reference, email, paymentReference);
+  if (storageMode() === "blob") return addPaymentBlob(reference, email, paymentReference, proof);
+  await ensurePaymentColumns();
+  const found = await sql<{ email: string; payment_reference: string }>(
+    "select email, payment_reference from registrations where reference = $1",
+    [reference],
+  );
+  const current = found[0];
+  if (!current || current.email.toLowerCase() !== email) return { error: paymentMessage, status: 400 };
+  if (paymentReference !== "" && current.payment_reference !== "" && current.payment_reference !== paymentReference) {
+    return { error: paymentLocked, status: 400 };
+  }
   const rows = await sql<{ id: string }>(
-    `update registrations set payment_reference = $1
-     where reference = $2 and lower(email) = lower($3)
-       and (payment_reference = '' or payment_reference = $1)
+    `update registrations set
+       payment_reference = case when $1 = '' then payment_reference else $1 end,
+       payment_proof = case when $2 = '' then payment_proof else $2 end,
+       payment_proof_data = case when $3 = '' then payment_proof_data else $3 end
+     where reference = $4 and lower(email) = lower($5)
      returning id`,
-    [paymentReference, reference, email],
+    [paymentReference, proof?.contentType ?? "", proof ? proof.bytes.toString("base64") : "", reference, email],
   );
   if (rows.length === 0) return { error: paymentMessage, status: 400 };
   return { ok: true };
+}
+
+export async function getPaymentProof(reference: string): Promise<ProofFile | null> {
+  if (storageMode() === "blob") {
+    const record = await readJson(`registrations/${reference}.json`, parseRegistration);
+    if (!record || record.paymentProof === "") return null;
+    const result = await get(`payments/${reference}`, { access: "private", useCache: false });
+    if (!result || result.statusCode !== 200) return null;
+    const bytes = Buffer.from(await new Response(result.stream).arrayBuffer());
+    if (record.paymentProof !== "image/jpeg" && record.paymentProof !== "image/png" && record.paymentProof !== "image/webp") {
+      return null;
+    }
+    return { contentType: record.paymentProof, bytes };
+  }
+  await ensurePaymentColumns();
+  const rows = await sql<{ payment_proof: string; payment_proof_data: string }>(
+    "select payment_proof, payment_proof_data from registrations where reference = $1",
+    [reference],
+  );
+  const row = rows[0];
+  if (!row || row.payment_proof === "" || row.payment_proof_data === "") return null;
+  if (row.payment_proof !== "image/jpeg" && row.payment_proof !== "image/png" && row.payment_proof !== "image/webp") return null;
+  return { contentType: row.payment_proof, bytes: Buffer.from(row.payment_proof_data, "base64") };
 }
 
 export async function createQuery(draft: QueryDraft): Promise<{ ok: true } | StoreError> {
@@ -141,7 +182,15 @@ export async function setMeetingUrl(url: string): Promise<void> {
   );
 }
 
+async function ensurePaymentColumns(): Promise<void> {
+  if (columnsReady || storageMode() === "blob") return;
+  await sql("alter table registrations add column if not exists payment_proof text not null default ''");
+  await sql("alter table registrations add column if not exists payment_proof_data text not null default ''");
+  columnsReady = true;
+}
+
 async function createRegistrationSql(draft: RegistrationDraft): Promise<{ reference: string } | StoreError> {
+  await ensurePaymentColumns();
   if (!withinHourlyPace("registrations")) return { error: pauseMessage, status: 429 };
   if ((await countOf("registrations")) >= 2000) return { error: capacityMessage, status: 429 };
   if ((await countRecent("registrations")) >= hourlyCap) return { error: pauseMessage, status: 429 };
@@ -195,13 +244,26 @@ async function createRegistrationBlob(draft: RegistrationDraft): Promise<{ refer
   return { reference: record.reference };
 }
 
-async function addPaymentBlob(reference: string, email: string, paymentReference: string): Promise<{ ok: true } | StoreError> {
+async function addPaymentBlob(
+  reference: string,
+  email: string,
+  paymentReference: string,
+  proof: ProofFile | null,
+): Promise<{ ok: true } | StoreError> {
   const record = await readJson(`registrations/${reference}.json`, parseRegistration);
   if (!record || record.email !== email) return { error: paymentMessage, status: 400 };
-  if (record.paymentReference !== "" && record.paymentReference !== paymentReference) {
-    return { error: paymentMessage, status: 400 };
+  if (paymentReference !== "" && record.paymentReference !== "" && record.paymentReference !== paymentReference) {
+    return { error: paymentLocked, status: 400 };
   }
-  record.paymentReference = paymentReference;
+  if (paymentReference !== "") record.paymentReference = paymentReference;
+  if (proof) {
+    await put(`payments/${reference}`, proof.bytes, {
+      access: "private",
+      contentType: proof.contentType,
+      allowOverwrite: true,
+    });
+    record.paymentProof = proof.contentType;
+  }
   await put(`registrations/${reference}.json`, JSON.stringify(record), {
     access: "private",
     contentType: "application/json",
@@ -215,6 +277,7 @@ function toRegistration(draft: RegistrationDraft, reference: string): Registrati
     id: randomUUID(),
     reference,
     createdAt: new Date().toISOString(),
+    paymentProof: "",
     ...draft,
   };
 }
@@ -241,6 +304,7 @@ function registrationFromRow(row: Record<string, unknown>): Registration {
     institution: String(row.institution),
     stateName: String(row.state_name),
     paymentReference: String(row.payment_reference ?? ""),
+    paymentProof: String(row.payment_proof ?? ""),
     accessNeeds: String(row.access_needs ?? ""),
     source: String(row.source) as ArrivalSource,
     consent: row.consent === true || row.consent === "t" || row.consent === "true",
@@ -251,6 +315,7 @@ function parseRegistration(value: unknown): Registration | null {
   if (typeof value !== "object" || value === null) return null;
   const row = value as Registration;
   if (typeof row.reference !== "string" || typeof row.email !== "string") return null;
+  if (typeof row.paymentProof !== "string") row.paymentProof = "";
   return row;
 }
 

@@ -9,17 +9,7 @@ export function SiteHeader() {
   const [open, setOpen] = useState(false);
 
   return (
-    <header className="no-print sticky top-0 z-30 border-b border-line bg-card/95 backdrop-blur">
-      <div className="bg-deep text-mint">
-        <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-2 px-4 py-2 text-xs tracking-wide sm:text-sm">
-          <p>
-            {programme.acknowledgement} · Institute {programme.instituteCode}
-          </p>
-          <p>
-            {programme.dateLabel} · {programme.mode}
-          </p>
-        </div>
-      </div>
+    <header className="no-print sticky top-0 z-30 border-b border-line bg-white/95 backdrop-blur">
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3">
         <Link href="/" className="flex min-w-0 items-center gap-3" onClick={() => setOpen(false)}>
           <Image
@@ -27,13 +17,15 @@ export function SiteHeader() {
             alt="Yenepoya Medical College"
             width={474}
             height={257}
-            className="h-14 w-auto sm:h-16"
+            className="h-12 w-auto"
             priority
             unoptimized
           />
-          <span className="hidden min-w-0 xl:block">
-            <span className="block text-xs font-semibold uppercase tracking-wide text-navy">Department of</span>
-            <span className="mt-1 block text-sm text-muted">Audiology and Speech Language Pathology</span>
+          <span className="hidden min-w-0 sm:block">
+            <span className="block font-serif text-base leading-tight text-navy">{programme.title}</span>
+            <span className="mt-0.5 block text-xs text-muted">
+              {programme.level} CRE · {programme.day} {programme.month}
+            </span>
           </span>
         </Link>
         <nav className="hidden items-center gap-4 text-sm font-semibold text-navy lg:flex" aria-label="Primary">
@@ -42,7 +34,7 @@ export function SiteHeader() {
               {item.label}
             </Link>
           ))}
-          <Link href="/registration" className="rounded-full bg-green px-4 py-2 text-white hover:bg-green-dark">
+          <Link href="/registration" className="rounded-lg bg-navy px-4 py-2 text-white">
             Register
           </Link>
         </nav>
@@ -76,7 +68,7 @@ export function SiteHeader() {
             <li>
               <Link
                 href="/registration"
-                className="mt-1 block rounded-full bg-green px-4 py-3 text-center font-semibold text-white"
+                className="mt-1 block rounded-lg bg-navy px-4 py-3 text-center font-semibold text-white"
                 onClick={() => setOpen(false)}
               >
                 Register

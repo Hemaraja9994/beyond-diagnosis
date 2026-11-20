@@ -130,16 +130,22 @@ export function parseQuery(body: unknown): { value: QueryDraft } | { error: stri
   return { value: { fullName, email, topic, message } };
 }
 
-export function parsePayment(body: unknown): { reference: string; email: string; paymentReference: string } | { error: string } {
-  const record = asRecord(body);
-  if (!record) return { error: "The payment note could not be read." };
-  const reference = readString(record, "reference").toUpperCase();
-  const email = readString(record, "email").toLowerCase();
-  const paymentReference = readString(record, "paymentReference");
+export function parsePaymentFields(input: {
+  reference: string;
+  email: string;
+  paymentReference: string;
+  hasProof: boolean;
+}): { reference: string; email: string; paymentReference: string } | { error: string } {
+  const reference = input.reference.trim().toUpperCase();
+  const email = input.email.trim().toLowerCase();
+  const paymentReference = input.paymentReference.trim();
   if (!/^YDU-[A-Z2-9]{12}$/.test(reference)) return { error: "Enter the registration reference from your confirmation." };
   if (!validEmail(email)) return { error: "Enter the email used at registration." };
-  if (paymentReference.length < 4 || paymentReference.length > 64 || /[^A-Za-z0-9 _./-]/.test(paymentReference)) {
-    return { error: "Enter the Razorpay payment reference." };
+  if (paymentReference !== "" && (paymentReference.length < 4 || paymentReference.length > 64 || /[^A-Za-z0-9 _./-]/.test(paymentReference))) {
+    return { error: "The payment id can use letters, numbers, and simple punctuation only." };
+  }
+  if (paymentReference === "" && !input.hasProof) {
+    return { error: "Add the Razorpay payment id, or upload a screenshot of the payment." };
   }
   return { reference, email, paymentReference };
 }

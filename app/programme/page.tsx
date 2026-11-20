@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { PageBanner } from "@/components/page-banner";
-import { facultyProfile, programme, sessions } from "@/lib/programme";
+import { facultyProfile, programme, sessionTickId, sessions } from "@/lib/programme";
 
 export const metadata: Metadata = { title: "Programme" };
 
@@ -16,7 +16,7 @@ export default function ProgrammePage() {
         {sessions.map((session) => {
           const profile = facultyProfile(session.crr);
           return (
-            <li key={session.crr} className="grid grid-cols-[4.2rem_1fr] gap-4 sm:grid-cols-[5.5rem_1fr]">
+            <li id={sessionTickId(session.time)} key={session.crr} className="grid grid-cols-[4.2rem_1fr] gap-4 sm:grid-cols-[5.5rem_1fr]">
               <p className="text-sm font-semibold text-green">
                 {session.time}
                 <span className="block text-xs text-muted">{session.meridiem} IST</span>

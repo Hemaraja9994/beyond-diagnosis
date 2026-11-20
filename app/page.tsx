@@ -1,25 +1,29 @@
 import Link from "next/link";
+import { BrochureActions } from "@/components/brochure-actions";
+import { HospitalMap } from "@/components/hospital-map";
 import { OfficialMarks } from "@/components/official-marks";
 import { PassCard } from "@/components/pass-card";
 import { Portrait } from "@/components/portrait";
 import { departmentUrl } from "@/lib/department";
-import { audience, committee, facultyProfile, invitation, objectives, programme, sessions } from "@/lib/programme";
+import { audience, committee, facultyProfile, invitation, objectives, programme, sessionTickId, sessions } from "@/lib/programme";
 
 export default function HomePage() {
   return (
     <div className="pb-20 md:pb-0">
-      <section>
+      <section id="date">
         <div className="mx-auto grid max-w-6xl items-center gap-10 px-4 py-12 lg:grid-cols-[1.2fr_0.8fr] lg:py-16">
           <div>
-            <p className="text-sm font-semibold uppercase tracking-[0.18em] text-green">Zonal CRE · Online · English</p>
-            <h1 className="mt-3 font-serif text-5xl leading-[1.05] text-navy sm:text-6xl">{programme.title}</h1>
-            <p className="mt-4 max-w-xl font-serif text-2xl leading-snug text-ink">{programme.subtitle}</p>
-            <p className="mt-4 max-w-xl text-lg leading-8 text-muted">{programme.aim}</p>
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-green">Zonal CRE · Online · English</p>
+            <h1 className="mt-4 max-w-[11ch] font-serif text-6xl font-medium leading-[0.9] tracking-[-0.035em] text-navy sm:text-7xl">
+              {programme.title}
+            </h1>
+            <p className="mt-6 max-w-xl font-serif text-2xl font-normal leading-snug text-ink">{programme.subtitle}</p>
+            <p className="mt-4 max-w-xl leading-7 text-muted">{programme.aim}</p>
             <div className="mt-6 flex flex-wrap gap-3">
-              <Link href="/registration" className="inline-flex min-h-12 items-center rounded-full bg-green px-5 font-semibold text-white">
+              <Link id="register" href="/registration" className="ticked inline-flex min-h-12 items-center rounded-lg bg-navy px-5 font-semibold text-white">
                 Register on this site
               </Link>
-              <Link href="/join" className="inline-flex min-h-12 items-center rounded-full border border-navy px-5 font-semibold text-navy">
+              <Link id="webex" href="/join" className="ticked inline-flex min-h-12 items-center rounded-lg border border-navy bg-white px-5 font-semibold text-navy">
                 Join on Webex
               </Link>
             </div>
@@ -27,6 +31,26 @@ export default function HomePage() {
           <PassCard />
         </div>
       </section>
+
+      <section id="brochure" className="mx-auto grid max-w-6xl items-center gap-8 px-4 py-12 lg:grid-cols-[280px_1fr]">
+        <img
+          src={programme.brochureImage}
+          alt="Brochure for Beyond the Diagnosis, Saturday 19 December 2026."
+          className="w-full rounded-3xl shadow-lg ring-1 ring-line"
+        />
+        <div>
+          <p className="text-sm font-semibold uppercase tracking-[0.16em] text-green">Brochure</p>
+          <h2 className="mt-2 font-serif text-3xl text-navy">Download it, or send it on WhatsApp</h2>
+          <p className="mt-3 max-w-xl leading-7 text-muted">
+            One page with the date, the four sessions, and the organising team. The picture is the flyer. The download is the same page as a PDF.
+          </p>
+          <div className="mt-5">
+            <BrochureActions />
+          </div>
+        </div>
+      </section>
+
+      <HospitalMap />
 
       <OfficialMarks />
 
@@ -40,24 +64,31 @@ export default function HomePage() {
           ].map(([label, value]) => (
             <div key={label} className="bg-white px-4 py-5">
               <dt className="text-xs font-semibold uppercase tracking-[0.14em] text-muted">{label}</dt>
-              <dd className="mt-1 font-serif text-xl text-navy">{value}</dd>
+              <dd className={`mt-1 font-serif text-xl text-navy ${label === "One day" ? "ticked" : ""}`}>{value}</dd>
             </div>
           ))}
         </dl>
       </section>
 
-      <section className="mx-auto grid max-w-6xl gap-4 px-4 py-12 sm:grid-cols-3">
-        {[
-          ["1", "Register here", "Your name, CRR number, and institution stay on this site. There is no separate form."],
-          ["2", "Pay on Razorpay", "The fee is taken on the payment page. Come back and attach the payment reference to your registration."],
-          ["3", "Join Webex", "One link opens the Cisco Webex session once the organising team publishes it."],
-        ].map(([step, title, text]) => (
-          <article key={step} className="rounded-3xl bg-card p-5 ring-1 ring-line">
-            <p className="font-serif text-4xl text-green">{step}</p>
-            <h2 className="mt-2 font-serif text-2xl text-navy">{title}</h2>
-            <p className="mt-2 leading-7 text-muted">{text}</p>
-          </article>
-        ))}
+      <section className="bg-navy text-white">
+        <div className="mx-auto max-w-6xl px-4 py-12">
+          <h2 className="font-serif text-4xl">Three steps</h2>
+          <ol className="mt-8 grid gap-8 sm:grid-cols-3">
+            {[
+              ["1", "Register on this site"],
+              ["2", "Pay on Razorpay"],
+              ["3", "Join Webex"],
+            ].map(([step, title]) => (
+              <li key={step}>
+                <p className="font-serif text-4xl text-flare">{step}</p>
+                <p className="mt-3 border-t border-white/25 pt-3 font-semibold">{title}</p>
+              </li>
+            ))}
+          </ol>
+          <p className="mt-6 max-w-2xl text-sm leading-6 text-white/80">
+            After you pay, add the payment id or upload the receipt screenshot on the registration page. It stays with your reference.
+          </p>
+        </div>
       </section>
 
       <section className="mx-auto grid max-w-6xl gap-8 px-4 pb-12 lg:grid-cols-[0.9fr_1.1fr]">
@@ -86,16 +117,16 @@ export default function HomePage() {
             College department page
           </a>
         </article>
-        <div>
+        <div id="day">
           <div className="flex items-end justify-between gap-4">
             <h2 className="font-serif text-3xl text-navy">The day</h2>
-            <Link href="/programme" className="text-sm font-semibold text-green">
+            <Link href="/programme" className="ticked text-sm font-semibold text-green">
               Full programme
             </Link>
           </div>
           <ol className="timeline mt-6 grid gap-5">
             {sessions.map((session) => (
-              <li key={session.time} className="grid grid-cols-[4.2rem_1fr] gap-4 sm:grid-cols-[5.5rem_1fr]">
+              <li id={sessionTickId(session.time)} key={session.time} className="grid grid-cols-[4.2rem_1fr] gap-4 sm:grid-cols-[5.5rem_1fr]">
                 <p className="pt-1 text-sm font-semibold text-green">
                   {session.time}
                   <span className="block text-xs text-muted">{session.meridiem}</span>
@@ -165,7 +196,7 @@ export default function HomePage() {
           <p className="mt-6 leading-7 text-muted">
             The programme is acknowledged as CRE {programme.acknowledgement}, institute code {programme.instituteCode}. Credit hours are those recorded by the Rehabilitation Council of India for this acknowledgement. This site does not state a point value.
           </p>
-          <Link href="/attend" className="mt-4 inline-flex font-semibold text-green">
+          <Link href="/attend" className="ticked mt-4 inline-flex font-semibold text-green">
             Single link for the RCI listing
           </Link>
         </div>

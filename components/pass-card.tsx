@@ -2,34 +2,32 @@ import { programme } from "@/lib/programme";
 
 export function PassCard() {
   return (
-    <article className="pass" aria-label="Programme pass">
-      <div className="flex items-center justify-between bg-navy px-5 py-4 text-mint">
-        <p className="text-sm font-semibold tracking-[0.16em] uppercase">Yenepoya</p>
-        <p className="text-sm font-semibold tracking-[0.16em] uppercase">CRE</p>
-      </div>
-      <div className="px-5 pb-5 pt-4">
-      <p className="font-serif text-7xl leading-none text-navy">{programme.day}</p>
-      <p className="font-serif text-2xl text-navy">{programme.month}</p>
-      <p className="mt-1 text-sm text-muted">Saturday · {programme.mode} · from {programme.start}</p>
-      <div className="pass-cut" />
-      <dl className="grid grid-cols-2 gap-3 text-sm">
-        <div>
-          <dt className="text-muted">Acknowledgement</dt>
-          <dd className="font-semibold text-navy">{programme.acknowledgement}</dd>
+    <article className="overflow-hidden rounded-2xl bg-navy text-white shadow-xl" aria-label="Programme pass">
+      <div className="h-1.5 bg-flare" />
+      <div className="px-6 py-5">
+        <div className="flex items-center justify-between text-xs font-semibold uppercase tracking-[0.16em]">
+          <p className="text-flare">Pass</p>
+          <p className="text-white/70">RCI CRE</p>
         </div>
-        <div>
-          <dt className="text-muted">Institute</dt>
-          <dd className="font-semibold text-navy">{programme.instituteCode}</dd>
+        <p className="mt-4 font-serif text-4xl leading-[1.05]">
+          Saturday,
+          <br />
+          19 December 2026
+        </p>
+        <div className="mt-6 grid grid-cols-2 border-t border-dashed border-white/25">
+          <div className="border-r border-dashed border-white/25 py-4 pr-4">
+            <p className="text-xs text-white/60">Starts</p>
+            <p className="mt-1 text-lg font-semibold">{programme.start}</p>
+          </div>
+          <div className="py-4 pl-4">
+            <p className="text-xs text-white/60">Venue</p>
+            <p className="mt-1 text-lg font-semibold">Webex</p>
+          </div>
         </div>
-        <div>
-          <dt className="text-muted">Language</dt>
-          <dd className="font-semibold text-navy">{programme.language}</dd>
+        <div className="flex items-center justify-between border-t border-dashed border-white/25 py-4 text-sm">
+          <p className="text-white/60">Institute code</p>
+          <p className="text-lg font-semibold tracking-wide">{programme.instituteCode}</p>
         </div>
-        <div>
-          <dt className="text-muted">Level</dt>
-          <dd className="font-semibold text-navy">{programme.level}</dd>
-        </div>
-      </dl>
       </div>
     </article>
   );

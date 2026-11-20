@@ -19,6 +19,13 @@ export const programme = {
   email: "yenepoyaaslpconference@gmail.com",
   departmentPhone: "7337798055",
   departmentEmail: "aslp@yenepoya.edu.in",
+  hospital: "Yenepoya Medical College Hospital",
+  mapsUrl:
+    "https://www.google.com/maps/search/?api=1&query=Yenepoya+Medical+College+Hospital+Deralakatte+Mangaluru",
+  mapsEmbed:
+    "https://maps.google.com/maps?q=Yenepoya+Medical+College+Hospital,+Deralakatte,+Mangaluru&z=16&output=embed",
+  brochurePdf: "/brochure/beyond-the-diagnosis.pdf",
+  brochureImage: "/brochure/beyond-the-diagnosis.png",
   paymentUrl: "https://rzp.io/rzp/FCDoSjbc",
   canvaUrl: "https://canva.link/h18vhw6kv7fzq26",
   // Drop the official emblem at public/brand/yenepoya-emblem.svg.
@@ -92,6 +99,10 @@ export function sourceLabel(source: ArrivalSource): string {
 // Photographs: replace each monogram with a consented headshot from the
 // resource person or the department. Save files in public/faculty/ and
 // do not take portraits from the open web.
+export function sessionTickId(time: string): string {
+  return `session-${time.replace(":", "")}`;
+}
+
 export const sessions = [
   {
     time: "10:00",
@@ -275,13 +286,11 @@ export const officialLinks = [
 ] as const;
 
 export const nav = [
-  { href: "/", label: "Home" },
   { href: "/programme", label: "Programme" },
   { href: "/faculty", label: "Faculty" },
-  { href: "/department", label: "Department" },
-  { href: "/inauguration", label: "Inauguration" },
   { href: "/attend", label: "Attend" },
   { href: "/general", label: "Information" },
+  { href: "/brochure", label: "Brochure" },
   { href: "/contact", label: "Contact" },
 ] as const;
 

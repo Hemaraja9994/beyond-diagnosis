@@ -89,7 +89,21 @@ export default async function AdminPage() {
                       <td className="px-3 py-3">{row.email}</td>
                       <td className="px-3 py-3">{row.crrNumber}</td>
                       <td className="px-3 py-3">{professionLabel(row.profession as Profession)}</td>
-                      <td className="px-3 py-3">{row.paymentReference || "—"}</td>
+                      <td className="px-3 py-3">
+                        <p>{row.paymentReference || "—"}</p>
+                        {row.paymentProof ? (
+                          <a
+                            className="font-semibold text-green"
+                            href={`/api/admin/payment-proof/${row.reference}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            Screenshot
+                          </a>
+                        ) : (
+                          <p className="text-muted">No screenshot</p>
+                        )}
+                      </td>
                       <td className="px-3 py-3">{sourceLabel(row.source as ArrivalSource)}</td>
                     </tr>
                   ))}

@@ -3,6 +3,7 @@ import { Fraunces, Outfit } from "next/font/google";
 import { Backdrop } from "@/components/backdrop";
 import { BottomNav } from "@/components/bottom-nav";
 import { ServiceWorker } from "@/components/service-worker";
+import { ScrollTicks } from "@/components/scroll-ticks";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { programme } from "@/lib/programme";
@@ -18,6 +19,7 @@ const fraunces = Fraunces({
   subsets: ["latin"],
   variable: "--font-fraunces",
   display: "swap",
+  axes: ["SOFT", "WONK", "opsz"],
 });
 
 export const viewport: Viewport = {
@@ -61,6 +63,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
           <main id="content">{children}</main>
           <SiteFooter />
           <BottomNav />
+          <ScrollTicks />
         </div>
       </body>
     </html>

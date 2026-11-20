@@ -21,6 +21,32 @@ export function SiteFooter() {
             {programme.organiser}, {programme.university}, {programme.city}.
           </p>
           <p className="mt-3 text-sm leading-6">{programme.address}</p>
+          <div className="mt-4 flex items-end gap-3">
+            <Image
+              src="/brand/rci.png"
+              alt="Rehabilitation Council of India"
+              width={80}
+              height={72}
+              className="h-14 w-auto rounded bg-white p-1"
+              unoptimized
+            />
+            <Image
+              src="/brand/india-emblem.png"
+              alt="State Emblem of India"
+              width={48}
+              height={72}
+              className="h-14 w-auto"
+              unoptimized
+            />
+            <Image
+              src="/brand/swavlamban.png"
+              alt="Swavlamban"
+              width={72}
+              height={66}
+              className="h-14 w-auto"
+              unoptimized
+            />
+          </div>
         </div>
         <div>
           <p className="text-sm font-semibold uppercase tracking-[0.14em] text-white">Programme</p>
@@ -29,10 +55,21 @@ export function SiteFooter() {
               <Link href="/department">Department faculties</Link>
             </li>
             <li>
+              <Link href="/inauguration">Inauguration</Link>
+            </li>
+            <li>
               <Link href="/install">Install on your phone</Link>
             </li>
             <li>
               <a href={departmentUrl}>College department page</a>
+            </li>
+            <li>
+              <Link href="/brochure">Brochure</Link>
+            </li>
+            <li>
+              <a href={programme.brochurePdf} download>
+                Download the brochure
+              </a>
             </li>
             <li>
               <Link href="/programme">Schedule</Link>
