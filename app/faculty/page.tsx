@@ -11,7 +11,7 @@ export default function FacultyPage() {
       <PageBanner
         kicker="Resource persons"
         title="Who is teaching"
-        lede="Names and CRR numbers are those given for this programme. Dr. Shwetha Prabhu’s portrait is the one published by Yenepoya Medical College. Dr. Goswami’s portrait is the photograph supplied for this programme."
+        lede="Names and CRR numbers are those given for this programme. Portraits are shown for Dr. Shwetha Prabhu, Vasudha K G, and Dr. Goswami."
       />
       <ul className="mx-auto grid max-w-6xl gap-5 px-4 py-10 sm:grid-cols-2">
         {sessions.map((session) => {
@@ -44,12 +44,22 @@ export default function FacultyPage() {
               <p className="mt-3 leading-7 text-muted">{session.relevance}</p>
               {profile ? <p className="mt-3 leading-7 text-muted">{profile.focus}</p> : null}
               {profile ? (
-                <a
-                  className="mt-3 inline-flex font-semibold text-green underline decoration-green underline-offset-4"
-                  href={profile.profileUrl}
-                >
-                  {profile.profileLabel}
-                </a>
+                <p className="mt-3 flex flex-wrap gap-x-4 gap-y-2">
+                  <a
+                    className="font-semibold text-green underline decoration-green underline-offset-4"
+                    href={profile.profileUrl}
+                  >
+                    {profile.profileLabel}
+                  </a>
+                  {"scholarUrl" in profile ? (
+                    <a
+                      className="font-semibold text-green underline decoration-green underline-offset-4"
+                      href={profile.scholarUrl}
+                    >
+                      Google Scholar
+                    </a>
+                  ) : null}
+                </p>
               ) : null}
             </li>
           );

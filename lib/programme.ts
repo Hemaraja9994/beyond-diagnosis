@@ -118,7 +118,7 @@ export const sessions = [
     person: "Ms. Vasudha K G",
     crr: "A85535",
     initials: "VK",
-    photo: null,
+    photo: "/faculty/vasudha-kg.jpg",
     relevance:
       "Takes learning disability, intellectual disability, and autism spectrum disorder from a psychologist’s side of certification, rights, and entitlements.",
   },
@@ -144,8 +144,9 @@ export const facultyProfiles = {
       "Department of Psychiatry, Kasturba Medical College, Mangaluru (Manipal Academy of Higher Education)",
     focus:
       "Clinical psychology, mental health, social and emotional learning, stress and coping, relationship dynamics, and cognitive and psychological well-being.",
-    profileUrl: "https://scholar.google.com/citations?user=d-N4iWYAAAAJ&hl=en",
-    profileLabel: "Google Scholar",
+    profileUrl: "https://www.manipal.edu/faculty/vasudha-k-g",
+    profileLabel: "MAHE faculty page",
+    scholarUrl: "https://scholar.google.com/citations?user=d-N4iWYAAAAJ&hl=en",
   },
 } as const;
 
