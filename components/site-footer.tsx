@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { departmentUrl } from "@/lib/department";
-import { programme } from "@/lib/programme";
+import { committee, programme } from "@/lib/programme";
 
 export function SiteFooter() {
   return (
@@ -50,9 +50,19 @@ export function SiteFooter() {
         </div>
         <div>
           <p className="text-sm font-semibold uppercase tracking-[0.14em] text-white">Desk</p>
-          <p className="mt-3 text-sm leading-6">
-            {programme.coordinator}
-            <br />
+          <ul className="mt-3 grid gap-3 text-sm leading-6">
+            {committee.map((seat) => (
+              <li key={seat.role}>
+                <span className="block text-xs font-semibold uppercase tracking-[0.14em] text-white">{seat.role}</span>
+                {seat.names.map((name) => (
+                  <span key={name} className="block">
+                    {name}
+                  </span>
+                ))}
+              </li>
+            ))}
+          </ul>
+          <p className="mt-3 text-sm">
             <a href={`mailto:${programme.email}`}>{programme.email}</a>
           </p>
           <p className="mt-3 text-sm">

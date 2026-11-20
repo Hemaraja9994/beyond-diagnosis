@@ -3,7 +3,7 @@ import { OfficialMarks } from "@/components/official-marks";
 import { PassCard } from "@/components/pass-card";
 import { Portrait } from "@/components/portrait";
 import { departmentUrl } from "@/lib/department";
-import { audience, facultyProfile, invitation, objectives, programme, sessions } from "@/lib/programme";
+import { audience, committee, facultyProfile, invitation, objectives, programme, sessions } from "@/lib/programme";
 
 export default function HomePage() {
   return (
@@ -69,13 +69,19 @@ export default function HomePage() {
               <p key={paragraph}>{paragraph}</p>
             ))}
           </div>
-          <p className="mt-6 text-sm">
-            {programme.coordinator}
-            <br />
-            Programme Coordinator
-            <br />
-            {programme.organiser}
-          </p>
+          <ul className="mt-6 grid gap-3 text-sm">
+            {committee.map((seat) => (
+              <li key={seat.role}>
+                <span className="block text-xs font-semibold uppercase tracking-[0.14em] text-mint">{seat.role}</span>
+                {seat.names.map((name) => (
+                  <span key={name} className="block">
+                    {name}
+                  </span>
+                ))}
+              </li>
+            ))}
+          </ul>
+          <p className="mt-4 text-sm">{programme.organiser}</p>
           <a className="mt-4 inline-flex font-semibold text-mint underline" href={departmentUrl}>
             College department page
           </a>

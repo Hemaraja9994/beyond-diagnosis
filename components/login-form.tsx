@@ -29,7 +29,7 @@ export function LoginForm({ ready }: { ready: boolean }) {
   if (!ready) {
     return (
       <p className="rounded-3xl bg-card p-5 leading-7 ring-1 ring-line">
-        The coordinator desk is locked until an access code is set for this deployment. Ms. Swathi C signs in with {programme.email}.
+        The coordinator desk is locked until an access code is set for this deployment. The organising secretaries sign in with {programme.email}.
       </p>
     );
   }

@@ -7,7 +7,8 @@ A mobile-first site for the zonal Continuing Rehabilitation Education programme 
 - **Mode:** Online (Cisco Webex), English, zonal
 - **Acknowledgement:** CRE-26111620026773
 - **Institute code:** KK048
-- **Coordinator:** Ms. Swathi C, yenepoyaaslpconference@gmail.com
+- **Organising chairperson:** Dr. Shwetha Prabhu
+- **Organising secretaries:** Ms. Swathi Chinnasamy and Ms. Rachana R Uchil, yenepoyaaslpconference@gmail.com
 
 Registration and queries are collected on this site. Payment stays on the Razorpay link supplied by the department. The coordinator desk exports both lists as CSV and publishes the Webex address.
 
@@ -33,7 +34,7 @@ Open http://127.0.0.1:3457. Without those two variables the public site still ru
 | `/join` | Opens the Cisco Webex session |
 | `/general` | Official Act, guidelines, and programme handouts |
 | `/contact` | Queries to the coordinator |
-| `/admin` | Desk for Ms. Swathi C and the conference email |
+| `/admin` | Desk for the organising secretaries and the conference email |
 
 Give RCI `/attend` if the listing allows one URL. Give `/registration?from=rci` and `/join` if it allows two.
 

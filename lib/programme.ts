@@ -15,7 +15,7 @@ export const programme = {
   university: "Yenepoya (Deemed to be University)",
   city: "Mangaluru",
   address: "Yenepoya Medical College, University Road, Deralakatte, Mangaluru 575018, Karnataka",
-  coordinator: "Ms. Swathi C",
+  coordinator: "Ms. Swathi Chinnasamy and Ms. Rachana R Uchil",
   email: "yenepoyaaslpconference@gmail.com",
   departmentPhone: "7337798055",
   departmentEmail: "aslp@yenepoya.edu.in",
@@ -24,6 +24,11 @@ export const programme = {
   // Drop the official emblem at public/brand/yenepoya-emblem.svg.
   // Use a file supplied by the university. Do not download a logo from an image site.
 } as const;
+
+export const committee = [
+  { role: "Organising chairperson", names: ["Dr. Shwetha Prabhu"] },
+  { role: "Organising secretary", names: ["Ms. Swathi Chinnasamy", "Ms. Rachana R Uchil"] },
+] as const;
 
 export const invitation = [
   "The Department of Audiology and Speech Language Pathology invites audiologists, speech-language pathologists, clinical psychologists, and other rehabilitation professionals to a zonal Continuing Rehabilitation Education programme.",
@@ -92,7 +97,7 @@ export const sessions = [
     time: "10:00",
     meridiem: "AM",
     title: "The RPwD Act, 2016: Rights, Responsibilities and Reach – An Overview",
-    person: "Ms. Shwetha G Prabhu",
+    person: "Dr. Shwetha Prabhu",
     crr: "A18456",
     initials: "SP",
     photo: "/department/shwetha-prabhu.jpg",
@@ -103,7 +108,7 @@ export const sessions = [
     time: "11:00",
     meridiem: "AM",
     title: "Know the 21: Types of Disabilities Recognised under the RPwD Act, 2016",
-    person: "Ms. Swathi C",
+    person: "Ms. Swathi Chinnasamy",
     crr: "A81760",
     initials: "SC",
     photo: "/faculty/swathi-c.jpg",

@@ -3,7 +3,7 @@ import Link from "next/link";
 import { PageBanner } from "@/components/page-banner";
 import { QueryForm } from "@/components/query-form";
 import { departmentUrl } from "@/lib/department";
-import { programme } from "@/lib/programme";
+import { committee, programme } from "@/lib/programme";
 
 export const metadata: Metadata = { title: "Contact" };
 
@@ -12,17 +12,24 @@ export default function ContactPage() {
     <div className="pb-24 md:pb-10">
       <PageBanner
         kicker="Support"
-        title="Write to the coordinator"
+        title="Write to the organising secretaries"
         lede="Queries sent here are stored for the organising team and can be exported from the coordinator desk."
       />
       <div className="mx-auto grid max-w-6xl gap-8 px-4 py-10 lg:grid-cols-[0.8fr_1.2fr]">
         <aside className="rounded-3xl bg-navy p-6 text-white">
           <h2 className="font-serif text-3xl">Programme desk</h2>
-          <p className="mt-4 leading-7">
-            {programme.coordinator}
-            <br />
-            Programme Coordinator
-          </p>
+          <ul className="mt-4 grid gap-3 text-sm leading-6">
+            {committee.map((seat) => (
+              <li key={seat.role}>
+                <span className="block text-xs font-semibold uppercase tracking-[0.14em] text-mint">{seat.role}</span>
+                {seat.names.map((name) => (
+                  <span key={name} className="block">
+                    {name}
+                  </span>
+                ))}
+              </li>
+            ))}
+          </ul>
           <p className="mt-4">
             <a className="underline" href={`mailto:${programme.email}`}>
               {programme.email}
