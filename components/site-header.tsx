@@ -23,18 +23,17 @@ export function SiteHeader() {
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3">
         <Link href="/" className="flex min-w-0 items-center gap-3" onClick={() => setOpen(false)}>
           <Image
-            src="/brand/yenepoya-logo.png"
-            alt=""
-            width={720}
-            height={623}
-            className="h-12 w-auto sm:h-14"
+            src="/brand/yenepoya-medical-college.svg"
+            alt="Yenepoya Medical College"
+            width={555}
+            height={302}
+            className="h-14 w-auto sm:h-16"
             priority
+            unoptimized
           />
-          <span className="min-w-0">
-            <span className="block font-serif text-xl leading-none text-navy">Yenepoya</span>
-            <span className="mt-1 block truncate text-xs text-muted sm:text-sm">
-              Audiology and Speech Language Pathology
-            </span>
+          <span className="hidden min-w-0 xl:block">
+            <span className="block text-xs font-semibold uppercase tracking-wide text-navy">Department of</span>
+            <span className="mt-1 block text-sm text-muted">Audiology and Speech Language Pathology</span>
           </span>
         </Link>
         <nav className="hidden items-center gap-4 text-sm font-semibold text-navy lg:flex" aria-label="Primary">

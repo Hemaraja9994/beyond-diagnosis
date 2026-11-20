@@ -6,14 +6,15 @@ export function OfficialMarks() {
     <section className="mx-auto grid max-w-6xl gap-4 px-4 py-8 md:grid-cols-3" aria-label="Organisers and official references">
       <figure className="flex flex-col items-center rounded-3xl bg-card/90 p-5 text-center ring-1 ring-line backdrop-blur">
         <Image
-          src="/brand/yenepoya-logo.png"
-          alt="Emblem of Yenepoya (Deemed to be University)"
-          width={720}
-          height={623}
-          className="h-40 w-auto"
+          src="/brand/yenepoya-medical-college.svg"
+          alt="Yenepoya Medical College"
+          width={555}
+          height={302}
+          className="h-28 w-auto"
+          unoptimized
         />
         <figcaption className="mt-3 text-sm leading-6 text-muted">
-          {programme.university}, the organising institution.
+          Yenepoya Medical College, a constituent college of {programme.university}.
         </figcaption>
       </figure>
       <figure className="overflow-hidden rounded-3xl bg-navy p-5 text-mint shadow-lg ring-1 ring-navy">
