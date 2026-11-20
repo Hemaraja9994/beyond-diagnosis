@@ -136,7 +136,7 @@ export function parsePayment(body: unknown): { reference: string; email: string;
   const reference = readString(record, "reference").toUpperCase();
   const email = readString(record, "email").toLowerCase();
   const paymentReference = readString(record, "paymentReference");
-  if (!/^YDU-[A-Z2-9]{6}$/.test(reference)) return { error: "Enter the registration reference from your confirmation." };
+  if (!/^YDU-[A-Z2-9]{12}$/.test(reference)) return { error: "Enter the registration reference from your confirmation." };
   if (!validEmail(email)) return { error: "Enter the email used at registration." };
   if (paymentReference.length < 4 || paymentReference.length > 64 || /[^A-Za-z0-9 _./-]/.test(paymentReference)) {
     return { error: "Enter the Razorpay payment reference." };

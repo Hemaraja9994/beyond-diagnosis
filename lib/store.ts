@@ -34,9 +34,12 @@ export type QueryRecord = {
 };
 
 type StoreError = { error: string; status: number };
-const duplicateMessage =
-  "This email is already registered. Add a payment reference from the confirmation, or write to the conference email.";
+const duplicateMessage = "Registration could not be completed with these details.";
 const capacityMessage = "Registration is full. Write to the conference email and the organising team will help.";
+const pauseMessage = "Registration is paused for a short while. Try again later or write to the conference email.";
+const paymentMessage = "That payment note could not be saved.";
+const hourlyCap = 40;
+const pace: Record<"registrations" | "queries", number[]> = { registrations: [], queries: [] };
 
 export async function createRegistration(draft: RegistrationDraft): Promise<{ reference: string } | StoreError> {
   if (storageMode() === "blob") return createRegistrationBlob(draft);
@@ -58,10 +61,13 @@ export async function addPaymentReference(
 ): Promise<{ ok: true } | StoreError> {
   if (storageMode() === "blob") return addPaymentBlob(reference, email, paymentReference);
   const rows = await sql<{ id: string }>(
-    "update registrations set payment_reference = $1 where reference = $2 and lower(email) = lower($3) returning id",
+    `update registrations set payment_reference = $1
+     where reference = $2 and lower(email) = lower($3)
+       and (payment_reference = '' or payment_reference = $1)
+     returning id`,
     [paymentReference, reference, email],
   );
-  if (rows.length === 0) return { error: "No registration matched that reference and email.", status: 404 };
+  if (rows.length === 0) return { error: paymentMessage, status: 400 };
   return { ok: true };
 }
 
@@ -71,6 +77,9 @@ export async function createQuery(draft: QueryDraft): Promise<{ ok: true } | Sto
     createdAt: new Date().toISOString(),
     ...draft,
   };
+  if (!withinHourlyPace("queries")) {
+    return { error: "The query box is paused for a short while. Try again later or email the conference address.", status: 429 };
+  }
   if (storageMode() === "blob") {
     const existing = await listAll("queries/");
     if (existing.length >= 2000) return { error: "The query box is full. Please email the conference address.", status: 429 };
@@ -82,7 +91,9 @@ export async function createQuery(draft: QueryDraft): Promise<{ ok: true } | Sto
     return { ok: true };
   }
   const count = await countOf("queries");
-  if (count >= 2000) return { error: "The query box is full. Please email the conference address.", status: 429 };
+  if (count >= 2000 || (await countRecent("queries")) >= hourlyCap) {
+    return { error: "The query box is full. Please email the conference address.", status: 429 };
+  }
   await sql(
     "insert into queries (id, created_at, full_name, email, topic, message) values ($1, $2, $3, $4, $5, $6)",
     [record.id, record.createdAt, record.fullName, record.email, record.topic, record.message],
@@ -131,7 +142,9 @@ export async function setMeetingUrl(url: string): Promise<void> {
 }
 
 async function createRegistrationSql(draft: RegistrationDraft): Promise<{ reference: string } | StoreError> {
+  if (!withinHourlyPace("registrations")) return { error: pauseMessage, status: 429 };
   if ((await countOf("registrations")) >= 2000) return { error: capacityMessage, status: 429 };
+  if ((await countRecent("registrations")) >= hourlyCap) return { error: pauseMessage, status: 429 };
   const reference = makeReference();
   const record = toRegistration(draft, reference);
   try {
@@ -159,18 +172,19 @@ async function createRegistrationSql(draft: RegistrationDraft): Promise<{ refere
       ],
     );
   } catch (error) {
-    if (isUniqueViolation(error)) return { error: duplicateMessage, status: 409 };
+    if (isUniqueViolation(error)) return { error: duplicateMessage, status: 400 };
     throw error;
   }
   return { reference };
 }
 
 async function createRegistrationBlob(draft: RegistrationDraft): Promise<{ reference: string } | StoreError> {
+  if (!withinHourlyPace("registrations")) return { error: pauseMessage, status: 429 };
   const existing = await listAll("registrations/");
   if (existing.length >= 2000) return { error: capacityMessage, status: 429 };
   const emailPath = `email-index/${createHash("sha256").update(draft.email).digest("hex")}.txt`;
   const prior = await get(emailPath, { access: "private", useCache: false });
-  if (prior?.statusCode === 200) return { error: duplicateMessage, status: 409 };
+  if (prior?.statusCode === 200) return { error: duplicateMessage, status: 400 };
   const record = toRegistration(draft, makeReference());
   await put(`registrations/${record.reference}.json`, JSON.stringify(record), {
     access: "private",
@@ -183,7 +197,10 @@ async function createRegistrationBlob(draft: RegistrationDraft): Promise<{ refer
 
 async function addPaymentBlob(reference: string, email: string, paymentReference: string): Promise<{ ok: true } | StoreError> {
   const record = await readJson(`registrations/${reference}.json`, parseRegistration);
-  if (!record || record.email !== email) return { error: "No registration matched that reference and email.", status: 404 };
+  if (!record || record.email !== email) return { error: paymentMessage, status: 400 };
+  if (record.paymentReference !== "" && record.paymentReference !== paymentReference) {
+    return { error: paymentMessage, status: 400 };
+  }
   record.paymentReference = paymentReference;
   await put(`registrations/${reference}.json`, JSON.stringify(record), {
     access: "private",
@@ -204,7 +221,7 @@ function toRegistration(draft: RegistrationDraft, reference: string): Registrati
 
 function makeReference(): string {
   const alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-  const bytes = randomBytes(6);
+  const bytes = randomBytes(12);
   let reference = "YDU-";
   for (const byte of bytes) reference += alphabet[byte % alphabet.length]!;
   return reference;
@@ -242,6 +259,25 @@ function parseQuery(value: unknown): QueryRecord | null {
   const row = value as QueryRecord;
   if (typeof row.id !== "string" || typeof row.email !== "string") return null;
   return row;
+}
+
+function withinHourlyPace(kind: "registrations" | "queries"): boolean {
+  const now = Date.now();
+  const recent = pace[kind].filter((time) => now - time < 60 * 60 * 1000);
+  if (recent.length >= hourlyCap) {
+    pace[kind] = recent;
+    return false;
+  }
+  recent.push(now);
+  pace[kind] = recent;
+  return true;
+}
+
+async function countRecent(table: "registrations" | "queries"): Promise<number> {
+  const rows = await sql<{ count: unknown }>(
+    `select count(*) as count from ${table} where created_at > now() - interval '1 hour'`,
+  );
+  return Number(rows[0]?.count ?? 0);
 }
 
 async function countOf(table: "registrations" | "queries"): Promise<number> {

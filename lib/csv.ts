@@ -4,8 +4,9 @@ export function toCsv(headers: string[], rows: string[][]): string {
 }
 
 function escapeCell(value: string): string {
-  if (/[",\r\n]/.test(value)) return `"${value.replace(/"/g, '""')}"`;
-  return value;
+  const safe = /^[=+\-@\t\r]/.test(value) ? `'${value}` : value;
+  if (/[",\r\n]/.test(safe)) return `"${safe.replace(/"/g, '""')}"`;
+  return safe;
 }
 
 export function csvResponse(filename: string, body: string): Response {
