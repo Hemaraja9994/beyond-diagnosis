@@ -19,7 +19,7 @@ export function BrochureSheet() {
         </p>
         <img src="/brand/swavlamban.png" alt="Swavlamban" />
       </div>
-      <p className="brochure-kicker">Zonal CRE · Online · English · RCI {programme.acknowledgement}</p>
+      <p className="brochure-kicker">Zonal CRE · Online · English · RCI CRE approval awaited</p>
       <h1>{programme.title}</h1>
       <p className="brochure-sub">{programme.subtitle}</p>
       <dl className="brochure-facts">

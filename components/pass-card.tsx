@@ -7,7 +7,7 @@ export function PassCard() {
       <div className="px-6 py-5">
         <div className="flex items-center justify-between text-xs font-semibold uppercase tracking-[0.16em]">
           <p className="text-flare">Pass</p>
-          <p className="text-white/70">RCI CRE</p>
+          <p className="text-flare">Approval awaited</p>
         </div>
         <p className="mt-4 font-serif text-4xl leading-[1.05]">
           Saturday,

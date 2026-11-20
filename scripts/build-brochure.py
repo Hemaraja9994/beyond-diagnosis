@@ -168,7 +168,7 @@ def build() -> Path:
     cover = presentation.slides.add_slide(blank)
     rect(cover, 0, 0, 8.27, 11.69, WHITE)
     header(cover, "1")
-    text(cover, 0.32, 1.26, 7.6, 0.24, "ZONAL CRE   ·   ONLINE   ·   ENGLISH   ·   RCI CRE-26111620026773", 11, ORANGE, True)
+    text(cover, 0.32, 1.26, 7.6, 0.24, "ZONAL CRE   ·   ONLINE   ·   ENGLISH   ·   RCI CRE APPROVAL AWAITED", 11, ORANGE, True)
     text(cover, 0.3, 1.48, 7.6, 0.52, "Beyond the Diagnosis", 32, NAVY, True, font="Georgia")
     text(
         cover,
@@ -223,7 +223,7 @@ def build() -> Path:
         1.68,
         7.6,
         0.36,
-        "Department of Audiology and Speech Language Pathology, Yenepoya Medical College.",
+        "RCI CRE approval awaited  ·  Yenepoya Medical College, Mangaluru.",
         12,
         MUTED,
     )

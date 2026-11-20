@@ -110,7 +110,7 @@ export function SiteFooter() {
       <div className="border-t border-white/10">
         <p className="mx-auto max-w-6xl px-4 py-4 text-xs text-mint/80">
           © {new Date().getFullYear()} {programme.university}. Continuing Rehabilitation Education{" "}
-          {programme.acknowledgement}.
+          {programme.acknowledgement}. RCI CRE approval awaited.
         </p>
       </div>
     </footer>

@@ -196,8 +196,7 @@ export function RegisterForm({ source }: { source: ArrivalSource }) {
         <label className="flex items-start gap-3 text-sm leading-6">
           <input className="mt-1 h-5 w-5" type="checkbox" name="consent" required />
           <span>
-            I agree that {programme.organiser} may keep these details, including the payment note, for registration, attendance, and the CRE certificate for{" "}
-            {programme.acknowledgement}.
+            I agree that {programme.organiser} may keep these details, including the payment note, for registration and attendance. RCI CRE approval is awaited. The reference on file is {programme.acknowledgement}.
           </span>
         </label>
       </fieldset>

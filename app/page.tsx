@@ -67,7 +67,7 @@ export default function HomePage() {
             ["One day", programme.dateLabel],
             ["Four sessions", `From ${programme.start}`],
             ["Online", "Cisco Webex"],
-            ["RCI CRE", programme.acknowledgement],
+            ["RCI CRE", "Approval awaited"],
           ].map(([label, value]) => (
             <div key={label} className="bg-white px-4 py-5">
               <dt className="text-xs font-semibold uppercase tracking-[0.14em] text-muted">{label}</dt>
@@ -201,7 +201,7 @@ export default function HomePage() {
             ))}
           </ul>
           <p className="mt-6 leading-7 text-muted">
-            The programme is acknowledged as CRE {programme.acknowledgement}, institute code {programme.instituteCode}. Credit hours are those recorded by the Rehabilitation Council of India for this acknowledgement. This site does not state a point value.
+            RCI CRE approval is awaited. The reference on file is {programme.acknowledgement}, institute code {programme.instituteCode}. Credit hours, if any, are those the council records once it approves the programme. This site does not state a point value.
           </p>
           <Link href="/attend" className="ticked mt-4 inline-flex font-semibold text-green">
             Single link for the RCI listing

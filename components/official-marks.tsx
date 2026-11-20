@@ -3,7 +3,7 @@ import { programme } from "@/lib/programme";
 
 export function OfficialMarks() {
   return (
-    <section className="mx-auto grid max-w-6xl gap-4 px-4 py-8 sm:grid-cols-2 xl:grid-cols-4" aria-label="Organisers and official references">
+    <section id="marks" className="mx-auto grid max-w-6xl gap-4 px-4 py-8 sm:grid-cols-2 xl:grid-cols-4" aria-label="Organisers and official references">
       <figure className="flex flex-col items-center rounded-3xl bg-card/90 p-5 text-center ring-1 ring-line backdrop-blur">
         <Image
           src="/brand/yenepoya-medical-college.png"
@@ -27,7 +27,7 @@ export function OfficialMarks() {
           unoptimized
         />
         <figcaption className="mt-3 text-sm leading-6 text-muted">
-          Rehabilitation Council of India. This CRE is acknowledged as {programme.acknowledgement}, institute {programme.instituteCode}.{" "}
+          Rehabilitation Council of India. Approval of this CRE is awaited. The reference on file is {programme.acknowledgement}, institute {programme.instituteCode}.{" "}
           <a className="font-semibold text-green" href="https://rehabcouncil.nic.in/">
             Open the council site
           </a>

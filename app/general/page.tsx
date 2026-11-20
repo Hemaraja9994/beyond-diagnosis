@@ -54,8 +54,7 @@ export default function GeneralPage() {
         <article className="rounded-3xl bg-card p-5 ring-1 ring-line">
           <h2 className="font-serif text-2xl text-navy">Certificate</h2>
           <p className="mt-3 leading-7 text-muted">
-            {programme.organiser} issues the CRE certificate after the programme, under the norms that apply to {programme.acknowledgement}.
-            Use the same name and CRR number at registration. The download steps will come from {programme.email}. This website does not generate certificates.
+            RCI CRE approval is awaited. The reference on file is {programme.acknowledgement}. If the council approves the programme, {programme.organiser} issues the certificate afterwards. Use the same name and CRR number at registration. The download steps will come from {programme.email}. This website does not generate certificates.
           </p>
         </article>
       </section>
