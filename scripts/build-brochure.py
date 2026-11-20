@@ -2,7 +2,7 @@
 
 from pathlib import Path
 
-from PIL import Image
+from PIL import Image, ImageDraw
 from pptx import Presentation
 from pptx.dml.color import RGBColor
 from pptx.enum.shapes import MSO_SHAPE
@@ -23,6 +23,11 @@ WHITE = RGBColor(0xFF, 0xFF, 0xFF)
 INK = RGBColor(0x11, 0x18, 0x27)
 MUTED = RGBColor(0x4B, 0x55, 0x63)
 PAPER = RGBColor(0xF4, 0xF6, 0xF8)
+LINE = RGBColor(0xE5, 0xE7, 0xEB)
+
+DEPARTMENT = "Department of Audiology and Speech Language Pathology"
+HOSPITAL = "Yenepoya Medical College Hospital"
+UNIVERSITY = "Yenepoya (Deemed to be University)"
 
 SESSIONS = [
     {
@@ -86,7 +91,7 @@ def portrait(src: Path, dest: Path) -> None:
     width, height = image.size
     pixels = image.load()
     min_x, min_y, max_x, max_y = width, height, 0, 0
-    for y in range(height):
+    for y in range(0, height, 2):
         for x in range(0, width, 2):
             red, green, blue = pixels[x, y]
             if red < 245 or green < 245 or blue < 245:
@@ -95,26 +100,46 @@ def portrait(src: Path, dest: Path) -> None:
                 max_x = max(max_x, x)
                 max_y = max(max_y, y)
     if max_x > min_x and max_y > min_y:
-        image = image.crop((min_x, min_y, min(width, max_x + 2), min(height, max_y + 2)))
+        image = image.crop((max(0, min_x - 2), max(0, min_y - 2), min(width, max_x + 4), min(height, max_y + 4)))
     width, height = image.size
     side = min(width, height)
     left = (width - side) // 2
-    top = max(0, int((height - side) * 0.08))
+    top = max(0, int((height - side) * 0.06))
     top = min(top, height - side)
-    image = image.crop((left, top, left + side, top + side)).resize((640, 640), Image.Resampling.LANCZOS)
+    image = image.crop((left, top, left + side, top + side)).resize((560, 560), Image.Resampling.LANCZOS).convert("RGBA")
+    size = 600
+    ring = 16
+    canvas = Image.new("RGBA", (size, size), (0, 0, 0, 0))
+    draw = ImageDraw.Draw(canvas)
+    draw.ellipse((0, 0, size - 1, size - 1), fill=(194, 65, 12, 255))
+    mask = Image.new("L", (560, 560), 0)
+    ImageDraw.Draw(mask).ellipse((0, 0, 559, 559), fill=255)
+    image.putalpha(mask)
+    canvas.paste(image, (ring, ring), image)
     dest.parent.mkdir(parents=True, exist_ok=True)
-    image.save(dest, quality=90)
+    canvas.save(dest)
 
 
-def fill(shape, color: RGBColor) -> None:
+def fill(shape, color: RGBColor, line: RGBColor | None = None) -> None:
     shape.fill.solid()
     shape.fill.fore_color.rgb = color
-    shape.line.fill.background()
+    if line is None:
+        shape.line.fill.background()
+    else:
+        shape.line.color.rgb = line
+        shape.line.width = Pt(1)
 
 
 def rect(slide, left, top, width, height, color: RGBColor):
     shape = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(left), Inches(top), Inches(width), Inches(height))
     fill(shape, color)
+    return shape
+
+
+def rrect(slide, left, top, width, height, color: RGBColor, radius: float = 0.15, line: RGBColor | None = None):
+    shape = slide.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(left), Inches(top), Inches(width), Inches(height))
+    fill(shape, color, line)
+    shape.adjustments[0] = radius
     return shape
 
 
@@ -126,10 +151,12 @@ def text(slide, left, top, width, height, content, size, color, bold=False, font
     frame.margin_right = Emu(0)
     frame.margin_top = Emu(0)
     frame.margin_bottom = Emu(0)
-    alignment = {"left": PP_ALIGN.LEFT, "center": PP_ALIGN.CENTER}[align]
+    alignment = {"left": PP_ALIGN.LEFT, "center": PP_ALIGN.CENTER, "right": PP_ALIGN.RIGHT}[align]
     for index, line in enumerate(content.split("\n")):
         paragraph = frame.paragraphs[0] if index == 0 else frame.add_paragraph()
         paragraph.alignment = alignment
+        paragraph.space_before = Pt(0)
+        paragraph.space_after = Pt(0)
         run = paragraph.add_run()
         run.text = line
         run.font.name = font
@@ -139,14 +166,25 @@ def text(slide, left, top, width, height, content, size, color, bold=False, font
     return shape
 
 
-def header(slide, page: str) -> None:
-    rect(slide, 0, 0, 8.27, 1.08, NAVY)
-    slide.shapes.add_picture(str(BRAND / "yenepoya-medical-college.png"), Inches(0.18), Inches(0.14), height=Inches(0.8))
-    text(slide, 1.95, 0.22, 4.85, 0.42, "Department of Audiology and Speech Language Pathology", 12, WHITE, True)
-    text(slide, 1.95, 0.64, 4.85, 0.26, "Yenepoya (Deemed to be University), Mangaluru", 11, WHITE)
-    slide.shapes.add_picture(str(BRAND / "rci.png"), Inches(7.22), Inches(0.1), height=Inches(0.86))
-    rect(slide, 0, 1.08, 8.27, 0.06, FLARE)
-    text(slide, 7.15, 11.42, 0.85, 0.2, page, 10, MUTED, align="center")
+def lines_for(content: str, size: int, width: float) -> int:
+    per_line = max(16, int(width / (size * 0.48 / 72)))
+    count = 0
+    for line in content.split("\n"):
+        count += max(1, -(-len(line) // per_line))
+    return count
+
+
+def masthead(slide) -> float:
+    rect(slide, 0, 0, 8.27, 1.38, NAVY)
+    rrect(slide, 0.18, 0.16, 1.62, 1.06, WHITE, 0.12)
+    slide.shapes.add_picture(str(BRAND / "yenepoya-medical-college.png"), Inches(0.26), Inches(0.28), height=Inches(0.82))
+    text(slide, 1.96, 0.24, 5.05, 0.42, DEPARTMENT, 12, WHITE, True)
+    text(slide, 1.96, 0.66, 5.05, 0.26, HOSPITAL, 12, WHITE)
+    text(slide, 1.96, 0.94, 5.05, 0.24, UNIVERSITY, 11, RGBColor(0xD6, 0xDE, 0xE8))
+    rrect(slide, 7.18, 0.18, 0.9, 1.02, WHITE, 0.12)
+    slide.shapes.add_picture(str(BRAND / "rci.png"), Inches(7.26), Inches(0.26), height=Inches(0.86))
+    rect(slide, 0, 1.38, 8.27, 0.045, FLARE)
+    return 1.5
 
 
 def build() -> Path:
@@ -154,7 +192,7 @@ def build() -> Path:
     for item in [*SESSIONS, *TEAM]:
         key = str(item["photo"])
         if key not in thumbs:
-            dest = THUMBS / f"{len(thumbs)}.jpg"
+            dest = THUMBS / f"{len(thumbs)}.png"
             portrait(item["photo"], dest)
             thumbs[key] = dest
 
@@ -167,129 +205,105 @@ def build() -> Path:
 
     cover = presentation.slides.add_slide(blank)
     rect(cover, 0, 0, 8.27, 11.69, WHITE)
-    header(cover, "1")
-    text(cover, 0.32, 1.26, 7.6, 0.24, "ZONAL CRE   ·   ONLINE   ·   ENGLISH   ·   RCI CRE APPROVAL AWAITED", 11, ORANGE, True)
-    text(cover, 0.3, 1.48, 7.6, 0.52, "Beyond the Diagnosis", 32, NAVY, True, font="Georgia")
+    masthead(cover)
+    rect(cover, 0, 1.425, 8.27, 2.4, NAVY)
+    text(cover, 0.36, 1.54, 7.5, 0.22, "ZONAL CRE    ·    ONLINE    ·    ENGLISH", 12, FLARE, True)
+    text(cover, 0.32, 1.76, 7.6, 0.58, "Beyond the Diagnosis", 34, WHITE, True, font="Georgia")
     text(
         cover,
-        0.32,
-        2.02,
+        0.36,
+        2.38,
         7.5,
-        0.52,
+        0.5,
         "Disability Assessment, Certification and Entitlements under the RPwD Act, 2016",
-        15,
-        INK,
+        14,
+        WHITE,
         font="Georgia",
     )
-    rect(cover, 0.32, 2.6, 7.63, 0.72, PAPER)
-    text(cover, 0.46, 2.68, 2.4, 0.24, "SATURDAY", 9, ORANGE, True)
-    text(cover, 0.46, 2.88, 2.5, 0.32, "19 December 2026", 14, NAVY, True)
-    text(cover, 3.05, 2.68, 2.3, 0.24, "FROM 10:00 IST", 9, ORANGE, True)
-    text(cover, 3.05, 2.88, 2.4, 0.32, "Cisco Webex  ·  Online", 13, NAVY, True)
-    text(cover, 5.55, 2.68, 2.2, 0.24, "INSTITUTE", 9, ORANGE, True)
-    text(cover, 5.55, 2.88, 2.2, 0.32, "KK048  ·  Zonal", 14, NAVY, True)
-    text(
-        cover,
-        0.32,
-        3.42,
-        7.6,
-        0.48,
-        "Once a diagnosis is made, what does the Act require of assessment, certification, and the entitlements a person can claim?",
-        12,
-        MUTED,
-    )
+    rrect(cover, 0.36, 2.96, 2.85, 0.32, ORANGE, 0.5)
+    text(cover, 0.36, 3.01, 2.85, 0.22, "RCI CRE APPROVAL AWAITED", 10, WHITE, True, align="center")
+    text(cover, 3.4, 3.0, 4.5, 0.24, "Saturday, 19 December 2026", 13, WHITE, True)
+    text(cover, 0.36, 3.4, 2.4, 0.16, "FROM 10:00 IST", 9, FLARE, True)
+    text(cover, 0.36, 3.56, 2.4, 0.2, "Cisco Webex", 12, WHITE, True)
+    text(cover, 2.9, 3.4, 2.4, 0.16, "ONLINE", 9, FLARE, True)
+    text(cover, 2.9, 3.56, 2.4, 0.2, "English  ·  Zonal", 12, WHITE, True)
+    text(cover, 5.44, 3.4, 2.4, 0.16, "INSTITUTE", 9, FLARE, True)
+    text(cover, 5.44, 3.56, 2.4, 0.2, "KK048", 12, WHITE, True)
 
-    top = 3.95
+    top = 3.86
     for session in SESSIONS:
-        rect(cover, 0.32, top, 0.08, 1.55, ORANGE)
-        cover.shapes.add_picture(str(thumbs[str(session["photo"])]), Inches(0.52), Inches(top), height=Inches(1.45))
-        text(cover, 2.12, top, 5.8, 0.22, session["time"], 12, ORANGE, True)
-        text(cover, 2.12, top + 0.22, 5.85, 0.58, session["title"], 12, NAVY, True)
-        text(cover, 2.12, top + 0.82, 5.85, 0.22, session["person"], 12, INK, True)
-        text(cover, 2.12, top + 1.04, 5.85, 0.2, session["meta"], 10, MUTED)
-        text(cover, 2.12, top + 1.24, 5.85, 0.32, session["topic"], 10, MUTED)
-        top += 1.72
+        title_lines = lines_for(session["title"], 12, 5.35)
+        topic_lines = lines_for(session["topic"], 10, 5.35)
+        height = 0.16 + 0.2 + title_lines * 0.23 + 0.22 + 0.16 + topic_lines * 0.16 + 0.1
+        height = max(1.38, height)
+        rrect(cover, 0.28, top, 7.71, height, PAPER, 0.08, LINE)
+        photo = min(1.16, height - 0.24)
+        cover.shapes.add_picture(str(thumbs[str(session["photo"])]), Inches(0.42), Inches(top + (height - photo) / 2), height=Inches(photo))
+        cursor = top + 0.1
+        text(cover, 1.78, cursor, 5.9, 0.2, session["time"], 11, ORANGE, True)
+        cursor += 0.2
+        text(cover, 1.78, cursor, 5.9, title_lines * 0.23, session["title"], 12, NAVY, True)
+        cursor += title_lines * 0.23 + 0.02
+        text(cover, 1.78, cursor, 5.9, 0.2, session["person"], 12, INK, True)
+        cursor += 0.2
+        text(cover, 1.78, cursor, 5.9, 0.18, session["meta"], 10, MUTED)
+        cursor += 0.18
+        text(cover, 1.78, cursor, 5.9, topic_lines * 0.16 + 0.04, session["topic"], 10, MUTED)
+        top += height + 0.08
 
     rect(cover, 0, 11.22, 8.27, 0.47, NAVY)
-    text(cover, 0.32, 11.32, 6.4, 0.26, "yenepoya-cre.vercel.app", 13, WHITE, True)
+    text(cover, 0.32, 11.34, 6.2, 0.24, "yenepoya-cre.vercel.app", 13, WHITE, True)
+    text(cover, 6.4, 11.34, 1.55, 0.24, "1  /  2", 12, FLARE, True, align="right")
 
     team = presentation.slides.add_slide(blank)
     rect(team, 0, 0, 8.27, 11.69, WHITE)
-    header(team, "2")
-    text(team, 0.32, 1.26, 7.6, 0.36, "Organising team", 26, NAVY, True, font="Georgia")
-    text(
-        team,
-        0.32,
-        1.68,
-        7.6,
-        0.36,
-        "RCI CRE approval awaited  ·  Yenepoya Medical College, Mangaluru.",
-        12,
-        MUTED,
-    )
+    masthead(team)
+    text(team, 0.32, 1.68, 4.6, 0.48, "Organising team", 28, NAVY, True, font="Georgia")
+    rrect(team, 5.15, 1.76, 2.8, 0.32, ORANGE, 0.5)
+    text(team, 5.15, 1.81, 2.8, 0.24, "RCI CRE APPROVAL AWAITED", 9, WHITE, True, align="center")
 
     for index, person in enumerate(TEAM):
-        left = 0.32 + index * 2.6
-        team.shapes.add_picture(str(thumbs[str(person["photo"])]), Inches(left + 0.35), Inches(2.15), height=Inches(1.7))
-        text(team, left, 3.95, 2.45, 0.22, person["role"].upper(), 10, ORANGE, True, align="center")
-        text(team, left, 4.18, 2.45, 0.48, person["name"], 14, NAVY, True, align="center")
-        text(team, left, 4.66, 2.45, 0.5, person["detail"], 11, MUTED, align="center")
+        left = 0.4 + index * 2.6
+        team.shapes.add_picture(str(thumbs[str(person["photo"])]), Inches(left + 0.28), Inches(2.52), height=Inches(1.85))
+        text(team, left, 4.48, 2.45, 0.22, person["role"].upper(), 10, ORANGE, True, align="center")
+        text(team, left, 4.72, 2.45, 0.48, person["name"], 14, NAVY, True, align="center")
+        text(team, left, 5.22, 2.45, 0.48, person["detail"], 11, MUTED, align="center")
 
-    rect(team, 0.32, 5.35, 7.63, 0.02, PAPER)
-    text(team, 0.32, 5.5, 3.6, 0.24, "WHO IT IS FOR", 11, ORANGE, True)
+    cards = [
+        ("WHO IT IS FOR", "Audiologists\nSpeech-language pathologists\nClinical psychologists\nOther rehabilitation professionals"),
+        ("HOW TO JOIN", "Register on yenepoya-cre.vercel.app.\nPay on Razorpay.\nAdd the payment id or the receipt screenshot on the same form."),
+        ("DESK", "yenepoyaaslpconference@gmail.com\n7337798055\naslp@yenepoya.edu.in"),
+        ("PLACE", "The CRE day is online, on Cisco Webex.\nYenepoya Medical College Hospital, University Road, Deralakatte, Mangaluru 575018, for anyone coming in person."),
+    ]
+    for index, (label, body) in enumerate(cards):
+        column = index % 2
+        row = index // 2
+        left = 0.28 + column * 3.95
+        card_top = 5.82 + row * 1.72
+        rrect(team, left, card_top, 3.78, 1.6, PAPER, 0.1, LINE)
+        text(team, left + 0.16, card_top + 0.12, 3.46, 0.22, label, 11, ORANGE, True)
+        text(team, left + 0.16, card_top + 0.38, 3.46, 1.12, body, 12, INK)
+
     text(
         team,
         0.32,
-        5.76,
-        3.7,
-        1.15,
-        "Audiologists\nSpeech-language pathologists\nClinical psychologists\nOther rehabilitation professionals",
-        13,
-        INK,
+        9.28,
+        7.6,
+        0.42,
+        "The department began in 2009, became independent in 2020, and is accredited by the Rehabilitation Council of India. It teaches the Bachelor of Audiology and Speech-Language Pathology.",
+        11,
+        MUTED,
     )
-    text(team, 4.2, 5.5, 3.7, 0.24, "HOW TO JOIN", 11, ORANGE, True)
-    text(
-        team,
-        4.2,
-        5.76,
-        3.75,
-        1.2,
-        "Register on yenepoya-cre.vercel.app.\nPay on Razorpay.\nAdd the payment id or the receipt screenshot on the same form.",
-        13,
-        INK,
-    )
-    text(team, 0.32, 7.1, 3.6, 0.24, "DESK", 11, ORANGE, True)
-    text(
-        team,
-        0.32,
-        7.36,
-        3.7,
-        1.15,
-        "yenepoyaaslpconference@gmail.com\n7337798055\naslp@yenepoya.edu.in",
-        13,
-        INK,
-    )
-    text(team, 4.2, 7.1, 3.7, 0.24, "PLACE", 11, ORANGE, True)
-    text(
-        team,
-        4.2,
-        7.36,
-        3.75,
-        1.35,
-        "The CRE day is online, on Cisco Webex.\nYenepoya Medical College Hospital, University Road, Deralakatte, Mangaluru 575018, is the hospital for anyone coming in person.",
-        13,
-        INK,
-    )
-    text(team, 0.32, 8.85, 7.6, 0.7, "The department began in 2009, became independent in 2020, and is accredited by the Rehabilitation Council of India. It teaches the Bachelor of Audiology and Speech-Language Pathology.", 12, MUTED)
-
-    rect(team, 0, 9.7, 8.27, 1.52, DEEP)
-    team.shapes.add_picture(str(BRAND / "india-emblem.png"), Inches(0.55), Inches(9.9), height=Inches(0.85))
-    text(team, 1.5, 10.05, 3.3, 0.28, "GOVERNMENT OF INDIA", 12, WHITE, True, align="center")
-    text(team, 1.5, 10.34, 3.3, 0.24, "Unique Disability ID  ·  Swavlamban", 11, WHITE, align="center")
-    team.shapes.add_picture(str(BRAND / "swavlamban.png"), Inches(5.05), Inches(9.88), height=Inches(0.9))
-    team.shapes.add_picture(str(BRAND / "rci.png"), Inches(6.55), Inches(9.82), height=Inches(1.0))
+    rect(team, 0, 9.78, 8.27, 1.44, DEEP)
+    team.shapes.add_picture(str(BRAND / "india-emblem.png"), Inches(0.42), Inches(9.98), height=Inches(0.78))
+    text(team, 1.25, 10.08, 3.5, 0.24, "GOVERNMENT OF INDIA", 12, WHITE, True)
+    text(team, 1.25, 10.34, 3.5, 0.22, "Unique Disability ID  ·  Swavlamban", 11, WHITE)
+    team.shapes.add_picture(str(BRAND / "swavlamban.png"), Inches(5.05), Inches(9.96), height=Inches(0.82))
+    rrect(team, 6.15, 9.96, 1.7, 0.9, WHITE, 0.12)
+    team.shapes.add_picture(str(BRAND / "rci.png"), Inches(6.42), Inches(10.02), height=Inches(0.78))
     rect(team, 0, 11.22, 8.27, 0.47, NAVY)
-    text(team, 0.32, 11.32, 7.4, 0.26, "CRE-26111620026773   ·   Institute KK048   ·   yenepoya-cre.vercel.app", 12, WHITE, True)
+    text(team, 0.32, 11.34, 6.2, 0.24, "CRE-26111620026773   ·   Institute KK048", 12, WHITE, True)
+    text(team, 6.4, 11.34, 1.55, 0.24, "2  /  2", 12, FLARE, True, align="right")
 
     OUT.mkdir(parents=True, exist_ok=True)
     path = OUT / "beyond-the-diagnosis.pptx"

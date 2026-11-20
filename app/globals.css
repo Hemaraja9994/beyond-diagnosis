@@ -682,7 +682,11 @@ body {
 .brochure-head p {
   margin: 0;
   font-size: 14px;
-  line-height: 1.4;
+  line-height: 1.35;
+}
+
+.brochure-head p:first-child {
+  font-weight: 700;
 }
 
 .brochure-kicker {

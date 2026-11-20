@@ -7,6 +7,7 @@ export function BrochureSheet() {
         <img src="/brand/yenepoya-medical-college.png" alt="Yenepoya Medical College" />
         <div>
           <p>Department of Audiology and Speech Language Pathology</p>
+          <p>{programme.hospital}</p>
           <p>{programme.university}</p>
         </div>
         <img className="brochure-rci" src="/brand/rci.png" alt="Rehabilitation Council of India" />
