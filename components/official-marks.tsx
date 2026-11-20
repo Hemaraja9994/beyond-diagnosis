@@ -34,10 +34,10 @@ export function OfficialMarks() {
         </figcaption>
       </figure>
       <figure className="overflow-hidden rounded-3xl bg-card ring-1 ring-line">
-        <div className="grid grid-cols-3" aria-hidden="true">
-          <span className="h-2 bg-[#ff7a1a]" />
-          <span className="h-2 bg-white" />
-          <span className="h-2 bg-[#138808]" />
+        <div aria-hidden="true">
+          <span className="block h-2 bg-[#FF9933]" />
+          <span className="block h-2 border-y border-[#e6e6e6] bg-white" />
+          <span className="block h-2 bg-[#138808]" />
         </div>
         <div className="p-5">
           <p className="font-serif text-2xl leading-tight text-navy">Government of India</p>
