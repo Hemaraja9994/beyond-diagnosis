@@ -18,7 +18,11 @@ export function SiteFooter() {
           />
           <p className="mt-3 font-serif text-2xl text-white">Yenepoya</p>
           <p className="mt-2 text-sm leading-6">
-            {programme.organiser}, {programme.university}, {programme.city}.
+            {programme.organiser}
+            <br />
+            {programme.hospital}
+            <br />
+            {programme.university}, {programme.city}.
           </p>
           <p className="mt-3 text-sm leading-6">{programme.address}</p>
           <div className="mt-4 flex items-end gap-3">

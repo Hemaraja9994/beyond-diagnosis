@@ -119,7 +119,13 @@ export default function HomePage() {
               </li>
             ))}
           </ul>
-          <p className="mt-4 text-sm">{programme.organiser}</p>
+          <p className="mt-4 text-sm leading-6">
+            {programme.organiser}
+            <br />
+            {programme.hospital}
+            <br />
+            {programme.university}
+          </p>
           <a className="mt-4 inline-flex font-semibold text-mint underline" href={departmentUrl}>
             College department page
           </a>

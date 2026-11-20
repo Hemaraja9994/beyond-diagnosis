@@ -22,11 +22,10 @@ export function SiteHeader() {
             priority
             unoptimized
           />
-          <span className="hidden min-w-0 sm:block">
-            <span className="block font-serif text-base leading-tight text-navy">{programme.title}</span>
-            <span className="mt-0.5 block text-xs text-muted">
-              {programme.level} CRE · {programme.day} {programme.month}
-            </span>
+          <span className="min-w-0 leading-tight">
+            <span className="block text-[11px] font-semibold text-navy sm:text-sm">{programme.organiser}</span>
+            <span className="block text-[11px] text-navy sm:text-sm">{programme.hospital}</span>
+            <span className="block text-[11px] text-muted sm:text-sm">{programme.university}</span>
           </span>
         </Link>
         <nav className="hidden items-center gap-4 text-sm font-semibold text-navy lg:flex" aria-label="Primary">
