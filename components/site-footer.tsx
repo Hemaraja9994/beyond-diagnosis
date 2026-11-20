@@ -1,0 +1,52 @@
+import Link from "next/link";
+import { programme } from "@/lib/programme";
+
+export function SiteFooter() {
+  return (
+    <footer className="no-print bg-deep pb-20 text-mint md:pb-0">
+      <div className="mx-auto grid max-w-6xl gap-8 px-4 py-10 sm:grid-cols-2 lg:grid-cols-3">
+        <div>
+          <p className="font-serif text-2xl text-white">Yenepoya</p>
+          <p className="mt-2 text-sm leading-6">
+            {programme.organiser}, {programme.university}, {programme.city}.
+          </p>
+          <p className="mt-3 text-sm leading-6">{programme.address}</p>
+        </div>
+        <div>
+          <p className="text-sm font-semibold uppercase tracking-[0.14em] text-white">Programme</p>
+          <ul className="mt-3 grid gap-2 text-sm">
+            <li>
+              <Link href="/programme">Schedule</Link>
+            </li>
+            <li>
+              <Link href="/registration">Registration</Link>
+            </li>
+            <li>
+              <Link href="/attend">RCI and Webex links</Link>
+            </li>
+            <li>
+              <Link href="/general">Guidelines and downloads</Link>
+            </li>
+          </ul>
+        </div>
+        <div>
+          <p className="text-sm font-semibold uppercase tracking-[0.14em] text-white">Desk</p>
+          <p className="mt-3 text-sm leading-6">
+            {programme.coordinator}
+            <br />
+            <a href={`mailto:${programme.email}`}>{programme.email}</a>
+          </p>
+          <p className="mt-3 text-sm">
+            <Link href="/admin">Coordinator desk</Link>
+          </p>
+        </div>
+      </div>
+      <div className="border-t border-white/10">
+        <p className="mx-auto max-w-6xl px-4 py-4 text-xs text-mint/80">
+          © {new Date().getFullYear()} {programme.university}. Continuing Rehabilitation Education{" "}
+          {programme.acknowledgement}.
+        </p>
+      </div>
+    </footer>
+  );
+}

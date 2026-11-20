@@ -1,0 +1,103 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: var(--font-source), "Segoe UI", sans-serif;
+  --font-serif: var(--font-newsreader), Georgia, serif;
+  --color-ink: #14232c;
+  --color-navy: #0e3a56;
+  --color-deep: #082636;
+  --color-green: #146b52;
+  --color-green-dark: #0c5340;
+  --color-mint: #e6f3ee;
+  --color-paper: #f6f3ee;
+  --color-card: #fffcf8;
+  --color-line: #e3dbd0;
+  --color-brass: #8a6430;
+  --color-muted: #3e4c54;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+}
+
+:focus-visible {
+  outline: 3px solid var(--color-green);
+  outline-offset: 3px;
+}
+
+.skip {
+  position: absolute;
+  left: 1rem;
+  top: -4rem;
+  z-index: 50;
+  background: white;
+  color: var(--color-navy);
+  padding: 0.6rem 0.9rem;
+  border-radius: 999px;
+}
+
+.skip:focus {
+  top: 0.75rem;
+}
+
+.pass {
+  background: var(--color-card);
+  border-radius: 1.5rem;
+  box-shadow: 0 24px 50px rgba(8, 38, 54, 0.16);
+  color: var(--color-ink);
+  overflow: hidden;
+}
+
+.pass-cut {
+  border-top: 1px dashed #d9c7a6;
+  margin: 0.9rem 0 0.8rem;
+}
+
+.field {
+  min-height: 2.75rem;
+  width: 100%;
+  border-radius: 0.9rem;
+  border: 1px solid var(--color-line);
+  background: white;
+  padding: 0.65rem 0.8rem;
+  font: inherit;
+  color: var(--color-ink);
+}
+
+.timeline {
+  position: relative;
+}
+
+.timeline::before {
+  background: #d5e4de;
+  content: "";
+  left: 4.4rem;
+  position: absolute;
+  top: 0.4rem;
+  bottom: 0.4rem;
+  width: 2px;
+}
+
+@media (max-width: 640px) {
+  .timeline::before {
+    left: 0.45rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+}
