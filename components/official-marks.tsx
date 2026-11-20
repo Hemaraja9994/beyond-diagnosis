@@ -20,14 +20,14 @@ export function OfficialMarks() {
       <figure className="overflow-hidden rounded-3xl bg-card shadow-lg ring-1 ring-line">
         <Image
           src="/brand/udid-sample.svg"
-          alt="Sample drawing of a Unique Disability ID card. It is not a real card."
-          width={640}
-          height={400}
-          className="h-52 w-full bg-navy object-cover"
+          alt="Graphical recreation of the original Unique Disability ID card. Personal fields are blank. It is not a real card."
+          width={1000}
+          height={580}
+          className="h-52 w-full bg-white object-contain p-3"
           unoptimized
         />
         <figcaption className="p-4 text-sm leading-6 text-muted">
-          Sample drawing of the Unique Disability ID. The sessions are about the certificate and the entitlements that follow it. This drawing is not a real card.
+          A drawing of the original Unique Disability ID card. Names, numbers, and the photograph are blank. This is not a real card.
         </figcaption>
       </figure>
       <figure className="overflow-hidden rounded-3xl bg-card shadow-lg ring-1 ring-line">

@@ -1,11 +1,68 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 400" fill="none" role="img" aria-label="Sample drawing of a Unique Disability ID card">
-  <rect width="640" height="400" rx="36" fill="#0c2340"/>
-  <rect x="36" y="40" width="128" height="156" rx="18" fill="#ffffff"/>
-  <text x="100" y="128" text-anchor="middle" fill="#0c2340" font-family="Segoe UI, sans-serif" font-size="22" font-weight="600">Photo</text>
-  <text x="188" y="108" fill="#fff7f1" font-family="Georgia, serif" font-size="72">UDID</text>
-  <text x="190" y="152" fill="#ffffff" font-family="Segoe UI, sans-serif" font-size="24">Unique Disability ID</text>
-  <rect x="36" y="230" width="460" height="18" rx="9" fill="#ffffff" opacity="0.9"/>
-  <rect x="36" y="266" width="300" height="18" rx="9" fill="#ffffff" opacity="0.55"/>
-  <rect x="36" y="302" width="380" height="18" rx="9" fill="#ff7a1a"/>
-  <rect x="36" y="346" width="220" height="14" rx="7" fill="#ffffff" opacity="0.35"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 580" fill="none" role="img" aria-label="Graphical recreation of a Unique Disability ID card. It is not a real card.">
+  <defs>
+    <clipPath id="card">
+      <rect width="1000" height="580" rx="28"/>
+    </clipPath>
+    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ffe08a"/>
+      <stop offset="0.5" stop-color="#e0a31a"/>
+      <stop offset="1" stop-color="#b7791f"/>
+    </linearGradient>
+  </defs>
+  <g clip-path="url(#card)">
+    <rect width="1000" height="580" fill="#ffffff"/>
+    <rect width="26" height="580" fill="#f5c518"/>
+    <rect x="26" width="8" height="580" fill="#f3e7a1"/>
+
+    <g transform="translate(52 36)">
+      <circle cx="36" cy="36" r="34" fill="url(#gold)"/>
+      <circle cx="36" cy="36" r="26" fill="#fff6d8"/>
+      <path d="M18 40c4-14 10-20 18-20s14 6 18 20" stroke="#b7791f" stroke-width="3" fill="none"/>
+      <circle cx="24" cy="28" r="5" fill="#c4841d"/>
+      <circle cx="36" cy="24" r="5.5" fill="#c4841d"/>
+      <circle cx="48" cy="28" r="5" fill="#c4841d"/>
+      <rect x="22" y="44" width="28" height="5" rx="1" fill="#c4841d"/>
+      <rect x="18" y="51" width="36" height="4" rx="1" fill="#a16207"/>
+    </g>
+
+    <text x="140" y="78" fill="#111827" font-family="Arial, sans-serif" font-size="34" font-weight="700" letter-spacing="0.5">UNIQUE DISABILITY ID</text>
+    <text x="142" y="110" fill="#374151" font-family="Arial, sans-serif" font-size="20">Government of India</text>
+
+    <g transform="translate(860 42)">
+      <circle cx="42" cy="42" r="40" fill="url(#gold)"/>
+      <circle cx="42" cy="42" r="28" fill="none" stroke="#fff6d8" stroke-width="3"/>
+      <circle cx="42" cy="42" r="8" fill="#fff6d8"/>
+      <path d="M42 18v48M18 42h48M25 25l34 34M75 25L41 59" stroke="#fff6d8" stroke-width="2"/>
+    </g>
+
+    <g font-family="Arial, sans-serif" fill="#6b7280">
+      <text x="52" y="168" font-size="16">नाम / Name</text>
+      <rect x="52" y="178" width="430" height="16" rx="3" fill="#d1d5db"/>
+
+      <text x="52" y="230" font-size="16">यूडी आईडी / UD ID</text>
+      <rect x="52" y="240" width="360" height="16" rx="3" fill="#9ca3af"/>
+
+      <text x="52" y="292" font-size="16">दिव्यांगता प्रकार / Disability Type</text>
+      <rect x="52" y="302" width="400" height="16" rx="3" fill="#d1d5db"/>
+
+      <text x="52" y="354" font-size="16">जन्म वर्ष / Year of Birth</text>
+      <rect x="52" y="364" width="150" height="16" rx="3" fill="#d1d5db"/>
+      <text x="250" y="354" font-size="16">दिव्यांगता % / % of Disability</text>
+      <rect x="250" y="364" width="180" height="16" rx="3" fill="#d1d5db"/>
+
+      <text x="52" y="416" font-size="16">जारी दिनांक / Date of Issue</text>
+      <rect x="52" y="426" width="170" height="16" rx="3" fill="#d1d5db"/>
+      <text x="260" y="416" font-size="16">वैधता / Valid upto</text>
+      <text x="260" y="442" fill="#111827" font-size="20" font-weight="700">Permanent</text>
+    </g>
+
+    <rect x="700" y="168" width="210" height="240" rx="8" fill="#e5e7eb" stroke="#d1d5db"/>
+    <circle cx="805" cy="250" r="42" fill="#cbd5e1"/>
+    <path d="M742 390c18-48 36-68 63-68s45 20 63 68" fill="#cbd5e1"/>
+
+    <circle cx="805" cy="446" r="22" fill="#16a34a"/>
+    <text x="805" y="454" text-anchor="middle" fill="#ffffff" font-family="Arial, sans-serif" font-size="22" font-weight="700">P</text>
+    <text x="700" y="520" fill="#6b7280" font-family="Arial, sans-serif" font-size="15">Issuing Authority Sign</text>
+  </g>
+  <rect width="998" height="578" rx="28" stroke="#e5e7eb" stroke-width="2"/>
 </svg>

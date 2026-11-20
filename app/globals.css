@@ -51,7 +51,7 @@ body {
   width: min(78vw, 720px);
   top: -4%;
   left: -12%;
-  opacity: 0.28;
+  opacity: 0.72;
   animation: drift-a 14s ease-in-out infinite;
 }
 
@@ -59,7 +59,7 @@ body {
   width: min(64vw, 620px);
   top: 34%;
   right: -16%;
-  opacity: 0.22;
+  opacity: 0.5;
   animation: drift-b 18s ease-in-out infinite;
 }
 
@@ -67,7 +67,7 @@ body {
   width: min(84vw, 780px);
   bottom: -16%;
   left: 8%;
-  opacity: 0.18;
+  opacity: 0.4;
   animation: drift-c 16s ease-in-out infinite;
 }
 
