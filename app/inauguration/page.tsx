@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { PageBanner } from "@/components/page-banner";
-import { programme } from "@/lib/programme";
 
 export const metadata: Metadata = { title: "Inauguration" };
 
@@ -15,7 +14,7 @@ export default function InaugurationPage() {
       <PageBanner
         kicker="Opening"
         title="Inauguration"
-        lede="The chief guest and guest of honour will be named here when the department confirms them. The ceremony board is already linked."
+        lede="The chief guest and guest of honour will be named here when the department confirms them."
       />
       <div className="mx-auto grid max-w-6xl gap-5 px-4 py-10 sm:grid-cols-2">
         {seats.map((seat) => (
@@ -24,16 +23,6 @@ export default function InaugurationPage() {
             <h2 className="mt-2 font-serif text-3xl text-navy">{seat.name}</h2>
           </article>
         ))}
-      </div>
-      <div className="mx-auto max-w-6xl px-4 pb-10">
-        <a
-          className="inline-flex min-h-12 items-center rounded-full bg-navy px-5 font-semibold text-white"
-          href={programme.canvaUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Open the ceremony board
-        </a>
       </div>
     </div>
   );
