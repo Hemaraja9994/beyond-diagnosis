@@ -142,7 +142,7 @@ def qr_svg(url: str) -> str:
     image.save(buffer)
     svg = buffer.getvalue().decode("utf-8")
     svg = svg[svg.index("<svg") :]
-    return svg.replace('fill="#000000"', 'fill="#0c2340"')
+    return svg.replace('fill="#000000"', 'fill="#0b1f3a"')
 
 
 def photo(build: Path, path: Path) -> str:
@@ -153,18 +153,40 @@ def photo(build: Path, path: Path) -> str:
     return name
 
 
-def header() -> str:
+COLOURS = ["c1", "c2", "c3", "c4"]
+
+
+def face(build: Path, path: Path, colour: str) -> str:
+    return f"""<div class="face {colour}"><div class="ring"><img src="{photo(build, path)}" alt=""></div>
+      <span class="bubble"></span><span class="dot"></span></div>"""
+
+
+def logo_strip() -> str:
     return f"""
-    <header class="head">
-      <img class="college" src="{(BRAND / 'yenepoya-medical-college.png').as_uri()}" alt="">
-      <p class="dept">Department of Audiology and<br>Speech Language Pathology
+    <div class="logo-strip">
+      <img src="{(BRAND / 'yenepoya-medical-college.png').as_uri()}" alt="">
+      <p>Department of Audiology and Speech Language Pathology
         <small>Yenepoya Medical College Hospital · Yenepoya (Deemed to be University), Mangaluru</small></p>
       <img class="council" src="{(BRAND / 'rci.png').as_uri()}" alt="">
-    </header>"""
+    </div>"""
+
+
+def date_tab(rci: bool = False) -> str:
+    last = "RCI CRE approval awaited" if rci else "Zonal CRE · English"
+    return f"""
+    <div class="datetab">
+      <div class="block"><b>19</b><span>DEC</span></div>
+      <div class="dinfo">
+        <p class="day">Saturday · 2026</p>
+        <p><i></i>10:00 AM IST onwards</p>
+        <p><i></i>Online · Cisco Webex</p>
+        <p><i></i>{last}</p>
+      </div>
+    </div>"""
 
 
 def footer(qr: str, page: str = "") -> str:
-    page_line = f'<small class="page-no">{page}</small>' if page else ""
+    page_line = f'<span class="pg">{page}</span>' if page else ""
     return f"""
     <footer class="foot">
       <div class="org">
@@ -173,9 +195,9 @@ def footer(qr: str, page: str = "") -> str:
       </div>
       <div class="cta">
         <div>
-          <p>Register now</p>
+          <span class="pill pill-solid">Register today</span>
           <b>{SITE}</b>
-          <small>yenepoyaaslpconference@gmail.com</small>
+          <small>yenepoyaaslpconference@gmail.com · +91 73377 98055</small>
           {page_line}
         </div>
         <div class="qr">{qr}</div>
@@ -185,49 +207,47 @@ def footer(qr: str, page: str = "") -> str:
 
 def poster(build: Path, qr: str) -> str:
     speakers = "".join(
-        f"""<div><div class="portrait"><img src="{photo(build, t['photo'])}" alt=""></div>
-        <h3>{esc(t['person'])}</h3><p>{esc(t['short'])}</p></div>"""
-        for t in TALKS
+        f"""<div>{face(build, t['photo'], COLOURS[i])}<h3>{esc(t['person'])}</h3><p>{esc(t['short'])}</p></div>"""
+        for i, t in enumerate(TALKS)
     )
     rows = "".join(
-        f"""<li><time class="serif">{t['time']}<small>{t['meridiem']}</small></time>
-        <span class="topic">{esc(t['title'])}</span><span class="who">{esc(t['person'])}</span></li>"""
-        for t in TALKS
+        f"""<div class="ribbon {COLOURS[i]}"><div class="tab"><b>{t['time']}</b><span>{t['meridiem']}</span></div>
+        <div class="card"><h3>{esc(t['title'])}</h3><p>{esc(t['person'])}</p></div></div>"""
+        for i, t in enumerate(TALKS)
     )
     return f"""
     <section class="sheet poster">
-      {header()}
       <div class="hero">
-        <div>
-          <p class="kicker">Zonal CRE Programme</p>
-          <h1 class="title serif">Beyond the<br><em>Diagnosis</em></h1>
-          <p class="subtitle">Disability Assessment, Certification and Entitlements under the RPwD Act, 2016</p>
-          <div class="meta"><span>Zonal CRE</span><span>English</span><span>One day · Four sessions</span></div>
+        {logo_strip()}
+        <div class="hero-top">
+          <p class="eyebrow">Zonal CRE Programme · Online</p>
+          <h1 class="headline display">
+            <span class="lead">Beyond <span class="script">the</span></span>
+            <span class="big">Diagnosis</span>
+          </h1>
         </div>
-        <aside class="datecard">
-          <p class="dow">Saturday</p>
-          <div class="day serif"><b>19</b><span>December<br>2026</span></div>
-          <dl>
-            <div><dt>Starts</dt><dd>10:00 AM IST</dd></div>
-            <div><dt>Mode</dt><dd>Online · Cisco Webex</dd></div>
-          </dl>
-          <div class="chips">
-            <span class="chip chip-line"><i></i>RCI CRE approval awaited</span>
-            <span class="chip chip-solid">Limited to 50 seats</span>
+        <div class="hero-grid">
+          <div>
+            <p class="sub">Disability Assessment, Certification and Entitlements under the RPwD Act, 2016</p>
+            <div class="pills">
+              <span class="pill pill-ghost">Register today</span>
+              <span class="pill pill-solid">Only 50 seats</span>
+            </div>
           </div>
-        </aside>
+          {date_tab(rci=True)}
+        </div>
       </div>
       <div class="speakers">
-        <p class="section-label">Resource <span>speakers</span></p>
+        <p class="section-title">Resource <em>speakers</em></p>
         <div class="speaker-row">{speakers}</div>
       </div>
       <div class="schedule">
-        <p class="section-label">Programme <span>schedule</span></p>
-        <ol class="schedule-list">{rows}</ol>
+        <p class="section-title">Programme <em>schedule</em></p>
+        <div class="ribbons">{rows}</div>
       </div>
-      <div class="team">
-        <div><p>Organising chairperson</p><b>Dr. Shwetha Prabhu</b></div>
-        <div><p>Organising secretaries</p><b>Ms. Swathi Chinnasamy<br>Ms. Rachana R Uchil</b></div>
+      <div class="organisers">
+        <span class="pill pill-dark">Organising chairperson</span><b>Dr. Shwetha Prabhu</b>
+        <span class="pill pill-dark">Organising secretaries</span><b>Ms. Swathi Chinnasamy<br>Ms. Rachana R Uchil</b>
       </div>
       {footer(qr)}
     </section>"""
@@ -235,33 +255,36 @@ def poster(build: Path, qr: str) -> str:
 
 def flyer_cover(build: Path, qr: str) -> str:
     sessions = "".join(
-        f"""<article class="session">
-          <div class="portrait"><img src="{photo(build, t['photo'])}" alt=""></div>
-          <div>
-            <div class="when"><time>{t['time']} {t['meridiem']}</time><span class="n">· Session {index + 1}</span></div>
-            <h3 class="serif">{esc(t['title'])}</h3>
-            <p class="by"><b>{esc(t['person'])}</b> <span>· {esc(', '.join(x for x in (t['role'], t['crr']) if x))}</span></p>
+        f"""<article class="session {COLOURS[i]}">
+          <div class="tab"><b>{t['time']}</b><span>{t['meridiem']}</span><small>Session {i + 1}</small></div>
+          {face(build, t['photo'], COLOURS[i])}
+          <div class="text">
+            <h3>{esc(t['title'])}</h3>
+            <p class="by"><b>{esc(t['person'])}</b><br>{esc(', '.join(x for x in (t['role'], t['crr']) if x))}</p>
           </div>
         </article>"""
-        for index, t in enumerate(TALKS)
+        for i, t in enumerate(TALKS)
     )
     return f"""
     <section class="sheet flyer">
-      {header()}
-      <div class="intro">
-        <p class="kicker">Zonal CRE Programme · RCI CRE approval awaited</p>
-        <h1 class="title serif">Beyond the <em>Diagnosis</em></h1>
-        <p class="subtitle">Disability Assessment, Certification and Entitlements under the RPwD Act, 2016</p>
+      <div class="hero">
+        {logo_strip()}
+        <div class="hero-row">
+          <div>
+            <p class="eyebrow">Zonal CRE Programme</p>
+            <h1 class="headline display">
+              <span class="lead">Beyond <span class="script">the</span></span>
+              <span class="big">Diagnosis</span>
+            </h1>
+            <p class="sub">Disability Assessment, Certification and Entitlements under the RPwD Act, 2016</p>
+            <div class="facts"><span class="hot">Only 50 seats</span><span>RCI CRE approval awaited</span><span>Four sessions</span></div>
+          </div>
+          <div class="mini-date">{date_tab()}</div>
+        </div>
       </div>
-      <dl class="factbar">
-        <div><dt>Date</dt><dd>Sat, 19 December 2026</dd></div>
-        <div><dt>Time</dt><dd>From 10:00 AM IST</dd></div>
-        <div><dt>Mode</dt><dd>Online · Cisco Webex</dd></div>
-        <div><dt>Level</dt><dd>Zonal · English</dd></div>
-      </dl>
-      <div class="sessions">
-        <p class="section-label">The <span>programme</span></p>
-        <div class="session-list">{sessions}</div>
+      <div class="body">
+        <p class="section-title">The <em>programme</em></p>
+        <div class="sessions">{sessions}</div>
       </div>
       {footer(qr, "Page 1 of 2")}
     </section>"""
@@ -269,51 +292,45 @@ def flyer_cover(build: Path, qr: str) -> str:
 
 def flyer_team(build: Path, qr: str) -> str:
     team = "".join(
-        f"""<div><div class="portrait"><img src="{photo(build, p['photo'])}" alt=""></div>
-        <p>{esc(p['role'])}</p><h3>{esc(p['name'])}</h3><span>{p['detail']}</span></div>"""
-        for p in TEAM
+        f"""<div>{face(build, p['photo'], COLOURS[i])}<span class="pill pill-solid">{esc(p['role'])}</span>
+        <h3>{esc(p['name'])}</h3><span>{p['detail']}</span></div>"""
+        for i, p in enumerate(TEAM)
     )
     tags = "".join(f"<span>{esc(a)}</span>" for a in AUDIENCE)
     return f"""
-    <section class="sheet flyer">
-      {header()}
-      <div class="team-head">
-        <p class="kicker">Beyond the Diagnosis · 19 December 2026</p>
-        <h2 class="serif">Organising team</h2>
-      </div>
-      <div class="team-row">{team}</div>
-      <div class="info-grid">
-        <div class="info">
-          <h4>Who should attend</h4>
-          <div class="tags">{tags}</div>
+    <section class="sheet flyer team">
+      <div class="hero">
+        {logo_strip()}
+        <div class="team-title">
+          <p class="eyebrow">Beyond the Diagnosis · 19 December 2026</p>
+          <h2>Organising <em>team</em></h2>
         </div>
-        <div class="info tinted">
-          <h4>How to register</h4>
-          <ol>
+        <div class="team-row">{team}</div>
+      </div>
+      <div class="body">
+        <div class="info-grid">
+          <div class="info c2"><h4>Who should attend</h4><div class="in"><div class="tags">{tags}</div></div></div>
+          <div class="info c1"><h4>How to register</h4><div class="in"><ol>
             <li><b>1</b><span>Register at <strong>{SITE}</strong> with your name and CRR number.</span></li>
             <li><b>2</b><span>Pay the fee on Razorpay using the link on the site.</span></li>
             <li><b>3</b><span>Add your payment ID or receipt to confirm your seat.</span></li>
-          </ol>
-        </div>
-        <div class="info">
-          <h4>Contact</h4>
-          <div class="lines">
+          </ol></div></div>
+          <div class="info c4"><h4>Contact</h4><div class="in"><div class="lines">
             <div><small>Email</small>yenepoyaaslpconference@gmail.com</div>
             <div><small>Phone</small>+91 73377 98055</div>
             <div><small>Department</small>aslp@yenepoya.edu.in</div>
-          </div>
+          </div></div></div>
+          <div class="info c3"><h4>Venue</h4><div class="in">
+            <p class="big">Online on<br>Cisco Webex</p>
+            <p>The joining link is shared with registered participants. Seats are limited to 50.</p>
+          </div></div>
         </div>
-        <div class="info">
-          <h4>Venue</h4>
-          <p class="big serif">Online on<br>Cisco Webex</p>
-          <div class="lines"><div>The joining link is shared with registered participants. Seats are limited to 50.</div></div>
+        <div class="refs">
+          <img src="{(BRAND / 'rci.png').as_uri()}" alt="">
+          <p><b>Rehabilitation Council of India</b> · CRE approval awaited<br>
+            <span>Acknowledgement CRE-26111620026773 · Institute code KK048</span></p>
+          <img src="{(BRAND / 'swavlamban.png').as_uri()}" alt="">
         </div>
-      </div>
-      <div class="refs">
-        <img src="{(BRAND / 'rci.png').as_uri()}" alt="">
-        <p><b>Rehabilitation Council of India</b> · CRE approval awaited<br>
-          <span>Acknowledgement CRE-26111620026773 · Institute code KK048</span></p>
-        <img src="{(BRAND / 'swavlamban.png').as_uri()}" alt="">
       </div>
       {footer(qr, "Page 2 of 2")}
     </section>"""
