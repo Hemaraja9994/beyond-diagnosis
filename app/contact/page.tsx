@@ -17,7 +17,7 @@ export default function ContactPage() {
       />
       <div className="mx-auto grid max-w-6xl gap-8 px-4 py-10 lg:grid-cols-[0.8fr_1.2fr]">
         <aside className="rounded-3xl bg-navy p-6 text-white">
-          <h2 className="font-serif text-3xl">Programme desk</h2>
+          <h2 className="font-serif text-2xl sm:text-3xl">Programme desk</h2>
           <ul className="mt-4 grid gap-3 text-sm leading-6">
             {committee.map((seat) => (
               <li key={seat.role}>

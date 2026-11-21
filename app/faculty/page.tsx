@@ -26,7 +26,7 @@ export default function FacultyPage() {
                   className="h-20 w-20 shrink-0 overflow-hidden rounded-3xl text-2xl"
                 />
                 <div>
-                  <h2 className="font-serif text-2xl text-navy">{session.person}</h2>
+                  <h2 className="font-serif text-xl text-navy sm:text-2xl">{session.person}</h2>
                   {profile ? <p className="text-sm text-muted">{profile.fullName}</p> : null}
                   {session.designation ? <p className="mt-1 text-sm leading-6 text-navy">{session.designation}</p> : null}
                   <p className="text-sm text-muted">CRR {session.crr}</p>

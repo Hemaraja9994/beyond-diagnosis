@@ -16,7 +16,7 @@ export default function DepartmentPage() {
 
       <section className="mx-auto grid max-w-6xl gap-6 px-4 py-10 lg:grid-cols-[1.2fr_0.8fr]">
         <article className="rounded-3xl bg-card p-6 ring-1 ring-line">
-          <h2 className="font-serif text-3xl text-navy">About the department</h2>
+          <h2 className="font-serif text-2xl sm:text-3xl text-navy">About the department</h2>
           <p className="mt-4 leading-7 text-muted">{department.summary}</p>
           <p className="mt-4 leading-7 text-muted">{department.course}</p>
           <p className="mt-4 leading-7 text-muted">
@@ -30,7 +30,7 @@ export default function DepartmentPage() {
           </a>
         </article>
         <aside className="rounded-3xl bg-navy p-6 text-white">
-          <h2 className="font-serif text-3xl">Clinic desk</h2>
+          <h2 className="font-serif text-2xl sm:text-3xl">Clinic desk</h2>
           <dl className="mt-4 grid gap-4 text-sm leading-6">
             <div>
               <dt className="text-mint">Phone</dt>
@@ -82,7 +82,7 @@ export default function DepartmentPage() {
       </section>
 
       <section className="mx-auto max-w-6xl px-4 py-10">
-        <h2 className="font-serif text-3xl text-navy">Staff</h2>
+        <h2 className="font-serif text-2xl sm:text-3xl text-navy">Staff</h2>
         <p className="mt-3 max-w-3xl leading-7 text-muted">
           Photographs are the ones published by Yenepoya Medical College. Ms. Merin Mathews and Ms. Shana Mariyam Basheer are shown with initials because that page uses a placeholder instead of a portrait. Ms. Ananya Shettigar has joined the department. Ms. Niha Kuraisha has left, and Ms. Praneetha is not on the staff. The college page has not yet caught up with those three changes, and it does not yet carry Ms. Ananya Shettigar’s photograph or designation.
         </p>
@@ -105,7 +105,7 @@ export default function DepartmentPage() {
       </section>
 
       <section className="mx-auto max-w-6xl px-4 pb-12">
-        <h2 className="font-serif text-3xl text-navy">Community postings</h2>
+        <h2 className="font-serif text-2xl sm:text-3xl text-navy">Community postings</h2>
         <ul className="mt-4 grid gap-3 sm:grid-cols-2">
           {outreach.map((post) => (
             <li key={post.centre} className="rounded-3xl bg-card px-5 py-4 ring-1 ring-line">

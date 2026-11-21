@@ -20,7 +20,7 @@ export default function InaugurationPage() {
         {seats.map((seat) => (
           <article key={seat.role} className="rounded-3xl bg-card p-6 ring-1 ring-line">
             <p className="text-sm font-semibold uppercase tracking-[0.14em] text-green">{seat.role}</p>
-            <h2 className="mt-2 font-serif text-3xl text-navy">{seat.name}</h2>
+            <h2 className="mt-2 font-serif text-2xl sm:text-3xl text-navy">{seat.name}</h2>
           </article>
         ))}
       </div>

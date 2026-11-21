@@ -20,7 +20,7 @@ export default async function AttendPage() {
       />
       <div className="mx-auto grid max-w-6xl gap-6 px-4 py-10 lg:grid-cols-2">
         <article className="rounded-3xl bg-card p-6 ring-1 ring-line">
-          <h2 className="font-serif text-3xl text-navy">Register</h2>
+          <h2 className="font-serif text-2xl sm:text-3xl text-navy">Register</h2>
           <p className="mt-3 leading-7 text-muted">
             Opens the registration form on this website, marked as an arrival from the RCI listing.
           </p>
@@ -32,7 +32,7 @@ export default async function AttendPage() {
           </Link>
         </article>
         <article className="rounded-3xl bg-card p-6 ring-1 ring-line">
-          <h2 className="font-serif text-3xl text-navy">Cisco Webex</h2>
+          <h2 className="font-serif text-2xl sm:text-3xl text-navy">Cisco Webex</h2>
           <p className="mt-3 leading-7 text-muted">
             {meeting
               ? "The session link is ready. Join opens Cisco Webex."

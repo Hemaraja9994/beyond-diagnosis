@@ -10,13 +10,13 @@ export default function HomePage() {
   return (
     <div className="pb-20 md:pb-0">
       <section id="date">
-        <div className="mx-auto grid max-w-6xl items-center gap-10 px-4 py-12 lg:grid-cols-[1.2fr_0.8fr] lg:py-16">
+        <div className="mx-auto grid max-w-6xl items-center gap-8 px-4 py-8 sm:py-12 lg:grid-cols-[1.2fr_0.8fr] lg:py-16">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.18em] text-green">Zonal CRE · Online · English</p>
-            <h1 className="mt-4 max-w-[11ch] font-serif text-6xl font-medium leading-[0.9] tracking-[-0.035em] text-navy sm:text-7xl">
+            <h1 className="mt-3 max-w-[12ch] font-serif text-4xl font-medium leading-[1.05] tracking-[-0.03em] text-navy sm:mt-4 sm:text-6xl sm:leading-[0.9] lg:text-7xl">
               {programme.title}
             </h1>
-            <p className="mt-6 max-w-xl font-serif text-2xl font-normal leading-snug text-ink">{programme.subtitle}</p>
+            <p className="mt-4 max-w-xl text-base leading-7 text-ink sm:mt-6 sm:text-lg">{programme.subtitle}</p>
             <p className="mt-4 max-w-xl leading-7 text-muted">{programme.aim}</p>
             <div className="mt-6 flex flex-wrap gap-3">
               <Link id="register" href="/registration" className="ticked inline-flex min-h-12 items-center rounded-lg bg-navy px-5 font-semibold text-white">
@@ -46,7 +46,7 @@ export default function HomePage() {
         </div>
         <div>
           <p className="text-sm font-semibold uppercase tracking-[0.16em] text-green">Brochure</p>
-          <h2 className="mt-2 font-serif text-3xl text-navy">Download it, or send it on WhatsApp</h2>
+          <h2 className="mt-2 font-serif text-2xl text-navy sm:text-3xl">Download it, or send it on WhatsApp</h2>
           <p className="mt-3 max-w-xl leading-7 text-muted">
             Two pages. The first has the four sessions, the speakers, and the topics. The second has the organising team and how to join. The download is that flyer as a PDF.
           </p>
@@ -76,7 +76,7 @@ export default function HomePage() {
 
       <section className="bg-navy text-white">
         <div className="mx-auto max-w-6xl px-4 py-12">
-          <h2 className="font-serif text-4xl">Three steps</h2>
+          <h2 className="font-serif text-3xl sm:text-4xl">Three steps</h2>
           <ol className="mt-8 grid gap-8 sm:grid-cols-3">
             {[
               ["1", "Register on this site"],
@@ -84,7 +84,7 @@ export default function HomePage() {
               ["3", "Join Webex"],
             ].map(([step, title]) => (
               <li key={step}>
-                <p className="font-serif text-4xl text-flare">{step}</p>
+                <p className="font-serif text-3xl text-flare sm:text-4xl">{step}</p>
                 <p className="mt-3 border-t border-white/25 pt-3 font-semibold">{title}</p>
               </li>
             ))}
@@ -98,7 +98,7 @@ export default function HomePage() {
       <section className="mx-auto grid max-w-6xl gap-8 px-4 pb-12 lg:grid-cols-[0.9fr_1.1fr]">
         <article className="rounded-3xl bg-navy p-6 text-white">
           <p className="text-xs font-semibold uppercase tracking-[0.16em] text-mint">Invitation</p>
-          <h2 className="mt-2 font-serif text-3xl">From the organising department</h2>
+          <h2 className="mt-2 font-serif text-2xl sm:text-3xl">From the organising department</h2>
           <div className="mt-4 grid gap-4 leading-7 text-white/90">
             {invitation.map((paragraph) => (
               <p key={paragraph}>{paragraph}</p>
@@ -129,20 +129,20 @@ export default function HomePage() {
         </article>
         <div id="day">
           <div className="flex items-end justify-between gap-4">
-            <h2 className="font-serif text-3xl text-navy">The day</h2>
+            <h2 className="font-serif text-2xl text-navy sm:text-3xl">The day</h2>
             <Link href="/programme" className="ticked text-sm font-semibold text-green">
               Full programme
             </Link>
           </div>
           <ol className="timeline mt-6 grid gap-5">
             {sessions.map((session) => (
-              <li id={sessionTickId(session.time)} key={session.time} className="grid grid-cols-[4.2rem_1fr] gap-4 sm:grid-cols-[5.5rem_1fr]">
-                <p className="pt-1 text-sm font-semibold text-green">
+              <li id={sessionTickId(session.time)} key={session.time} className="grid gap-2 sm:grid-cols-[5.5rem_1fr] sm:gap-4">
+                <p className="text-sm font-semibold text-green sm:pt-1">
                   {session.time}
-                  <span className="block text-xs text-muted">{session.meridiem}</span>
+                  <span className="text-xs font-normal text-muted sm:block"> {session.meridiem}</span>
                 </p>
                 <article className="rounded-3xl bg-card p-4 ring-1 ring-line">
-                  <h3 className="font-serif text-xl leading-snug text-navy">{session.title}</h3>
+                  <h3 className="font-serif text-lg leading-snug text-navy sm:text-xl">{session.title}</h3>
                   <p className="mt-2 text-sm font-semibold">
                     {session.person} · CRR {session.crr}
                   </p>
@@ -157,7 +157,7 @@ export default function HomePage() {
       <section className="bg-white">
         <div className="mx-auto max-w-6xl px-4 py-12">
           <div className="flex items-end justify-between gap-4">
-            <h2 className="font-serif text-3xl text-navy">Faculty</h2>
+            <h2 className="font-serif text-2xl text-navy sm:text-3xl">Faculty</h2>
             <Link href="/faculty" className="text-sm font-semibold text-green">
               All resource persons
             </Link>
@@ -183,7 +183,7 @@ export default function HomePage() {
 
       <section className="mx-auto grid max-w-6xl gap-8 px-4 py-12 lg:grid-cols-2">
         <div>
-          <h2 className="font-serif text-3xl text-navy">Why this day</h2>
+          <h2 className="font-serif text-2xl text-navy sm:text-3xl">Why this day</h2>
           <ul className="mt-4 grid gap-3">
             {objectives.map((objective) => (
               <li key={objective} className="rounded-2xl bg-card px-4 py-3 leading-7 ring-1 ring-line">
@@ -193,7 +193,7 @@ export default function HomePage() {
           </ul>
         </div>
         <div>
-          <h2 className="font-serif text-3xl text-navy">Who it is for</h2>
+          <h2 className="font-serif text-2xl text-navy sm:text-3xl">Who it is for</h2>
           <ul className="mt-4 flex flex-wrap gap-2">
             {audience.map((item) => (
               <li key={item} className="rounded-full bg-navy px-4 py-2 text-sm text-white">

@@ -16,13 +16,13 @@ export default function ProgrammePage() {
         {sessions.map((session) => {
           const profile = facultyProfile(session.crr);
           return (
-            <li id={sessionTickId(session.time)} key={session.crr} className="grid grid-cols-[4.2rem_1fr] gap-4 sm:grid-cols-[5.5rem_1fr]">
+            <li id={sessionTickId(session.time)} key={session.crr} className="grid gap-2 sm:grid-cols-[5.5rem_1fr] sm:gap-4">
               <p className="text-sm font-semibold text-green">
                 {session.time}
-                <span className="block text-xs text-muted">{session.meridiem} IST</span>
+                <span className="text-xs font-normal text-muted sm:block"> {session.meridiem} IST</span>
               </p>
-              <article className="rounded-3xl bg-card p-5 ring-1 ring-line">
-                <h2 className="font-serif text-2xl leading-snug text-navy">{session.title}</h2>
+              <article className="rounded-3xl bg-card p-4 ring-1 ring-line sm:p-5">
+                <h2 className="font-serif text-xl leading-snug text-navy sm:text-2xl">{session.title}</h2>
                 <p className="mt-3 font-semibold">
                   {session.person}
                   <span className="font-normal text-muted"> · CRR {session.crr}</span>

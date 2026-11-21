@@ -9,7 +9,7 @@ export function PassCard() {
           <p className="text-flare">Pass</p>
           <p className="text-flare">Approval awaited</p>
         </div>
-        <p className="mt-4 font-serif text-4xl leading-[1.05]">
+        <p className="mt-4 font-serif text-3xl leading-tight sm:text-4xl sm:leading-[1.05]">
           Saturday,
           <br />
           19 December 2026

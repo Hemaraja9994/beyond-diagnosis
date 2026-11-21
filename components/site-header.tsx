@@ -18,14 +18,14 @@ export function SiteHeader() {
             alt="Yenepoya Medical College"
             width={474}
             height={257}
-            className="h-12 w-auto"
+            className="h-10 w-auto sm:h-12"
             priority
             unoptimized
           />
-          <span className="min-w-0 leading-tight">
-            <span className="block text-[11px] font-semibold text-navy sm:text-sm">{programme.organiser}</span>
-            <span className="block text-[11px] text-navy sm:text-sm">{programme.hospital}</span>
-            <span className="block text-[11px] text-muted sm:text-sm">{programme.university}</span>
+          <span className="min-w-0 text-xs leading-4 text-navy sm:text-sm sm:leading-5">
+            <span className="block font-semibold">{programme.organiser}</span>
+            <span className="block">{programme.hospital}</span>
+            <span className="block text-muted">{programme.university}</span>
           </span>
         </Link>
         <nav className="hidden items-center gap-4 text-sm font-semibold text-navy lg:flex" aria-label="Primary">

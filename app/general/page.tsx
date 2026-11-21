@@ -15,7 +15,7 @@ export default function GeneralPage() {
       />
       <OfficialMarks />
       <section className="mx-auto max-w-6xl px-4 py-10">
-        <h2 className="font-serif text-3xl text-navy">Official channels</h2>
+        <h2 className="font-serif text-2xl sm:text-3xl text-navy">Official channels</h2>
         <ul className="mt-5 grid gap-3">
           {officialLinks.map((link) => (
             <li key={link.href} className="rounded-3xl bg-card p-5 ring-1 ring-line">

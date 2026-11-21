@@ -133,7 +133,7 @@ export function RegisterForm({ source }: { source: ArrivalSource }) {
   return (
     <form className="grid gap-6" onSubmit={onSubmit} noValidate>
       <fieldset className="grid gap-4 rounded-3xl bg-white p-5 ring-1 ring-line">
-        <legend className="px-1 font-serif text-2xl text-navy">
+        <legend className="px-1 font-serif text-xl text-navy sm:text-2xl">
           <span className="mr-2 text-green">1</span>Who is attending
         </legend>
         <Field label="Full name, as on the CRR" name="fullName" autoComplete="name" required />
@@ -164,7 +164,7 @@ export function RegisterForm({ source }: { source: ArrivalSource }) {
         <Field label="CRR number" name="crrNumber" hint="Example A81760. Students may leave this blank." />
       </fieldset>
       <fieldset className="grid gap-4 rounded-3xl bg-white p-5 ring-1 ring-line">
-        <legend className="px-1 font-serif text-2xl text-navy">
+        <legend className="px-1 font-serif text-xl text-navy sm:text-2xl">
           <span className="mr-2 text-green">2</span>Where you work
         </legend>
         <Field label="Designation" name="designation" />
@@ -184,7 +184,7 @@ export function RegisterForm({ source }: { source: ArrivalSource }) {
         </label>
       </fieldset>
       <fieldset className="grid gap-4 rounded-3xl bg-white p-5 ring-1 ring-line">
-        <legend className="px-1 font-serif text-2xl text-navy">
+        <legend className="px-1 font-serif text-xl text-navy sm:text-2xl">
           <span className="mr-2 text-green">3</span>Payment and access
         </legend>
         <p className="text-sm leading-6 text-muted">

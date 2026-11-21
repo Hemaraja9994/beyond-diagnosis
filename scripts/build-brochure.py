@@ -232,25 +232,25 @@ def build() -> Path:
 
     top = 3.86
     for session in SESSIONS:
-        title_lines = lines_for(session["title"], 12, 5.35)
+        title_lines = lines_for(session["title"], 13, 5.35)
         designation = session["designation"]
-        designation_lines = lines_for(designation, 11, 5.35) if designation else 0
-        height = 0.16 + 0.2 + title_lines * 0.23 + 0.22 + designation_lines * 0.18 + 0.2 + 0.1
+        designation_lines = lines_for(designation, 12, 6.3) if designation else 0
+        height = 0.16 + 0.22 + title_lines * 0.24 + 0.24 + designation_lines * 0.2 + 0.22 + 0.12
         height = max(1.28, height)
         rrect(cover, 0.28, top, 7.71, height, PAPER, 0.08, LINE)
         photo = min(1.12, height - 0.2)
         cover.shapes.add_picture(str(thumbs[str(session["photo"])]), Inches(0.42), Inches(top + (height - photo) / 2), height=Inches(photo))
         cursor = top + 0.1
-        text(cover, 1.78, cursor, 5.9, 0.2, session["time"], 11, ORANGE, True)
-        cursor += 0.2
-        text(cover, 1.78, cursor, 5.9, title_lines * 0.23, session["title"], 12, NAVY, True)
-        cursor += title_lines * 0.23 + 0.02
-        text(cover, 1.78, cursor, 5.9, 0.2, session["person"], 12, INK, True)
+        text(cover, 1.78, cursor, 5.9, 0.2, session["time"], 12, ORANGE, True)
         cursor += 0.22
+        text(cover, 1.78, cursor, 5.9, title_lines * 0.24, session["title"], 13, NAVY, True)
+        cursor += title_lines * 0.24 + 0.04
+        text(cover, 1.78, cursor, 5.9, 0.22, session["person"], 13, INK, True)
+        cursor += 0.24
         if designation:
-            text(cover, 1.78, cursor, 5.9, designation_lines * 0.18, designation, 11, MUTED)
-            cursor += designation_lines * 0.18
-        text(cover, 1.78, cursor, 5.9, 0.18, session["crr"], 11, MUTED)
+            text(cover, 1.78, cursor, 5.9, designation_lines * 0.2, designation, 12, MUTED)
+            cursor += designation_lines * 0.2
+        text(cover, 1.78, cursor, 5.9, 0.2, session["crr"], 12, MUTED)
         top += height + 0.1
 
     rect(cover, 0, 11.22, 8.27, 0.47, NAVY)
@@ -265,11 +265,11 @@ def build() -> Path:
     text(team, 5.15, 1.81, 2.8, 0.24, "RCI CRE APPROVAL AWAITED", 9, WHITE, True, align="center")
 
     for index, person in enumerate(TEAM):
-        left = 0.4 + index * 2.6
-        team.shapes.add_picture(str(thumbs[str(person["photo"])]), Inches(left + 0.28), Inches(2.52), height=Inches(1.85))
-        text(team, left, 4.48, 2.45, 0.22, person["role"].upper(), 10, ORANGE, True, align="center")
-        text(team, left, 4.72, 2.45, 0.48, person["name"], 14, NAVY, True, align="center")
-        text(team, left, 5.22, 2.45, 0.66, person["detail"], 11, MUTED, align="center")
+        left = 0.36 + index * 2.62
+        team.shapes.add_picture(str(thumbs[str(person["photo"])]), Inches(left + 0.42), Inches(2.28), height=Inches(1.62))
+        text(team, left, 4.02, 2.5, 0.22, person["role"].upper(), 11, ORANGE, True, align="center")
+        text(team, left, 4.26, 2.5, 0.46, person["name"], 15, NAVY, True, align="center")
+        text(team, left, 4.74, 2.5, 0.62, person["detail"], 12, MUTED, align="center")
 
     cards = [
         ("WHO IT IS FOR", "Audiologists\nSpeech-language pathologists\nSpecial educators and occupational therapists\nAnd others"),
@@ -281,17 +281,17 @@ def build() -> Path:
         column = index % 2
         row = index // 2
         left = 0.28 + column * 3.95
-        card_top = 5.98 + row * 1.58
-        rrect(team, left, card_top, 3.78, 1.48, PAPER, 0.1, LINE)
-        text(team, left + 0.16, card_top + 0.12, 3.46, 0.22, label, 11, ORANGE, True)
-        text(team, left + 0.16, card_top + 0.38, 3.46, 1.12, body, 12, INK)
+        card_top = 5.5 + row * 1.7
+        rrect(team, left, card_top, 3.78, 1.58, PAPER, 0.1, LINE)
+        text(team, left + 0.18, card_top + 0.14, 3.42, 0.24, label, 12, ORANGE, True)
+        text(team, left + 0.18, card_top + 0.42, 3.42, 1.05, body, 13, INK)
 
     text(
         team,
         0.32,
-        9.28,
+        9.02,
         7.6,
-        0.42,
+        0.55,
         "The department began in 2009, became independent in 2020, and is accredited by the Rehabilitation Council of India. It teaches the Bachelor of Audiology and Speech-Language Pathology.",
         11,
         MUTED,

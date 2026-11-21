@@ -24,9 +24,9 @@ export const programme = {
     "https://www.google.com/maps/search/?api=1&query=Yenepoya+Medical+College+Hospital+Deralakatte+Mangaluru",
   mapsEmbed:
     "https://maps.google.com/maps?q=Yenepoya+Medical+College+Hospital,+Deralakatte,+Mangaluru&z=16&output=embed",
-  brochurePdf: "/brochure/beyond-the-diagnosis.pdf?v=4",
-  brochureImage: "/brochure/beyond-the-diagnosis-1.png?v=4",
-  brochureImageBack: "/brochure/beyond-the-diagnosis-2.png?v=4",
+  brochurePdf: "/brochure/beyond-the-diagnosis.pdf?v=5",
+  brochureImage: "/brochure/beyond-the-diagnosis-1.png?v=5",
+  brochureImageBack: "/brochure/beyond-the-diagnosis-2.png?v=5",
   paymentUrl: "https://rzp.io/rzp/FCDoSjbc",
   // Drop the official emblem at public/brand/yenepoya-emblem.svg.
   // Use a file supplied by the university. Do not download a logo from an image site.
