@@ -43,8 +43,8 @@ TALKS = [
         "meridiem": "AM",
         "title": "The RPwD Act, 2016: Rights, Responsibilities and Reach – An Overview",
         "person": "Dr. Shwetha Prabhu",
-        "role": "Associate Professor and Head of the Department",
-        "short": "Associate Professor and HOD, ASLP",
+        "role": "Professor and Head, Dept. of ASLP, Yenepoya Medical College Hospital, Yenepoya (Deemed to be University)",
+        "short": "Professor and HOD, ASLP, YMCH, Mangaluru",
         "crr": "CRR A18456",
         "photo": PUBLIC / "department" / "shwetha-prabhu.jpg",
     },
@@ -84,7 +84,7 @@ TEAM = [
     {
         "name": "Dr. Shwetha Prabhu",
         "role": "Organising chairperson",
-        "detail": "Associate Professor and<br>Head of the Department",
+        "detail": "Professor and Head, Dept. of ASLP<br>Yenepoya Medical College Hospital",
         "photo": PUBLIC / "department" / "shwetha-prabhu.jpg",
     },
     {

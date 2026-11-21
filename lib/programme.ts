@@ -24,11 +24,11 @@ export const programme = {
     "https://www.google.com/maps/search/?api=1&query=Yenepoya+Medical+College+Hospital+Deralakatte+Mangaluru",
   mapsEmbed:
     "https://maps.google.com/maps?q=Yenepoya+Medical+College+Hospital,+Deralakatte,+Mangaluru&z=16&output=embed",
-  brochurePdf: "/brochure/beyond-the-diagnosis.pdf?v=10",
-  brochureImage: "/brochure/beyond-the-diagnosis-1.png?v=10",
-  brochureImageBack: "/brochure/beyond-the-diagnosis-2.png?v=10",
-  saveTheDatePdf: "/brochure/block-the-date.pdf?v=10",
-  saveTheDateImage: "/brochure/block-the-date.png?v=10",
+  brochurePdf: "/brochure/beyond-the-diagnosis.pdf?v=11",
+  brochureImage: "/brochure/beyond-the-diagnosis-1.png?v=11",
+  brochureImageBack: "/brochure/beyond-the-diagnosis-2.png?v=11",
+  saveTheDatePdf: "/brochure/block-the-date.pdf?v=11",
+  saveTheDateImage: "/brochure/block-the-date.png?v=11",
   paymentUrl: "https://rzp.io/rzp/FCDoSjbc",
   // Drop the official emblem at public/brand/yenepoya-emblem.svg.
   // Use a file supplied by the university. Do not download a logo from an image site.
@@ -139,7 +139,7 @@ export const sessions = [
     crr: "A18456",
     initials: "SP",
     photo: "/department/shwetha-prabhu.jpg",
-    designation: "Associate Professor and Head of the Department",
+    designation: "Professor and Head, Department of Audiology and Speech Language Pathology, Yenepoya Medical College Hospital, Yenepoya (Deemed to be University), Mangaluru",
     relevance:
       "Opens the Act: the rights it names, the duties it places on institutions, and how far those duties reach into rehabilitation practice.",
   },

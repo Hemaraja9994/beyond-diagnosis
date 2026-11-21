@@ -7,7 +7,7 @@ import { departmentUrl } from "@/lib/department";
 import { audience, invitation, objectives, programme, sessionTickId, sessions } from "@/lib/programme";
 
 const team = [
-  { role: "Organising chairperson", name: "Dr. Shwetha Prabhu", detail: "Associate Professor and Head of the Department", photo: "/department/shwetha-prabhu.jpg", initials: "SP" },
+  { role: "Organising chairperson", name: "Dr. Shwetha Prabhu", detail: "Professor and Head, Dept. of ASLP, Yenepoya Medical College Hospital", photo: "/department/shwetha-prabhu.jpg", initials: "SP" },
   { role: "Organising secretary", name: "Ms. Swathi Chinnasamy", detail: "Assistant Professor", photo: "/faculty/swathi-c.jpg", initials: "SC" },
   { role: "Organising secretary", name: "Ms. Rachana R Uchil", detail: "Clinical Supervisor", photo: "/department/rachana-uchil.jpg", initials: "RU" },
 ] as const;
