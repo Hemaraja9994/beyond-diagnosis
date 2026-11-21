@@ -39,6 +39,20 @@ export const committee = [
   { role: "Organising secretary", names: ["Ms. Swathi Chinnasamy", "Ms. Rachana R Uchil"] },
 ] as const;
 
+/** People who open the coordinator desk. They share programme.email and one access code. */
+export const deskCoordinators = [
+  "Ms. Swathi Chinnasamy",
+  "Ms. Rachana R Uchil",
+  "Ms. Pavana M J",
+] as const;
+
+export function deskCoordinatorLine(): string {
+  const names = [...deskCoordinators];
+  const last = names[names.length - 1];
+  if (!last || names.length === 1) return last ?? "";
+  return `${names.slice(0, -1).join(", ")}, and ${last}`;
+}
+
 export const invitation = [
   "The Department of Audiology and Speech Language Pathology invites audiologists, speech-language pathologists, clinical psychologists, and other rehabilitation professionals to a zonal Continuing Rehabilitation Education programme.",
   "The day stays with one question: once a diagnosis is made, what does the Rights of Persons with Disabilities Act, 2016 require of assessment, certification, and the entitlements a person can claim?",

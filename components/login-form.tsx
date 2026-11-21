@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { programme } from "@/lib/programme";
+import { deskCoordinatorLine, programme } from "@/lib/programme";
 
 export function LoginForm({ ready }: { ready: boolean }) {
   const [error, setError] = useState("");
@@ -29,7 +29,7 @@ export function LoginForm({ ready }: { ready: boolean }) {
   if (!ready) {
     return (
       <p className="rounded-3xl bg-card p-5 leading-7 ring-1 ring-line">
-        The coordinator desk is locked until an access code is set for this deployment. The organising secretaries sign in with {programme.email}.
+        The coordinator desk is locked until an access code is set for this deployment. {deskCoordinatorLine()} sign in with {programme.email}.
       </p>
     );
   }
@@ -53,7 +53,7 @@ export function LoginForm({ ready }: { ready: boolean }) {
         {pending ? "Checking…" : "Open the desk"}
       </button>
       <p className="text-sm leading-6 text-muted">
-        The desk is for {programme.coordinator} and {programme.email}. Another organiser email can be added in the deployment settings.
+        The desk is for {deskCoordinatorLine()}. They use {programme.email} and the same access code.
       </p>
     </form>
   );

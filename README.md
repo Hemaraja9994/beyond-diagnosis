@@ -40,7 +40,7 @@ Give RCI `/attend` if the listing allows one URL. Give `/registration?from=rci` 
 
 ## Coordinator desk
 
-Sign in with `yenepoyaaslpconference@gmail.com` and the access code. The desk can:
+Sign in with `yenepoyaaslpconference@gmail.com` and the access code. Ms. Swathi Chinnasamy, Ms. Rachana R Uchil, and Ms. Pavana M J share that mailbox and that code. The desk can:
 
 - export registrations and queries as CSV
 - save a Cisco Webex link (`https://…webex.com/…`), which `/join` then opens

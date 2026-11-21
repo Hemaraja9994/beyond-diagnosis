@@ -4,12 +4,15 @@ import { cookies } from "next/headers";
 const cookieName = "cre_desk";
 const twelveHours = 60 * 60 * 12;
 
+/** Conference mailbox shared by the desk coordinators, including Ms. Pavana M J. */
+const conferenceEmail = "yenepoyaaslpconference@gmail.com";
+
 export function allowedAdminEmails(): string[] {
   const extra = (process.env.ADMIN_EMAILS ?? "")
     .split(",")
     .map((email) => email.trim().toLowerCase())
     .filter((email) => email.includes("@"));
-  return [...new Set(["yenepoyaaslpconference@gmail.com", ...extra])];
+  return [...new Set([conferenceEmail, ...extra])];
 }
 
 export function adminReady(): boolean {

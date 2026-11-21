@@ -3,7 +3,7 @@ import { LoginForm } from "@/components/login-form";
 import { MeetingForm } from "@/components/meeting-form";
 import { PageBanner } from "@/components/page-banner";
 import { adminReady, currentAdmin } from "@/lib/admin";
-import { professionLabel, programme, sourceLabel, type ArrivalSource, type Profession } from "@/lib/programme";
+import { deskCoordinatorLine, professionLabel, programme, sourceLabel, type ArrivalSource, type Profession } from "@/lib/programme";
 import { getMeetingUrl, listQueries, listRegistrations, storageMode } from "@/lib/store";
 
 export const metadata: Metadata = { title: "Coordinator desk", robots: { index: false, follow: false } };
@@ -16,8 +16,8 @@ export default async function AdminPage() {
       <div className="pb-10">
         <PageBanner
           kicker="Coordinator desk"
-          title={`For ${programme.coordinator}`}
-          lede={`Sign in with ${programme.email} and the access code for this deployment. From here you can export registrations and queries, and publish the Webex link.`}
+          title="For the desk coordinators"
+          lede={`${deskCoordinatorLine()} sign in with ${programme.email} and the same access code. From here you can export registrations and queries, and publish the Webex link.`}
         />
         <div className="mx-auto max-w-6xl px-4 py-10">
           <LoginForm ready={adminReady()} />
