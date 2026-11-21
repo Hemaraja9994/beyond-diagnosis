@@ -13,12 +13,13 @@ BRAND = ROOT / "public" / "brand"
 OUT = Path("/opt/cursor/artifacts")
 
 NAVY = RGBColor(0x0C, 0x23, 0x40)
-DEEP = RGBColor(0x07, 0x15, 0x26)
 ORANGE = RGBColor(0xC2, 0x41, 0x0C)
 FLARE = RGBColor(0xFF, 0x7A, 0x1A)
 WHITE = RGBColor(0xFF, 0xFF, 0xFF)
 SOFT = RGBColor(0xD6, 0xDE, 0xE8)
+INK = RGBColor(0x11, 0x18, 0x27)
 MUTED = RGBColor(0x4B, 0x55, 0x63)
+PAPER = RGBColor(0xF4, 0xF6, 0xF8)
 
 W = 7.5
 H = 9.375
@@ -36,7 +37,13 @@ def rect(slide, left, top, width, height, color: RGBColor):
     return shape
 
 
-def rrect(slide, left, top, width, height, color: RGBColor, radius: float = 0.12):
+def oval(slide, left, top, width, height, color: RGBColor):
+    shape = slide.shapes.add_shape(MSO_SHAPE.OVAL, Inches(left), Inches(top), Inches(width), Inches(height))
+    fill(shape, color)
+    return shape
+
+
+def rrect(slide, left, top, width, height, color: RGBColor, radius: float = 0.16):
     shape = slide.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, Inches(left), Inches(top), Inches(width), Inches(height))
     fill(shape, color)
     shape.adjustments[0] = radius
@@ -74,44 +81,52 @@ def build() -> Path:
     presentation.core_properties.subject = "First flyer for the online workshop on 19 December 2026."
     slide = presentation.slides.add_slide(presentation.slide_layouts[6])
 
-    rect(slide, 0, 0, W, H, NAVY)
-    rect(slide, 0, 0, 0.16, H, FLARE)
+    rect(slide, 0, 0, W, H, PAPER)
+    oval(slide, 5.7, -1.15, 2.7, 2.7, FLARE)
+    oval(slide, -1.05, 6.35, 2.1, 2.1, RGBColor(0xE7, 0xED, 0xF3))
 
-    rrect(slide, 0.42, 0.28, 1.7, 0.82, WHITE, 0.14)
-    slide.shapes.add_picture(str(BRAND / "yenepoya-medical-college.png"), Inches(0.52), Inches(0.36), height=Inches(0.66))
-    rrect(slide, 5.72, 0.28, 1.36, 0.82, WHITE, 0.14)
-    slide.shapes.add_picture(str(BRAND / "rci.png"), Inches(5.92), Inches(0.36), height=Inches(0.66))
+    rrect(slide, 0.32, 0.28, 1.72, 0.78, WHITE, 0.16)
+    slide.shapes.add_picture(str(BRAND / "yenepoya-medical-college.png"), Inches(0.42), Inches(0.34), height=Inches(0.66))
+    rrect(slide, 5.55, 0.28, 1.28, 0.78, WHITE, 0.16)
+    slide.shapes.add_picture(str(BRAND / "rci.png"), Inches(5.7), Inches(0.34), height=Inches(0.66))
 
-    text(slide, 0.42, 1.32, 6.6, 1.22, "BLOCK", 84, WHITE, True, "Georgia")
-    text(slide, 0.42, 2.48, 6.6, 1.15, "THE DATE", 72, FLARE, True, "Georgia")
-    rect(slide, 0.46, 3.72, 1.7, 0.07, ORANGE)
+    rrect(slide, 0.36, 1.32, 2.15, 0.38, ORANGE, 0.5)
+    text(slide, 0.36, 1.39, 2.15, 0.24, "BLOCK THE DATE", 11, WHITE, True, align="center")
 
-    text(slide, 0.38, 3.9, 2.15, 1.45, "19", 96, WHITE, True, "Georgia")
-    text(slide, 2.55, 4.12, 4.5, 0.42, "December 2026", 26, WHITE, True, "Georgia")
-    text(slide, 2.55, 4.58, 4.5, 0.32, "Saturday", 18, SOFT, False)
-    text(slide, 2.55, 4.92, 4.5, 0.32, "From 10:00 IST", 18, FLARE, True)
-
-    rrect(slide, 0.42, 5.5, 6.66, 2.28, DEEP, 0.08)
-    text(slide, 0.68, 5.68, 6.15, 0.48, "Beyond the Diagnosis", 26, WHITE, True, "Georgia")
+    rrect(slide, 0.32, 1.86, 3.35, 1.12, NAVY, 0.18)
+    text(slide, 0.52, 2.02, 3.0, 0.82, "Beyond", 46, WHITE, True, "Georgia")
+    text(slide, 0.36, 3.08, 6.7, 0.72, "the Diagnosis", 40, NAVY, True, "Georgia")
     text(
         slide,
-        0.68,
-        6.22,
-        6.15,
+        0.36,
+        3.86,
+        6.7,
         0.7,
-        "An online workshop on disability assessment,\ncertification, and entitlements.",
+        "An online workshop on disability assessment,\ncertification, and entitlements under the RPwD Act, 2016.",
         16,
-        SOFT,
+        MUTED,
     )
-    text(slide, 0.68, 6.96, 6.15, 0.3, "Under the RPwD Act, 2016", 15, FLARE, True)
-    text(slide, 0.68, 7.32, 6.15, 0.28, "Zonal CRE   ·   English   ·   Cisco Webex", 14, WHITE, True)
 
-    rect(slide, 0, 7.98, W, 1.395, WHITE)
-    rect(slide, 0, 7.98, 0.16, 1.395, FLARE)
-    text(slide, 0.42, 8.1, 6.7, 0.26, "Department of Audiology and Speech Language Pathology", 12, NAVY, True)
-    text(slide, 0.42, 8.36, 6.7, 0.22, "Yenepoya Medical College Hospital", 12, NAVY)
-    text(slide, 0.42, 8.58, 6.7, 0.22, "Yenepoya (Deemed to be University)", 12, MUTED)
-    text(slide, 0.42, 8.9, 6.7, 0.26, "RCI CRE approval awaited    ·    yenepoya-cre.vercel.app", 12, ORANGE, True)
+    rrect(slide, 0.32, 4.7, 3.42, 1.82, NAVY, 0.14)
+    text(slide, 0.5, 4.82, 3.05, 1.05, "19", 68, WHITE, True, "Georgia")
+    text(slide, 0.52, 5.9, 3.05, 0.4, "Saturday, December 2026", 14, SOFT, True)
+
+    rrect(slide, 3.9, 4.7, 3.28, 0.84, WHITE, 0.18)
+    text(slide, 4.08, 4.92, 2.95, 0.42, "From 10:00 IST", 20, ORANGE, True, "Georgia", "center")
+
+    rrect(slide, 3.9, 5.68, 3.28, 0.84, ORANGE, 0.18)
+    text(slide, 4.08, 5.78, 2.95, 0.36, "Online", 18, WHITE, True, "Georgia", "center")
+    text(slide, 4.08, 6.12, 2.95, 0.26, "Cisco Webex", 13, WHITE, True, align="center")
+
+    rrect(slide, 0.32, 6.68, 3.15, 0.4, WHITE, 0.5)
+    text(slide, 0.32, 6.76, 3.15, 0.24, "RCI CRE approval awaited", 12, ORANGE, True, align="center")
+    text(slide, 3.6, 6.74, 3.55, 0.28, "Zonal  ·  English", 14, NAVY, True, align="right")
+
+    rect(slide, 0, 7.32, W, 2.055, NAVY)
+    text(slide, 0.4, 7.52, 6.7, 0.32, "Department of Audiology and Speech Language Pathology", 13, WHITE, True)
+    text(slide, 0.4, 7.88, 6.7, 0.26, "Yenepoya Medical College Hospital", 13, WHITE)
+    text(slide, 0.4, 8.18, 6.7, 0.26, "Yenepoya (Deemed to be University)", 13, SOFT)
+    text(slide, 0.4, 8.62, 6.7, 0.3, "yenepoya-cre.vercel.app", 16, FLARE, True)
 
     OUT.mkdir(parents=True, exist_ok=True)
     path = OUT / "block-the-date.pptx"

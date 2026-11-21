@@ -286,23 +286,13 @@ def build() -> Path:
         text(team, left + 0.18, card_top + 0.14, 3.42, 0.24, label, 12, ORANGE, True)
         text(team, left + 0.18, card_top + 0.42, 3.42, 1.05, body, 13, INK)
 
-    text(
-        team,
-        0.32,
-        9.02,
-        7.6,
-        0.55,
-        "The department began in 2009, became independent in 2020, and is accredited by the Rehabilitation Council of India. It teaches the Bachelor of Audiology and Speech-Language Pathology.",
-        11,
-        MUTED,
-    )
-    rect(team, 0, 9.78, 8.27, 1.44, DEEP)
-    team.shapes.add_picture(str(BRAND / "india-emblem.png"), Inches(0.42), Inches(9.98), height=Inches(0.78))
-    text(team, 1.25, 10.08, 3.5, 0.24, "GOVERNMENT OF INDIA", 12, WHITE, True)
-    text(team, 1.25, 10.34, 3.5, 0.22, "Unique Disability ID  ·  Swavlamban", 11, WHITE)
-    team.shapes.add_picture(str(BRAND / "swavlamban.png"), Inches(5.05), Inches(9.96), height=Inches(0.82))
-    rrect(team, 6.15, 9.96, 1.7, 0.9, WHITE, 0.12)
-    team.shapes.add_picture(str(BRAND / "rci.png"), Inches(6.42), Inches(10.02), height=Inches(0.78))
+    rect(team, 0, 9.06, 8.27, 2.16, DEEP)
+    team.shapes.add_picture(str(BRAND / "india-emblem.png"), Inches(0.42), Inches(9.62), height=Inches(0.82))
+    text(team, 1.25, 9.78, 3.5, 0.26, "GOVERNMENT OF INDIA", 13, WHITE, True)
+    text(team, 1.25, 10.08, 3.5, 0.24, "Unique Disability ID  ·  Swavlamban", 12, WHITE)
+    team.shapes.add_picture(str(BRAND / "swavlamban.png"), Inches(5.05), Inches(9.58), height=Inches(0.9))
+    rrect(team, 6.15, 9.58, 1.7, 0.96, WHITE, 0.12)
+    team.shapes.add_picture(str(BRAND / "rci.png"), Inches(6.4), Inches(9.66), height=Inches(0.8))
     rect(team, 0, 11.22, 8.27, 0.47, NAVY)
     text(team, 0.32, 11.34, 6.2, 0.24, "CRE-26111620026773   ·   Institute KK048", 12, WHITE, True)
     text(team, 6.4, 11.34, 1.55, 0.24, "2  /  2", 12, FLARE, True, align="right")
