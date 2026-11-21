@@ -1122,3 +1122,77 @@ body {
 .poster .foot {
   padding: 36px 48px 18px;
 }
+
+
+/* Bigger, clearer subtitle */
+.sub {
+  border-left: 5px solid var(--gold);
+  padding-left: 18px;
+  color: #ffffff;
+  font-weight: 600;
+  line-height: 1.22;
+}
+
+.sub em {
+  font-style: normal;
+  color: var(--gold);
+}
+
+.poster .sub {
+  font-size: 31px;
+  max-width: 560px;
+}
+
+.poster .headline .big {
+  font-size: 138px;
+}
+
+.flyer .sub {
+  font-size: 27px;
+  max-width: 620px;
+  margin-top: 16px;
+}
+
+.flyer .headline .big {
+  font-size: 92px;
+}
+
+/* Footer without QR */
+.foot .cta .label {
+  display: inline-block;
+  color: var(--gold);
+  font-family: "Oswald", sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.foot .cta b {
+  margin-top: 6px;
+}
+
+.foot .cta small {
+  font-size: 16px;
+  color: #ffffff;
+}
+
+/* Speakers row: full designation */
+.poster .speaker-row p {
+  font-size: 13px;
+  line-height: 1.38;
+}
+
+.team-row .face {
+  width: 160px;
+  height: 160px;
+}
+
+.team-row span {
+  font-size: 14px;
+}
+
+.poster .speaker-row .face {
+  width: 120px;
+  height: 120px;
+}

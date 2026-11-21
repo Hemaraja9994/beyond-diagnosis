@@ -49,7 +49,7 @@ export default function BrochurePage() {
             <p className="text-sm font-semibold uppercase tracking-[0.16em] text-green">Poster</p>
             <h2 className="mt-2 font-display text-2xl text-navy sm:text-3xl">Spread the word</h2>
             <p className="mt-3 max-w-xl leading-7 text-muted">
-              {programme.dateLabel}, from {programme.start}. The whole day on a single page. Seats are limited to 50.
+              {programme.dateLabel}, from {programme.start}. The whole day on a single page.
             </p>
             <div className="mt-5">
               <BrochureActions kind="save" />

@@ -26,7 +26,7 @@ export function SiteFooter() {
             <p className="mt-3 font-display text-3xl font-bold uppercase leading-none sm:text-5xl">
               Beyond <span className="script text-gold">the</span> <span className="title-gradient">Diagnosis</span>
             </p>
-            <p className="mt-3 max-w-xl text-white/80">Only 50 seats. Register now and complete payment to confirm your place.</p>
+            <p className="mt-3 max-w-xl text-white/80">Disability Assessment, Certification and Entitlements under the RPwD Act, 2016.</p>
           </div>
           <div className="flex flex-wrap gap-3">
             <Link href="/registration" className="pill pill-solid">

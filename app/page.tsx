@@ -4,18 +4,18 @@ import { Face } from "@/components/face";
 import { OfficialMarks } from "@/components/official-marks";
 import { PassCard } from "@/components/pass-card";
 import { departmentUrl } from "@/lib/department";
-import { audience, invitation, objectives, programme, sessionTickId, sessions } from "@/lib/programme";
+import { audience, invitation, objectives, programme, sessionTickId, sessions, speakers } from "@/lib/programme";
 
 const team = [
-  { role: "Organising chairperson", name: "Dr. Shwetha Prabhu", detail: "Professor and Head, Dept. of ASLP, Yenepoya Medical College Hospital", photo: "/department/shwetha-prabhu.jpg", initials: "SP" },
-  { role: "Organising secretary", name: "Ms. Swathi Chinnasamy", detail: "Assistant Professor", photo: "/faculty/swathi-c.jpg", initials: "SC" },
-  { role: "Organising secretary", name: "Ms. Rachana R Uchil", detail: "Clinical Supervisor", photo: "/department/rachana-uchil.jpg", initials: "RU" },
+  { role: "Organising chairperson", name: "Dr. Shwetha Prabhu", detail: "Professor, Department of Audiology and Speech Language Pathology, Yenepoya University", photo: "/department/shwetha-prabhu.jpg", initials: "SP" },
+  { role: "Organising secretary", name: "Ms. Swathi Chinnasamy", detail: "Assistant Professor, Department of Audiology and Speech Language Pathology, Yenepoya University", photo: "/faculty/swathi-c.jpg", initials: "SC" },
+  { role: "Organising secretary", name: "Ms. Rachana R Uchil", detail: "Clinical Supervisor, Department of Audiology and Speech Language Pathology, Yenepoya University", photo: "/department/rachana-uchil.jpg", initials: "RU" },
 ] as const;
 
 const stats = [
   ["1", "Day"],
   ["4", "Sessions"],
-  ["50", "Seats only"],
+  ["4", "Resource persons"],
   ["21", "Disabilities covered"],
 ] as const;
 
@@ -31,9 +31,11 @@ export default function HomePage() {
               <span className="block text-5xl text-white sm:text-7xl">
                 Beyond <span className="script text-gold">the</span>
               </span>
-              <span className="title-gradient block text-[4.6rem] sm:text-[8rem] lg:text-[8.6rem]">Diagnosis</span>
+              <span className="title-gradient block text-[4.2rem] sm:text-[7rem] lg:text-[7.6rem]">Diagnosis</span>
             </h1>
-            <p className="mt-6 max-w-xl text-lg leading-8 text-white/90 sm:text-xl">{programme.subtitle}</p>
+            <p className="mt-6 max-w-2xl border-l-4 border-gold pl-4 text-2xl font-semibold leading-tight text-white sm:text-[2.1rem]">
+              Disability Assessment, <span className="text-gold">Certification</span> and Entitlements under the RPwD Act, 2016
+            </p>
             <p className="mt-3 max-w-xl leading-7 text-white/70">{programme.aim}</p>
             <div className="mt-7 flex flex-wrap gap-3">
               <Link id="register" href="/registration" className="pill pill-solid">
@@ -72,20 +74,16 @@ export default function HomePage() {
           </Link>
         </div>
         <ul className="mt-8 grid grid-cols-2 gap-x-4 gap-y-10 lg:grid-cols-4">
-          {sessions.map((session, index) => (
-            <li key={session.crr} className="text-center">
+          {speakers.map((speaker) => (
+            <li key={speaker.crr} className="text-center">
               <Face
-                name={session.person}
-                initials={session.initials}
-                photo={session.photo}
-                accent={index + 1}
+                name={speaker.person}
+                initials={speaker.initials}
+                photo={speaker.photo}
                 className="mx-auto h-28 w-28 sm:h-36 sm:w-36"
               />
-              <h3 className="mt-5 text-lg font-bold leading-snug text-navy">{session.person}</h3>
-              <p className="mt-1 text-sm leading-5 text-muted">{session.designation || `CRR ${session.crr}`}</p>
-              <p className={`accent-${index + 1} speaker-name text-accent mt-2 text-sm`}>
-                {session.time} {session.meridiem} IST
-              </p>
+              <h3 className="mt-5 text-lg font-bold leading-snug text-navy">{speaker.person}</h3>
+              <p className="mt-1 text-sm leading-5 text-muted">{speaker.designation}</p>
             </li>
           ))}
         </ul>

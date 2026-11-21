@@ -9,7 +9,7 @@ Outputs, in public/brochure/:
   beyond-the-diagnosis.pdf           both flyer pages
 
 Run:  python3 scripts/build-posters.py
-Needs: pip install playwright qrcode pillow, and Chrome or Chromium.
+Needs: pip install playwright pillow, and Chrome or Chromium.
 """
 
 from __future__ import annotations
@@ -21,8 +21,6 @@ import shutil
 import tempfile
 from pathlib import Path
 
-import qrcode
-import qrcode.image.svg
 from PIL import Image
 from playwright.sync_api import sync_playwright
 
@@ -32,8 +30,8 @@ BRAND = PUBLIC / "brand"
 KIT = Path(__file__).resolve().parent / "posters"
 OUT = PUBLIC / "brochure"
 
-SITE = "yenepoya-cre.vercel.app"
-REGISTER_URL = f"https://{SITE}/registration"
+EMAIL = "yenepoyaaslpconference@gmail.com"
+PHONE = "+91 73377 98055"
 WIDTH, HEIGHT = 1080, 1528
 PNG_SCALE = 1.5
 
@@ -43,8 +41,7 @@ TALKS = [
         "meridiem": "AM",
         "title": "The RPwD Act, 2016: Rights, Responsibilities and Reach – An Overview",
         "person": "Dr. Shwetha Prabhu",
-        "role": "Professor and Head, Dept. of ASLP, Yenepoya Medical College Hospital, Yenepoya (Deemed to be University)",
-        "short": "Professor and HOD, ASLP, YMCH, Mangaluru",
+        "role": "Professor, Department of Audiology and Speech Language Pathology, Yenepoya University",
         "crr": "CRR A18456",
         "photo": PUBLIC / "department" / "shwetha-prabhu.jpg",
     },
@@ -53,8 +50,7 @@ TALKS = [
         "meridiem": "AM",
         "title": "Know the 21: Types of Disabilities Recognised under the RPwD Act, 2016",
         "person": "Ms. Swathi Chinnasamy",
-        "role": "Assistant Professor",
-        "short": "Assistant Professor",
+        "role": "Assistant Professor, Department of Audiology and Speech Language Pathology, Yenepoya University",
         "crr": "CRR A81760",
         "photo": PUBLIC / "faculty" / "swathi-c.jpg",
     },
@@ -63,8 +59,7 @@ TALKS = [
         "meridiem": "PM",
         "title": "Learning, Intellectual and Autism Spectrum Disabilities: Rights and Entitlements under the RPwD Act, 2016 – A Psychologist’s Perspective",
         "person": "Ms. Vasudha K G",
-        "role": "Assistant Professor, Department of Psychiatry, KMC Mangaluru (MAHE)",
-        "short": "Assistant Professor, Dept. of Psychiatry, KMC Mangaluru (MAHE)",
+        "role": "Assistant Professor in Clinical Psychology, Department of Psychiatry, KMC Mangalore",
         "crr": "CRR A85535",
         "photo": PUBLIC / "faculty" / "vasudha-kg.jpg",
     },
@@ -72,9 +67,8 @@ TALKS = [
         "time": "01:00",
         "meridiem": "PM",
         "title": "Rights and Privileges of Persons with Communication Disorders: ASLPs to Deal with Legal and Legislative Aspects",
-        "person": "Dr. Satyapal Puri Goswami",
-        "role": "",
-        "short": "CRR A00260",
+        "person": "Dr. S P Goswami",
+        "role": "Professor of Speech Pathology, All India Institute of Speech and Hearing",
         "crr": "CRR A00260",
         "photo": PUBLIC / "faculty" / "satyapal-goswami.jpg",
     },
@@ -84,22 +78,28 @@ TEAM = [
     {
         "name": "Dr. Shwetha Prabhu",
         "role": "Organising chairperson",
-        "detail": "Professor and Head, Dept. of ASLP<br>Yenepoya Medical College Hospital",
+        "detail": "Professor, Department of Audiology and<br>Speech Language Pathology, Yenepoya University",
         "photo": PUBLIC / "department" / "shwetha-prabhu.jpg",
     },
     {
         "name": "Ms. Swathi Chinnasamy",
         "role": "Organising secretary",
-        "detail": "Assistant Professor",
+        "detail": "Assistant Professor, Department of Audiology and<br>Speech Language Pathology, Yenepoya University",
         "photo": PUBLIC / "faculty" / "swathi-c.jpg",
     },
     {
         "name": "Ms. Rachana R Uchil",
         "role": "Organising secretary",
-        "detail": "Clinical Supervisor",
+        "detail": "Clinical Supervisor, Department of Audiology and<br>Speech Language Pathology, Yenepoya University",
         "photo": PUBLIC / "department" / "rachana-uchil.jpg",
     },
 ]
+
+# Speakers shown as pictures in this order (not session order):
+# Dr. S P Goswami, Dr. Shwetha Prabhu, Ms. Vasudha K G, Ms. Swathi Chinnasamy.
+SPEAKER_ORDER = [3, 0, 2, 1]
+
+SUBTITLE = 'Disability Assessment, <em>Certification</em> and Entitlements under the RPwD Act, 2016'
 
 AUDIENCE = [
     "Audiologists",
@@ -136,15 +136,6 @@ def crop_square(path: Path, size: int = 480) -> Image.Image:
     return image.crop((left, top, left + side, top + side)).resize((size, size), Image.Resampling.LANCZOS)
 
 
-def qr_svg(url: str) -> str:
-    image = qrcode.make(url, image_factory=qrcode.image.svg.SvgPathImage, box_size=10, border=0)
-    buffer = io.BytesIO()
-    image.save(buffer)
-    svg = buffer.getvalue().decode("utf-8")
-    svg = svg[svg.index("<svg") :]
-    return svg.replace('fill="#000000"', 'fill="#0b1f3a"')
-
-
 def photo(build: Path, path: Path) -> str:
     name = f"p-{path.stem}.jpg"
     target = build / name
@@ -157,8 +148,7 @@ COLOURS = ["c1", "c2", "c3", "c4"]
 
 
 def face(build: Path, path: Path, colour: str) -> str:
-    return f"""<div class="face {colour}"><div class="ring"><img src="{photo(build, path)}" alt=""></div>
-      <span class="bubble"></span><span class="dot"></span></div>"""
+    return f"""<div class="face {colour}"><div class="ring"><img src="{photo(build, path)}" alt=""></div></div>"""
 
 
 def logo_strip() -> str:
@@ -185,7 +175,7 @@ def date_tab(rci: bool = False) -> str:
     </div>"""
 
 
-def footer(qr: str, page: str = "") -> str:
+def footer(page: str = "") -> str:
     page_line = f'<span class="pg">{page}</span>' if page else ""
     return f"""
     <footer class="foot">
@@ -195,20 +185,19 @@ def footer(qr: str, page: str = "") -> str:
       </div>
       <div class="cta">
         <div>
-          <span class="pill pill-solid">Register today</span>
-          <b>{SITE}</b>
-          <small>yenepoyaaslpconference@gmail.com · +91 73377 98055</small>
+          <span class="label">For details</span>
+          <b>{EMAIL}</b>
+          <small>{PHONE}</small>
           {page_line}
         </div>
-        <div class="qr">{qr}</div>
       </div>
     </footer>"""
 
 
-def poster(build: Path, qr: str) -> str:
+def poster(build: Path) -> str:
     speakers = "".join(
-        f"""<div>{face(build, t['photo'], COLOURS[i])}<h3>{esc(t['person'])}</h3><p>{esc(t['short'])}</p></div>"""
-        for i, t in enumerate(TALKS)
+        f"""<div>{face(build, TALKS[i]['photo'], COLOURS[i])}<h3>{esc(TALKS[i]['person'])}</h3><p>{esc(TALKS[i]['role'])}</p></div>"""
+        for i in SPEAKER_ORDER
     )
     rows = "".join(
         f"""<div class="ribbon {COLOURS[i]}"><div class="tab"><b>{t['time']}</b><span>{t['meridiem']}</span></div>
@@ -228,11 +217,7 @@ def poster(build: Path, qr: str) -> str:
         </div>
         <div class="hero-grid">
           <div>
-            <p class="sub">Disability Assessment, Certification and Entitlements under the RPwD Act, 2016</p>
-            <div class="pills">
-              <span class="pill pill-ghost">Register today</span>
-              <span class="pill pill-solid">Only 50 seats</span>
-            </div>
+            <p class="sub">{SUBTITLE}</p>
           </div>
           {date_tab(rci=True)}
         </div>
@@ -249,11 +234,11 @@ def poster(build: Path, qr: str) -> str:
         <span class="pill pill-dark">Organising chairperson</span><b>Dr. Shwetha Prabhu</b>
         <span class="pill pill-dark">Organising secretaries</span><b>Ms. Swathi Chinnasamy<br>Ms. Rachana R Uchil</b>
       </div>
-      {footer(qr)}
+      {footer()}
     </section>"""
 
 
-def flyer_cover(build: Path, qr: str) -> str:
+def flyer_cover(build: Path) -> str:
     sessions = "".join(
         f"""<article class="session {COLOURS[i]}">
           <div class="tab"><b>{t['time']}</b><span>{t['meridiem']}</span><small>Session {i + 1}</small></div>
@@ -276,8 +261,8 @@ def flyer_cover(build: Path, qr: str) -> str:
               <span class="lead">Beyond <span class="script">the</span></span>
               <span class="big">Diagnosis</span>
             </h1>
-            <p class="sub">Disability Assessment, Certification and Entitlements under the RPwD Act, 2016</p>
-            <div class="facts"><span class="hot">Only 50 seats</span><span>RCI CRE approval awaited</span><span>Four sessions</span></div>
+            <p class="sub">{SUBTITLE}</p>
+            <div class="facts"><span class="hot">RCI CRE approval awaited</span><span>Four sessions</span><span>Online · English</span></div>
           </div>
           <div class="mini-date">{date_tab()}</div>
         </div>
@@ -286,11 +271,11 @@ def flyer_cover(build: Path, qr: str) -> str:
         <p class="section-title">The <em>programme</em></p>
         <div class="sessions">{sessions}</div>
       </div>
-      {footer(qr, "Page 1 of 2")}
+      {footer("Page 1 of 2")}
     </section>"""
 
 
-def flyer_team(build: Path, qr: str) -> str:
+def flyer_team(build: Path) -> str:
     team = "".join(
         f"""<div>{face(build, p['photo'], COLOURS[i])}<span class="pill pill-solid">{esc(p['role'])}</span>
         <h3>{esc(p['name'])}</h3><span>{p['detail']}</span></div>"""
@@ -310,11 +295,10 @@ def flyer_team(build: Path, qr: str) -> str:
       <div class="body">
         <div class="info-grid">
           <div class="info c2"><h4>Who should attend</h4><div class="in"><div class="tags">{tags}</div></div></div>
-          <div class="info c1"><h4>How to register</h4><div class="in"><ol>
-            <li><b>1</b><span>Register at <strong>{SITE}</strong> with your name and CRR number.</span></li>
-            <li><b>2</b><span>Pay the fee on Razorpay using the link on the site.</span></li>
-            <li><b>3</b><span>Add your payment ID or receipt to confirm your seat.</span></li>
-          </ol></div></div>
+          <div class="info c1"><h4>Registration</h4><div class="in">
+            <p class="big">Opens soon</p>
+            <p>Registration details will be shared by the organising team. Keep your name and CRR number ready as they should appear on the certificate.</p>
+          </div></div>
           <div class="info c4"><h4>Contact</h4><div class="in"><div class="lines">
             <div><small>Email</small>yenepoyaaslpconference@gmail.com</div>
             <div><small>Phone</small>+91 73377 98055</div>
@@ -322,7 +306,7 @@ def flyer_team(build: Path, qr: str) -> str:
           </div></div></div>
           <div class="info c3"><h4>Venue</h4><div class="in">
             <p class="big">Online on<br>Cisco Webex</p>
-            <p>The joining link is shared with registered participants. Seats are limited to 50.</p>
+            <p>The joining link will be shared with registered participants.</p>
           </div></div>
         </div>
         <div class="refs">
@@ -332,7 +316,7 @@ def flyer_team(build: Path, qr: str) -> str:
           <img src="{(BRAND / 'swavlamban.png').as_uri()}" alt="">
         </div>
       </div>
-      {footer(qr, "Page 2 of 2")}
+      {footer("Page 2 of 2")}
     </section>"""
 
 
@@ -359,11 +343,10 @@ def build() -> None:
         work = Path(tmp)
         shutil.copy(KIT / "poster.css", work / "poster.css")
         shutil.copytree(KIT / "fonts", work / "fonts")
-        qr = qr_svg(REGISTER_URL)
 
         jobs = {
-            "block-the-date": [poster(work, qr)],
-            "beyond-the-diagnosis": [flyer_cover(work, qr), flyer_team(work, qr)],
+            "block-the-date": [poster(work)],
+            "beyond-the-diagnosis": [flyer_cover(work), flyer_team(work)],
         }
 
         with sync_playwright() as play:

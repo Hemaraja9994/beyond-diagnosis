@@ -37,7 +37,7 @@ export function BrochureActions({ kind = "programme" }: { kind?: FlyerKind }) {
               programme.title,
               programme.dateLabel,
               "Zonal CRE · Online on Cisco Webex · from 10:00 AM IST",
-              "Limited to 50 seats. RCI CRE approval awaited.",
+              "RCI CRE approval awaited.",
               `Poster: ${fileUrl(programme.saveTheDateImage)}`,
               `Register: ${originUrl("/registration")}`,
             ].join("\n")

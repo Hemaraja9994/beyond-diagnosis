@@ -55,7 +55,7 @@ export type DepartmentStaff = {
 export const departmentStaff: DepartmentStaff[] = [
   {
     name: "Dr. Shwetha Prabhu",
-    role: "Professor and Head of the Department",
+    role: "Professor",
     email: "shwethaprabhu@yenepoya.edu.in",
     photo: "/department/shwetha-prabhu.jpg",
     initials: "SP",

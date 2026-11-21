@@ -24,11 +24,11 @@ export const programme = {
     "https://www.google.com/maps/search/?api=1&query=Yenepoya+Medical+College+Hospital+Deralakatte+Mangaluru",
   mapsEmbed:
     "https://maps.google.com/maps?q=Yenepoya+Medical+College+Hospital,+Deralakatte,+Mangaluru&z=16&output=embed",
-  brochurePdf: "/brochure/beyond-the-diagnosis.pdf?v=11",
-  brochureImage: "/brochure/beyond-the-diagnosis-1.png?v=11",
-  brochureImageBack: "/brochure/beyond-the-diagnosis-2.png?v=11",
-  saveTheDatePdf: "/brochure/block-the-date.pdf?v=11",
-  saveTheDateImage: "/brochure/block-the-date.png?v=11",
+  brochurePdf: "/brochure/beyond-the-diagnosis.pdf?v=12",
+  brochureImage: "/brochure/beyond-the-diagnosis-1.png?v=12",
+  brochureImageBack: "/brochure/beyond-the-diagnosis-2.png?v=12",
+  saveTheDatePdf: "/brochure/block-the-date.pdf?v=12",
+  saveTheDateImage: "/brochure/block-the-date.png?v=12",
   paymentUrl: "https://rzp.io/rzp/FCDoSjbc",
   // Drop the official emblem at public/brand/yenepoya-emblem.svg.
   // Use a file supplied by the university. Do not download a logo from an image site.
@@ -139,7 +139,7 @@ export const sessions = [
     crr: "A18456",
     initials: "SP",
     photo: "/department/shwetha-prabhu.jpg",
-    designation: "Professor and Head, Department of Audiology and Speech Language Pathology, Yenepoya Medical College Hospital, Yenepoya (Deemed to be University), Mangaluru",
+    designation: "Professor, Department of Audiology and Speech Language Pathology, Yenepoya University",
     relevance:
       "Opens the Act: the rights it names, the duties it places on institutions, and how far those duties reach into rehabilitation practice.",
   },
@@ -151,7 +151,7 @@ export const sessions = [
     crr: "A81760",
     initials: "SC",
     photo: "/faculty/swathi-c.jpg",
-    designation: "Assistant Professor",
+    designation: "Assistant Professor, Department of Audiology and Speech Language Pathology, Yenepoya University",
     relevance:
       "Walks through the specified disabilities a certificate can name, so assessment is matched to the schedule of the Act rather than to habit.",
   },
@@ -164,7 +164,7 @@ export const sessions = [
     crr: "A85535",
     initials: "VK",
     photo: "/faculty/vasudha-kg.jpg",
-    designation: "Assistant Professor, Department of Psychiatry, KMC Mangaluru (MAHE)",
+    designation: "Assistant Professor in Clinical Psychology, Department of Psychiatry, KMC Mangalore",
     relevance:
       "Takes learning disability, intellectual disability, and autism spectrum disorder from a psychologist’s side of certification, rights, and entitlements.",
   },
@@ -173,21 +173,29 @@ export const sessions = [
     meridiem: "PM",
     title:
       "Rights and Privileges of Persons with Communication Disorders: ASLPs to Deal with Legal and Legislative Aspects",
-    person: "Dr. Satyapal Puri Goswami",
+    person: "Dr. S P Goswami",
     crr: "A00260",
     initials: "SG",
     photo: "/faculty/satyapal-goswami.jpg",
-    designation: "",
+    designation: "Professor of Speech Pathology, All India Institute of Speech and Hearing",
     relevance:
       "Turns to communication disorders and the legal and legislative work audiologists and speech-language pathologists are asked to do.",
   },
 ] as const;
 
+/** Speakers in display order (not session order): Dr. S P Goswami, Dr. Shwetha Prabhu, Ms. Vasudha K G, Ms. Swathi Chinnasamy. */
+const speakerOrder = ["A00260", "A18456", "A85535", "A81760"] as const;
+
+export const speakers = speakerOrder.map((crr) => {
+  const index = sessions.findIndex((session) => session.crr === crr);
+  return { ...sessions[index], session: index + 1 };
+});
+
 export const facultyProfiles = {
   A85535: {
     fullName: "Vasudha Kadikadka Gangadhara",
-    role: "Assistant Professor, Department of Psychiatry",
-    affiliation: "Kasturba Medical College, Mangaluru (Manipal Academy of Higher Education)",
+    role: "Assistant Professor in Clinical Psychology, Department of Psychiatry",
+    affiliation: "KMC Mangalore",
     focus: "Department of Psychiatry, Kasturba Medical College, Mangaluru (MAHE).",
     profileUrl: "https://www.manipal.edu/faculty/vasudha-k-g",
     profileLabel: "MAHE faculty page",

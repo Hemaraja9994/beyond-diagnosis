@@ -1,6 +1,6 @@
 import { Portrait } from "@/components/portrait";
 
-/** Round portrait with a gold ring and a small coloured bubble, as on the poster. */
+/** Round portrait with a gold ring, as on the poster. */
 export function Face({
   name,
   initials,
@@ -19,8 +19,6 @@ export function Face({
       <span className="face-ring">
         <Portrait name={name} initials={initials} photo={photo} className="rounded-full" />
       </span>
-      <span className="face-bubble" aria-hidden="true" />
-      <span className="face-dot" aria-hidden="true" />
     </span>
   );
 }

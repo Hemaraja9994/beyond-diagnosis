@@ -18,7 +18,7 @@ export default async function RegistrationPage({
   return (
     <div id="register" className="pb-24 md:pb-10">
       <PageBanner
-        kicker="Registration · Only 50 seats"
+        kicker="Registration"
         title="Reserve"
         accent="your seat"
         lede="Enter your name and CRR number exactly as they should appear on the certificate. After submitting, pay on Razorpay and add your receipt on the confirmation screen."
