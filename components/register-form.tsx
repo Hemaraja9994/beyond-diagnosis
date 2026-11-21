@@ -97,14 +97,14 @@ export function RegisterForm({ source }: { source: ArrivalSource }) {
 
   if (success) {
     return (
-      <section className="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-line" aria-live="polite">
+      <section className="card p-6" aria-live="polite">
         <p className="text-xs font-semibold uppercase tracking-[0.16em] text-green">You are registered</p>
-        <h2 className="mt-2 font-serif text-4xl leading-none tracking-tight text-navy sm:text-5xl">{success.reference}</h2>
+        <h2 className="mt-2 font-display text-4xl leading-none tracking-tight text-navy sm:text-5xl">{success.reference}</h2>
         <p className="mt-4 max-w-xl leading-7 text-muted">
           Please note this reference. Complete payment on Razorpay, then add your payment ID or a screenshot of the receipt below to confirm your seat.
         </p>
         <a
-          className="mt-5 inline-flex min-h-12 items-center rounded-lg bg-navy px-5 font-semibold text-white"
+          className="pill pill-solid mt-5"
           href={programme.paymentUrl}
           target="_blank"
           rel="noopener noreferrer"
@@ -115,7 +115,7 @@ export function RegisterForm({ source }: { source: ArrivalSource }) {
           <input type="hidden" name="email" value={success.email} />
           <p className="text-sm text-muted">Saving for {success.email}</p>
           <PaymentFields preview={preview} proofName={proofName} onProof={onProof} />
-          <button className="min-h-12 rounded-lg bg-navy px-5 font-semibold text-white disabled:opacity-60" type="submit" disabled={pending}>
+          <button className="pill pill-navy disabled:opacity-60" type="submit" disabled={pending}>
             {pending ? "Saving payment…" : "Save payment on this registration"}
           </button>
           {paymentMessage ? <p role="status">{paymentMessage}</p> : null}
@@ -132,8 +132,8 @@ export function RegisterForm({ source }: { source: ArrivalSource }) {
 
   return (
     <form className="grid gap-6" onSubmit={onSubmit} noValidate>
-      <fieldset className="grid gap-4 rounded-3xl bg-white p-5 ring-1 ring-line">
-        <legend className="px-1 font-serif text-xl text-navy sm:text-2xl">
+      <fieldset className="grid gap-4 card p-5">
+        <legend className="px-1 font-display text-xl text-navy sm:text-2xl">
           <span className="mr-2 text-green">1</span>Who is attending
         </legend>
         <Field label="Full name, as on the CRR" name="fullName" autoComplete="name" required />
@@ -163,8 +163,8 @@ export function RegisterForm({ source }: { source: ArrivalSource }) {
         ) : null}
         <Field label="CRR number" name="crrNumber" hint="Example A81760. Students may leave this blank." />
       </fieldset>
-      <fieldset className="grid gap-4 rounded-3xl bg-white p-5 ring-1 ring-line">
-        <legend className="px-1 font-serif text-xl text-navy sm:text-2xl">
+      <fieldset className="grid gap-4 card p-5">
+        <legend className="px-1 font-display text-xl text-navy sm:text-2xl">
           <span className="mr-2 text-green">2</span>Where you work
         </legend>
         <Field label="Designation" name="designation" />
@@ -183,8 +183,8 @@ export function RegisterForm({ source }: { source: ArrivalSource }) {
           </select>
         </label>
       </fieldset>
-      <fieldset className="grid gap-4 rounded-3xl bg-white p-5 ring-1 ring-line">
-        <legend className="px-1 font-serif text-xl text-navy sm:text-2xl">
+      <fieldset className="grid gap-4 card p-5">
+        <legend className="px-1 font-display text-xl text-navy sm:text-2xl">
           <span className="mr-2 text-green">3</span>Payment and access
         </legend>
         <p className="text-sm leading-6 text-muted">
@@ -212,7 +212,7 @@ export function RegisterForm({ source }: { source: ArrivalSource }) {
           {error}
         </p>
       ) : null}
-      <button className="min-h-12 rounded-lg bg-navy px-6 font-semibold text-white disabled:opacity-60" type="submit" disabled={pending}>
+      <button className="pill pill-solid disabled:opacity-60" type="submit" disabled={pending}>
         {pending ? "Saving registration…" : "Register for the programme"}
       </button>
     </form>

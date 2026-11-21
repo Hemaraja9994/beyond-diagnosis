@@ -15,14 +15,15 @@ export default async function JoinPage() {
     <div className="pb-24 md:pb-0">
       <PageBanner
         kicker="Cisco Webex"
-        title="The session link will be shared soon"
+        title="Session link"
+        accent="coming soon"
         lede="This page will open the Cisco Webex session once the link is published. Register now to reserve your seat, and the link will also reach you by email."
       />
       <div className="mx-auto flex max-w-3xl flex-wrap gap-3 px-4 py-10">
-        <Link href="/registration?from=join" className="inline-flex min-h-12 items-center rounded-full bg-green px-5 font-semibold text-white">
+        <Link href="/registration?from=join" className="pill pill-solid">
           Register
         </Link>
-        <Link href="/contact" className="inline-flex min-h-12 items-center rounded-full border border-navy px-5 font-semibold text-navy">
+        <Link href="/contact" className="pill pill-outline">
           Ask the coordinator
         </Link>
       </div>

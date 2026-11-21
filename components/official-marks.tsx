@@ -3,8 +3,12 @@ import { programme } from "@/lib/programme";
 
 export function OfficialMarks() {
   return (
-    <section id="marks" className="mx-auto grid max-w-6xl gap-4 px-4 py-8 sm:grid-cols-2 xl:grid-cols-4" aria-label="Organisers and official references">
-      <figure className="flex flex-col items-center rounded-3xl bg-card/90 p-5 text-center ring-1 ring-line backdrop-blur">
+    <section id="marks" className="mx-auto max-w-6xl px-4 pb-6 pt-16" aria-label="Organisers and official references">
+      <h2 className="section-title">
+        Official <em>references</em>
+      </h2>
+      <div className="mt-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <figure className="flex flex-col items-center card p-5 text-center">
         <Image
           src="/brand/yenepoya-medical-college.png"
           alt="Yenepoya Medical College"
@@ -17,7 +21,7 @@ export function OfficialMarks() {
           Yenepoya Medical College, a constituent college of {programme.university}.
         </figcaption>
       </figure>
-      <figure className="flex flex-col items-center rounded-3xl bg-card/90 p-5 text-center ring-1 ring-line backdrop-blur">
+      <figure className="flex flex-col items-center card p-5 text-center">
         <Image
           src="/brand/rci.png"
           alt="Rehabilitation Council of India"
@@ -34,7 +38,7 @@ export function OfficialMarks() {
           .
         </figcaption>
       </figure>
-      <figure className="overflow-hidden rounded-3xl bg-card shadow-lg ring-1 ring-line">
+      <figure className="card overflow-hidden">
         <Image
           src="/brand/udid-sample.svg"
           alt="Illustration of the Unique Disability ID card with blank fields."
@@ -51,7 +55,7 @@ export function OfficialMarks() {
           .
         </figcaption>
       </figure>
-      <figure className="overflow-hidden rounded-3xl bg-card shadow-lg ring-1 ring-line">
+      <figure className="card overflow-hidden">
         <Image
           src="/brand/udid-card.png"
           alt="Unique Disability ID card issued by the Government of India. Personal details are obscured."
@@ -67,6 +71,7 @@ export function OfficialMarks() {
           .
         </figcaption>
       </figure>
+      </div>
     </section>
   );
 }

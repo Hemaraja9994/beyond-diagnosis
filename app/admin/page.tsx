@@ -56,14 +56,14 @@ export default async function AdminPage() {
           </form>
         </div>
         <section className="rounded-3xl bg-card p-5 ring-1 ring-line">
-          <h2 className="font-serif text-2xl text-navy">Webex link</h2>
+          <h2 className="font-display text-2xl text-navy">Webex link</h2>
           <p className="mt-2 text-sm leading-6 text-muted">Only an https address on webex.com is accepted. Join and the RCI attend page use it immediately.</p>
           <div className="mt-4 max-w-xl">
             <MeetingForm current={meeting} />
           </div>
         </section>
         <section>
-          <h2 className="font-serif text-2xl text-navy">Registrations ({registrations.length})</h2>
+          <h2 className="font-display text-2xl text-navy">Registrations ({registrations.length})</h2>
           {registrations.length === 0 ? (
             <p className="mt-3 text-muted">No one has registered yet.</p>
           ) : (
@@ -116,7 +116,7 @@ export default async function AdminPage() {
           )}
         </section>
         <section>
-          <h2 className="font-serif text-2xl text-navy">Queries ({queries.length})</h2>
+          <h2 className="font-display text-2xl text-navy">Queries ({queries.length})</h2>
           {queries.length === 0 ? (
             <p className="mt-3 text-muted">No queries yet.</p>
           ) : (

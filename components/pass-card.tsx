@@ -2,33 +2,28 @@ import { programme } from "@/lib/programme";
 
 export function PassCard() {
   return (
-    <article className="overflow-hidden rounded-2xl bg-navy text-white shadow-xl" aria-label="Programme pass">
-      <div className="h-1.5 bg-flare" />
-      <div className="px-6 py-5">
-        <div className="flex items-center justify-between text-xs font-semibold uppercase tracking-[0.16em]">
-          <p className="text-flare">Pass</p>
-          <p className="text-flare">Approval awaited</p>
+    <div className="grid gap-4">
+      <article className="datetab" aria-label="Programme date">
+        <div className="datetab-block">
+          <b>{programme.day}</b>
+          <span>DEC</span>
         </div>
-        <p className="mt-4 font-serif text-3xl leading-tight sm:text-4xl sm:leading-[1.05]">
-          Saturday,
-          <br />
-          19 December 2026
-        </p>
-        <div className="mt-6 grid grid-cols-2 border-t border-dashed border-white/25">
-          <div className="border-r border-dashed border-white/25 py-4 pr-4">
-            <p className="text-xs text-white/60">Starts</p>
-            <p className="mt-1 text-lg font-semibold">{programme.start}</p>
-          </div>
-          <div className="py-4 pl-4">
-            <p className="text-xs text-white/60">Venue</p>
-            <p className="mt-1 text-lg font-semibold">Webex</p>
-          </div>
+        <div className="datetab-info">
+          <p className="day">Saturday · 2026</p>
+          <p>10:00 AM IST onwards</p>
+          <p>Online · Cisco Webex</p>
+          <p>Zonal CRE · {programme.language}</p>
         </div>
-        <div className="flex items-center justify-between border-t border-dashed border-white/25 py-4 text-sm">
-          <p className="text-white/60">Institute code</p>
-          <p className="text-lg font-semibold tracking-wide">{programme.instituteCode}</p>
-        </div>
+      </article>
+      <div className="flex items-center gap-3 text-sm leading-5 text-white/85">
+        <span className="grid h-14 w-14 flex-none place-items-center rounded-2xl bg-white p-1.5">
+          <img src="/brand/rci.png" alt="Rehabilitation Council of India" className="h-auto w-full" />
+        </span>
+        <span>
+          <b className="block font-semibold text-white">RCI CRE approval awaited</b>
+          {programme.acknowledgement} · Institute {programme.instituteCode}
+        </span>
       </div>
-    </article>
+    </div>
   );
 }

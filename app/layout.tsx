@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Fraunces, Outfit } from "next/font/google";
+import localFont from "next/font/local";
 import { Backdrop } from "@/components/backdrop";
 import { BottomNav } from "@/components/bottom-nav";
 import { ServiceWorker } from "@/components/service-worker";
@@ -9,21 +9,31 @@ import { SiteHeader } from "@/components/site-header";
 import { programme } from "@/lib/programme";
 import "./globals.css";
 
-const outfit = Outfit({
-  subsets: ["latin"],
+const outfit = localFont({
+  src: "./fonts/outfit-latin-wght-normal.woff2",
   variable: "--font-outfit",
+  weight: "100 900",
   display: "swap",
 });
 
-const fraunces = Fraunces({
-  subsets: ["latin"],
+const fraunces = localFont({
+  src: [
+    { path: "./fonts/fraunces-latin-full-normal.woff2", style: "normal", weight: "100 900" },
+    { path: "./fonts/fraunces-latin-full-italic.woff2", style: "italic", weight: "100 900" },
+  ],
   variable: "--font-fraunces",
   display: "swap",
-  axes: ["SOFT", "WONK", "opsz"],
+});
+
+const oswald = localFont({
+  src: "./fonts/oswald-latin-wght-normal.woff2",
+  variable: "--font-oswald",
+  weight: "200 700",
+  display: "swap",
 });
 
 export const viewport: Viewport = {
-  themeColor: "#0c2340",
+  themeColor: "#0b1f3a",
   width: "device-width",
   initialScale: 1,
 };
@@ -51,8 +61,8 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en">
-      <body className={`${outfit.variable} ${fraunces.variable} antialiased`}>
+    <html lang="en" className={`${outfit.variable} ${fraunces.variable} ${oswald.variable}`}>
+      <body className="antialiased">
         <ServiceWorker />
         <Backdrop />
         <div className="relative z-10">

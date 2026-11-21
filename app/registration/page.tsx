@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { PageBanner } from "@/components/page-banner";
 import { RegisterForm } from "@/components/register-form";
 import { programme, type ArrivalSource } from "@/lib/programme";
 
@@ -16,39 +17,38 @@ export default async function RegistrationPage({
 
   return (
     <div id="register" className="pb-24 md:pb-10">
-      <section className="border-b border-line bg-white">
-        <div className="mx-auto max-w-6xl px-4 py-10 sm:py-14">
-          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-green">Registration</p>
-          <h1 className="mt-3 max-w-3xl font-serif text-3xl leading-tight tracking-tight text-navy sm:text-5xl">Register on this website</h1>
-          <p className="mt-4 max-w-2xl leading-7 text-muted">
-            Enter your name and CRR number exactly as they should appear on the certificate. After submitting, pay on Razorpay and add your receipt on the confirmation screen.
-          </p>
-        </div>
-      </section>
+      <PageBanner
+        kicker="Registration · Only 50 seats"
+        title="Reserve"
+        accent="your seat"
+        lede="Enter your name and CRR number exactly as they should appear on the certificate. After submitting, pay on Razorpay and add your receipt on the confirmation screen."
+      />
       <div className="mx-auto grid max-w-6xl gap-8 px-4 py-10 lg:grid-cols-[1fr_18rem] lg:items-start">
         <RegisterForm source={source} />
-        <aside className="h-fit rounded-3xl bg-white p-5 ring-1 ring-line lg:sticky lg:top-28">
-          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-green">Payment</p>
-          <ol className="mt-4 grid gap-4">
+        <aside className="info-card accent-1 h-fit lg:sticky lg:top-32">
+          <h2>How payment works</h2>
+          <div>
+          <ol className="grid gap-4">
             {[
               ["1", "Register and keep the reference shown on this page."],
               ["2", "Pay on Razorpay. The amount is the one shown there."],
               ["3", "After payment, add the payment id or the screenshot on the confirmation screen."],
             ].map(([step, text]) => (
-              <li key={step} className="grid grid-cols-[2rem_1fr] gap-2 text-sm leading-6">
-                <span className="font-serif text-2xl text-green">{step}</span>
+              <li key={step} className="grid grid-cols-[2rem_1fr] gap-3 text-sm leading-6">
+                <span className="grid h-8 w-8 place-items-center rounded-full bg-accent font-display font-bold text-white">{step}</span>
                 <span>{text}</span>
               </li>
             ))}
           </ol>
           <a
-            className="ticked mt-5 inline-flex min-h-12 items-center rounded-lg bg-navy px-4 font-semibold text-white"
+            className="pill pill-solid mt-5 w-full"
             href={programme.paymentUrl}
             target="_blank"
             rel="noopener noreferrer"
           >
             Open Razorpay
           </a>
+          </div>
         </aside>
       </div>
     </div>

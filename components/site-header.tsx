@@ -10,7 +10,7 @@ export function SiteHeader() {
   const [open, setOpen] = useState(false);
 
   return (
-    <header className="no-print sticky top-0 z-30 border-b border-line bg-white/95 backdrop-blur">
+    <header className="no-print sticky top-0 z-30 bg-white/95 shadow-[0_6px_24px_rgba(11,31,58,0.08)] backdrop-blur">
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3">
         <Link href="/" className="flex min-w-0 items-center gap-3" onClick={() => setOpen(false)}>
           <Image
@@ -22,19 +22,20 @@ export function SiteHeader() {
             priority
             unoptimized
           />
-          <span className="min-w-0 text-xs leading-4 text-navy sm:text-sm sm:leading-5">
-            <span className="block font-semibold">{programme.organiser}</span>
-            <span className="block">{programme.hospital}</span>
-            <span className="block text-muted">{programme.university}</span>
+          <span className="min-w-0 border-l border-line pl-3 text-[0.7rem] leading-4 text-navy sm:text-xs sm:leading-5">
+            <span className="block font-display text-[0.8rem] font-semibold uppercase tracking-[0.08em] sm:text-sm">{programme.organiser}</span>
+            <span className="block text-muted">
+              {programme.hospital} · {programme.university}
+            </span>
           </span>
         </Link>
-        <nav className="hidden items-center gap-4 text-sm font-semibold text-navy lg:flex" aria-label="Primary">
+        <nav className="hidden items-center gap-5 font-display text-[0.95rem] font-medium uppercase tracking-[0.06em] text-navy lg:flex" aria-label="Primary">
           {nav.map((item) => (
-            <Link key={item.href} href={item.href} className="hover:text-green">
+            <Link key={item.href} href={item.href} className="transition-colors hover:text-green">
               {item.label}
             </Link>
           ))}
-          <Link href="/registration" className="rounded-lg bg-navy px-4 py-2 text-white">
+          <Link href="/registration" className="pill pill-solid min-h-10 px-5 text-sm">
             Register
           </Link>
         </nav>
@@ -58,7 +59,7 @@ export function SiteHeader() {
               <li key={item.href}>
                 <Link
                   href={item.href}
-                  className="block rounded-2xl px-3 py-3 text-lg text-navy"
+                  className="block rounded-2xl px-3 py-3 font-display text-lg uppercase tracking-[0.06em] text-navy"
                   onClick={() => setOpen(false)}
                 >
                   {item.label}
@@ -68,7 +69,7 @@ export function SiteHeader() {
             <li>
               <Link
                 href="/registration"
-                className="mt-1 block rounded-lg bg-navy px-4 py-3 text-center font-semibold text-white"
+                className="pill pill-solid mt-2 flex w-full"
                 onClick={() => setOpen(false)}
               >
                 Register

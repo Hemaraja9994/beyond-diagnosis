@@ -9,7 +9,8 @@ export default function InstallPage() {
     <div className="pb-24 md:pb-10">
       <PageBanner
         kicker="On your phone"
-        title="Install and use it"
+        title="Add it to"
+        accent="your phone"
         lede="Add this programme website to your phone's home screen for one-tap access to the schedule, registration and the Webex session. No app store download is needed."
       />
       <div className="mx-auto max-w-6xl px-4 py-10">

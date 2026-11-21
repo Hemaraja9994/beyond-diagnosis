@@ -12,12 +12,13 @@ export default function ContactPage() {
     <div className="pb-24 md:pb-10">
       <PageBanner
         kicker="Support"
-        title="Write to the organising secretaries"
+        title="Write to the"
+        accent="organisers"
         lede="Questions about registration, payment, certificates or the sessions? Write to us and the organising team will reply by email."
       />
       <div className="mx-auto grid max-w-6xl gap-8 px-4 py-10 lg:grid-cols-[0.8fr_1.2fr]">
-        <aside className="rounded-3xl bg-navy p-6 text-white">
-          <h2 className="font-serif text-2xl sm:text-3xl">Programme desk</h2>
+        <aside className="hero-dark rounded-[1.75rem] p-6">
+          <h2 className="font-display text-2xl sm:text-3xl">Programme desk</h2>
           <ul className="mt-4 grid gap-3 text-sm leading-6">
             {committee.map((seat) => (
               <li key={seat.role}>

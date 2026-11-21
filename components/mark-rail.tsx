@@ -40,8 +40,7 @@ function MarkSet({ hidden = false }: { hidden?: boolean }) {
           <Image src={mark.src} alt={hidden ? "" : mark.label} width={mark.width} height={mark.height} unoptimized />
         </a>
       ))}
-      <a className="mark-chip mark-chip-dark" href="https://depwd.gov.in/" tabIndex={hidden ? -1 : undefined}>
-        <Image src="/brand/india-emblem.png" alt={hidden ? "" : "State Emblem of India"} width={60} height={92} unoptimized />
+      <a className="mark-chip" href="https://swavlambancard.gov.in/" tabIndex={hidden ? -1 : undefined}>
         <Image src="/brand/swavlamban.png" alt={hidden ? "" : "Swavlamban"} width={104} height={94} unoptimized />
       </a>
     </div>

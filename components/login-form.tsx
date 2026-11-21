@@ -35,7 +35,7 @@ export function LoginForm({ ready }: { ready: boolean }) {
   }
 
   return (
-    <form className="grid max-w-md gap-4 rounded-3xl bg-card p-5 ring-1 ring-line" onSubmit={onSubmit}>
+    <form className="grid max-w-md gap-4 card p-5" onSubmit={onSubmit}>
       <label className="grid gap-1 text-sm font-semibold text-navy">
         Email
         <input className="field" name="email" type="email" autoComplete="username" defaultValue={programme.email} required />

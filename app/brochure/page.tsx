@@ -10,7 +10,8 @@ export default function BrochurePage() {
     <div className="pb-24 md:pb-10">
       <PageBanner
         kicker="Brochure"
-        title="Flyer and poster"
+        title="Flyer and"
+        accent="poster"
         lede="Download the programme flyer or the one-page poster, and share them with colleagues and students."
       />
       <div className="mx-auto grid max-w-6xl gap-10 px-4 py-10">
@@ -19,17 +20,17 @@ export default function BrochurePage() {
             <img
               src={programme.brochureImage}
               alt="Flyer page 1: the programme, with the four speakers and their topics."
-              className="w-full rounded-3xl shadow-lg ring-1 ring-line"
+              className="w-full rounded-2xl shadow-lg ring-1 ring-line"
             />
             <img
               src={programme.brochureImageBack}
               alt="Flyer page 2: the organising team, who it is for, and how to join."
-              className="w-full rounded-3xl shadow-lg ring-1 ring-line"
+              className="w-full rounded-2xl shadow-lg ring-1 ring-line"
             />
           </div>
           <div>
             <p className="text-sm font-semibold uppercase tracking-[0.16em] text-green">Programme flyer</p>
-            <h2 className="mt-2 font-serif text-2xl text-navy sm:text-3xl">Speakers and the organising team</h2>
+            <h2 className="mt-2 font-display text-2xl text-navy sm:text-3xl">Speakers and the organising team</h2>
             <p className="mt-3 max-w-md leading-7 text-muted">
               A two-page PDF with every session, speaker and topic, followed by the organising team and how to join.
             </p>
@@ -42,11 +43,11 @@ export default function BrochurePage() {
           <img
             src={programme.saveTheDateImage}
             alt="Poster: Beyond the Diagnosis, 19 December 2026, with the resource speakers, programme schedule and organising team."
-            className="w-full rounded-3xl shadow-lg ring-1 ring-line"
+            className="w-full rounded-2xl shadow-lg ring-1 ring-line"
           />
           <div>
             <p className="text-sm font-semibold uppercase tracking-[0.16em] text-green">Poster</p>
-            <h2 className="mt-2 font-serif text-2xl text-navy sm:text-3xl">Spread the word</h2>
+            <h2 className="mt-2 font-display text-2xl text-navy sm:text-3xl">Spread the word</h2>
             <p className="mt-3 max-w-xl leading-7 text-muted">
               {programme.dateLabel}, from {programme.start}. The whole day on a single page. Seats are limited to 50.
             </p>

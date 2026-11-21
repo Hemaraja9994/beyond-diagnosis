@@ -69,7 +69,7 @@ export function QueryForm() {
           {error}
         </p>
       ) : null}
-      <button className="min-h-11 rounded-full bg-navy px-5 font-semibold text-white disabled:opacity-60" disabled={pending} type="submit">
+      <button className="pill pill-solid disabled:opacity-60" disabled={pending} type="submit">
         {pending ? "Sending…" : "Send query"}
       </button>
     </form>

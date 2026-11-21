@@ -70,12 +70,12 @@ function FlyerActions({
 
   return (
     <div className="flex flex-wrap gap-3">
-      <a className="ticked inline-flex min-h-12 items-center rounded-full bg-navy px-5 font-semibold text-white" href={href} download={download}>
+      <a className="pill pill-navy" href={href} download={download}>
         {downloadLabel}
       </a>
       <button
         type="button"
-        className="inline-flex min-h-12 items-center rounded-full bg-[#128C7E] px-5 font-semibold text-white"
+        className="pill bg-[#128C7E] text-white"
         onClick={shareOnWhatsApp}
       >
         {shareLabel}

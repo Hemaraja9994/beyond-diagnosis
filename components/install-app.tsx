@@ -74,8 +74,8 @@ export function InstallApp() {
 
   return (
     <div className="grid gap-4 lg:grid-cols-2">
-      <article className="rounded-3xl bg-card p-6 ring-1 ring-line">
-        <h2 className="font-serif text-2xl sm:text-3xl text-navy">iPhone</h2>
+      <article className="card p-6">
+        <h2 className="font-display text-2xl sm:text-3xl text-navy">iPhone</h2>
         <ol className="mt-4 grid list-decimal gap-2 pl-5 leading-7">
           {iphoneSteps.map((step) => (
             <li key={step}>{step}</li>
@@ -83,12 +83,12 @@ export function InstallApp() {
         </ol>
         {phone === "iphone" && installed ? <p className="mt-4 text-sm font-semibold text-green">Already on this iPhone.</p> : null}
       </article>
-      <article className="rounded-3xl bg-card p-6 ring-1 ring-line">
-        <h2 className="font-serif text-2xl sm:text-3xl text-navy">Android</h2>
+      <article className="card p-6">
+        <h2 className="font-display text-2xl sm:text-3xl text-navy">Android</h2>
         {promptEvent ? (
           <button
             type="button"
-            className="mt-4 inline-flex min-h-12 items-center rounded-full bg-green px-5 font-semibold text-white"
+            className="pill pill-solid mt-4"
             onClick={install}
           >
             Install on this phone
