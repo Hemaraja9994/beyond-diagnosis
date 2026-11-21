@@ -24,11 +24,11 @@ export const programme = {
     "https://www.google.com/maps/search/?api=1&query=Yenepoya+Medical+College+Hospital+Deralakatte+Mangaluru",
   mapsEmbed:
     "https://maps.google.com/maps?q=Yenepoya+Medical+College+Hospital,+Deralakatte,+Mangaluru&z=16&output=embed",
-  brochurePdf: "/brochure/beyond-the-diagnosis.pdf?v=7",
-  brochureImage: "/brochure/beyond-the-diagnosis-1.png?v=7",
-  brochureImageBack: "/brochure/beyond-the-diagnosis-2.png?v=7",
-  saveTheDatePdf: "/brochure/block-the-date.pdf?v=5",
-  saveTheDateImage: "/brochure/block-the-date.png?v=5",
+  brochurePdf: "/brochure/beyond-the-diagnosis.pdf?v=8",
+  brochureImage: "/brochure/beyond-the-diagnosis-1.png?v=8",
+  brochureImageBack: "/brochure/beyond-the-diagnosis-2.png?v=8",
+  saveTheDatePdf: "/brochure/block-the-date.pdf?v=6",
+  saveTheDateImage: "/brochure/block-the-date.png?v=6",
   paymentUrl: "https://rzp.io/rzp/FCDoSjbc",
   // Drop the official emblem at public/brand/yenepoya-emblem.svg.
   // Use a file supplied by the university. Do not download a logo from an image site.
