@@ -34,11 +34,11 @@ export function BrochureActions({ kind = "programme" }: { kind?: FlyerKind }) {
           shareLabel="WhatsApp this flyer"
           message={() =>
             [
-              "Block the date",
               programme.title,
               programme.dateLabel,
-              "Online workshop, from 10:00 IST.",
-              "Disability assessment, certification and entitlements under the RPwD Act, 2016.",
+              "Online, Cisco Webex, from 10:00 IST. Zonal. English.",
+              "Resource speakers, organising chairperson and organising secretaries.",
+              "Limited number of seats. RCI CRE approval awaited.",
               `Flyer: ${fileUrl(programme.saveTheDateImage)}`,
               originUrl("/"),
             ].join("\n")

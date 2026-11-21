@@ -59,14 +59,14 @@ export default function HomePage() {
         <div className="mt-12 grid items-center gap-8 border-t border-line pt-12 lg:grid-cols-[280px_1fr]">
           <img
             src={programme.saveTheDateImage}
-            alt="Block the date: Saturday 19 December 2026, an online workshop from 10:00 IST."
+            alt="One-page flyer: Beyond the Diagnosis, the programme schedule, resource speakers, and the organising chairperson and secretaries."
             className="w-full rounded-3xl shadow-lg ring-1 ring-line"
           />
           <div>
             <p className="text-sm font-semibold uppercase tracking-[0.16em] text-green">Also share</p>
-            <h2 className="mt-2 font-serif text-2xl text-navy sm:text-3xl">Block the date</h2>
+            <h2 className="mt-2 font-serif text-2xl text-navy sm:text-3xl">Share this flyer</h2>
             <p className="mt-3 max-w-xl leading-7 text-muted">
-              A second flyer to send around. It puts the date up front, then the four speakers and the timed talks. The programme flyer above stays as well.
+              One page for WhatsApp. The title is up front, then the schedule with the resource speakers by name, and the organising chairperson and secretaries. Seats are limited. RCI CRE approval is still awaited. The programme flyer above stays as well.
             </p>
             <div className="mt-5">
               <BrochureActions kind="save" />

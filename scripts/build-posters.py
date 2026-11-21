@@ -188,75 +188,115 @@ def draw_logos(canvas: Image.Image, x: int, y: int) -> None:
     canvas.alpha_composite(council, (d(x) + college.width + d(16), d(y - 1)))
 
 
+def centered(draw: ImageDraw.ImageDraw, text: str, font: ImageFont.FreeTypeFont, y: int, fill: tuple[int, int, int, int], width: int = 1080) -> None:
+    draw.text(((d(width) - font.getlength(text)) / 2, d(y)), text, font=font, fill=fill)
+
+
 def first_flyer() -> Image.Image:
-    width, height = 1080, 1640
+    width, height = 1080, 1680
     canvas = Image.new("RGBA", (d(width), d(height)), WHITE)
     draw = ImageDraw.Draw(canvas)
-    draw.rectangle((0, 0, d(width), d(14)), fill=ORANGE)
-    draw_logos(canvas, 36, 32)
+    draw.rectangle((0, 0, d(width), d(12)), fill=ORANGE)
 
-    panel = (d(648), d(118), d(1044), d(430))
-    shadow(canvas, panel, d(28))
-    draw.rounded_rectangle(panel, radius=d(28), fill=NAVY)
-    draw.text((d(676), d(148)), "19", font=face(SERIF, 78), fill=WHITE)
-    draw.text((d(676), d(248)), "December 2026", font=face(SANS_BOLD, 22), fill=WHITE)
-    draw.text((d(676), d(284)), "Saturday", font=face(SANS_BOLD, 20), fill=FLARE)
-    draw.text((d(676), d(316)), "From 10:00 IST", font=face(SANS_SEMI, 18), fill=SOFT)
-    draw.text((d(676), d(346)), "Online · Cisco Webex", font=face(SANS_SEMI, 18), fill=WHITE)
+    college = logo(BRAND / "yenepoya-medical-college.png", d(72))
+    canvas.alpha_composite(college, (d(36), d(28)))
+    draw.line((d(196), d(36), d(196), d(96)), fill=LINE, width=d(2))
+    dept = face(SANS_BOLD, 16)
+    draw.text((d(216), d(40)), "DEPARTMENT OF AUDIOLOGY AND", font=dept, fill=NAVY)
+    draw.text((d(216), d(64)), "SPEECH LANGUAGE PATHOLOGY", font=dept, fill=NAVY)
 
-    draw.rounded_rectangle((d(36), d(124), d(300), d(168)), radius=d(22), fill=ORANGE)
-    draw.text((d(56), d(136)), "BLOCK THE DATE", font=face(SANS_BOLD, 16), fill=WHITE)
-    draw.text((d(36), d(186)), "Beyond", font=face(SERIF, 52), fill=NAVY)
-    draw.text((d(36), d(250)), "the Diagnosis", font=face(SERIF, 52), fill=ORANGE)
-    intro = face(SANS, 18)
-    draw.text((d(36), d(322)), "Disability assessment, certification,", font=intro, fill=MUTED)
-    draw.text((d(36), d(348)), "and entitlements under the", font=intro, fill=MUTED)
-    draw.text((d(36), d(374)), "RPwD Act, 2016.", font=intro, fill=MUTED)
-    draw.text((d(36), d(410)), "Zonal CRE  ·  English", font=face(SANS_BOLD, 18), fill=NAVY)
+    council = logo(BRAND / "rci.png", d(168))
+    canvas.alpha_composite(council, (d(540), d(200)))
+    draw = ImageDraw.Draw(canvas)
+    approval = face(SANS_BOLD, 13)
+    for index, line in enumerate(["RCI CRE", "APPROVAL AWAITED"]):
+        line_w = approval.getlength(line)
+        draw.text((d(540) + (council.width - line_w) / 2, d(384 + index * 18)), line, font=approval, fill=ORANGE)
 
-    draw.rounded_rectangle((d(28), d(468), d(1052), d(536)), radius=d(18), fill=ORANGE)
-    bar = face(SANS_BOLD, 18)
-    bar_text = "Saturday, 19 December 2026      ·      10:00 IST      ·      Online, Cisco Webex"
-    bar_w = bar.getlength(bar_text)
-    draw.text(((d(1080) - bar_w) / 2, d(486)), bar_text, font=bar, fill=WHITE)
+    kicker = face(SANS_BOLD, 15)
+    kicker_lines = ["CONTINUING REHABILITATION", "EDUCATION (CRE) PROGRAMME"]
+    kicker_w = max(kicker.getlength(line) for line in kicker_lines)
+    pill = (d(36), d(124), d(36) + kicker_w + d(56), d(196))
+    draw.rounded_rectangle(pill, radius=d(36), fill=ORANGE)
+    for index, line in enumerate(kicker_lines):
+        draw.text((d(64), d(136 + index * 24)), line, font=kicker, fill=WHITE)
 
-    draw.text((d(36), d(572)), "OUR SPEAKERS", font=face(SANS_BOLD, 14), fill=ORANGE)
-    draw.rectangle((d(196), d(580), d(320), d(584)), fill=ORANGE)
+    draw.text((d(36), d(220)), "BEYOND THE", font=face(SERIF, 64), fill=NAVY)
+    diagnosis = face(SERIF, 68)
+    word = "DIAGNOSIS"
+    word_w = diagnosis.getlength(word)
+    highlight = (d(28), d(292), d(28) + word_w + d(36), d(380))
+    draw.rounded_rectangle(highlight, radius=d(12), fill=ORANGE)
+    draw.text((d(46), d(300)), word, font=diagnosis, fill=WHITE)
 
-    title_font = face(SANS_MED, 17)
+    draw.rectangle((d(36), d(408), d(46), d(500)), fill=ORANGE)
+    sub = face(SANS_SEMI, 20)
+    draw.text((d(64), d(408)), "Disability Assessment, Certification", font=sub, fill=NAVY)
+    draw.text((d(64), d(438)), "and Entitlements under the", font=sub, fill=NAVY)
+    draw.text((d(64), d(468)), "RPwD Act, 2016", font=sub, fill=NAVY)
+
+    draw.rounded_rectangle((d(28), d(528), d(1052), d(600)), radius=d(28), fill=NAVY)
+    centered(draw, "19 DECEMBER 2026", face(SANS_BOLD, 28), 544, WHITE)
+
+    draw.rounded_rectangle((d(28), d(616), d(1052), d(676)), radius=d(24), fill=(255, 241, 232, 255))
+    centered(draw, "ONLINE  ·  CISCO WEBEX      ·      ZONAL      ·      ENGLISH      ·      FROM 10:00 IST", face(SANS_BOLD, 15), 634, NAVY)
+
+    schedule = face(SANS_BOLD, 18)
+    label = "PROGRAMME SCHEDULE"
+    label_w = schedule.getlength(label)
+    schedule_pill = ((d(width) - label_w) / 2 - d(28), d(700), (d(width) + label_w) / 2 + d(28), d(748))
+    draw.rounded_rectangle(schedule_pill, radius=d(24), fill=NAVY)
+    centered(draw, label, schedule, 712, WHITE)
+    centered(draw, "RESOURCE SPEAKERS", face(SANS_BOLD, 13), 760, ORANGE)
+
     talk_lines = {
-        "10:00 AM": ["The RPwD Act, 2016: Rights,", "Responsibilities and Reach –", "An Overview"],
+        "10:00 AM": ["The RPwD Act, 2016: Rights,", "Responsibilities and Reach – An Overview"],
         "11:00 AM": ["Know the 21: Types of Disabilities", "Recognised under the RPwD Act, 2016"],
-        "12:00 PM": ["Learning, Intellectual and Autism", "Spectrum Disabilities: Rights and", "Entitlements under the RPwD Act,", "2016 – A Psychologist’s Perspective"],
-        "01:00 PM": ["Rights and Privileges of Persons", "with Communication Disorders:", "ASLPs to Deal with Legal and", "Legislative Aspects"],
+        "12:00 PM": ["Learning, Intellectual and Autism Spectrum", "Disabilities: Rights and Entitlements under", "the RPwD Act, 2016 – A Psychologist’s", "Perspective"],
+        "01:00 PM": ["Rights and Privileges of Persons with", "Communication Disorders: ASLPs to Deal", "with Legal and Legislative Aspects"],
     }
-    cell_w, cell_h = 500, 420
+    topic_font = face(SANS_MED, 16)
+    name_font = face(SANS_BOLD, 16)
+    time_font = face(SANS_BOLD, 18)
+    row_h = 132
     for index, talk in enumerate(TALKS):
-        column = index % 2
-        row = index // 2
-        left = 28 + column * (cell_w + 24)
-        top = 612 + row * (cell_h + 20)
-        box = (d(left), d(top), d(left + cell_w), d(top + cell_h))
-        shadow(canvas, box, d(22), alpha=36)
-        draw.rounded_rectangle(box, radius=d(22), fill=WHITE, outline=LINE, width=d(2))
-        draw.rectangle((d(left + 22), d(top), d(left + cell_w - 22), d(top + 8)), fill=ORANGE)
-        portrait = circled(talk["photo"], d(132))
-        canvas.alpha_composite(portrait, (d(left + (cell_w - portrait.width / SCALE) / 2), d(top + 28)))
-        draw = ImageDraw.Draw(canvas)
-        name = face(SANS_BOLD, 20)
-        name_w = name.getlength(talk["person"])
-        draw.text((d(left) + (d(cell_w) - name_w) / 2, d(top + 188)), talk["person"], font=name, fill=NAVY)
-        time_font = face(SANS_BOLD, 16)
+        top = 792 + index * row_h
+        fill = WHITE if index % 2 == 0 else (255, 247, 242, 255)
+        draw.rounded_rectangle((d(28), d(top), d(1052), d(top + row_h - 10)), radius=d(16), fill=fill, outline=LINE, width=d(2))
         time_w = time_font.getlength(talk["time"])
-        draw.text((d(left) + (d(cell_w) - time_w) / 2, d(top + 216)), talk["time"], font=time_font, fill=ORANGE)
-        for line_index, line in enumerate(talk_lines[talk["time"]]):
-            line_w = title_font.getlength(line)
-            draw.text((d(left) + (d(cell_w) - line_w) / 2, d(top + 248 + line_index * 24)), line, font=title_font, fill=INK)
+        lines = talk_lines[talk["time"]]
+        block = len(lines) * 22
+        text_top = top + (row_h - 10 - block) / 2
+        draw.text((d(48) + (d(150) - time_w) / 2, d(text_top + 8)), talk["time"], font=time_font, fill=ORANGE)
+        for line_index, line in enumerate(lines):
+            draw.text((d(220), d(text_top + line_index * 22)), line, font=topic_font, fill=INK)
+        name_w = name_font.getlength(talk["person"])
+        name_box = (d(760), d(top + 36), d(1028), d(top + row_h - 46))
+        draw.rounded_rectangle(name_box, radius=d(16), fill=ORANGE)
+        draw.text((d(760) + (d(268) - name_w) / 2, d(top + 52)), talk["person"], font=name_font, fill=WHITE)
 
-    draw.line((d(36), d(1508), d(1044), d(1508)), fill=LINE, width=d(2))
-    draw.text((d(36), d(1524)), "Department of Audiology and Speech Language Pathology", font=face(SANS_SEMI, 16), fill=NAVY)
-    draw.text((d(36), d(1550)), "Yenepoya Medical College Hospital", font=face(SANS, 16), fill=INK)
-    draw.text((d(36), d(1576)), "Yenepoya (Deemed to be University)   ·   yenepoya-cre.vercel.app", font=face(SANS, 16), fill=MUTED)
+    seats = (d(28), d(1340), d(430), d(1520))
+    shadow(canvas, seats, d(24), alpha=28)
+    draw.rounded_rectangle(seats, radius=d(24), fill=NAVY)
+    draw.text((d(52), d(1372)), "LIMITED", font=face(SANS_BOLD, 28), fill=WHITE)
+    draw.text((d(52), d(1410)), "NUMBER OF", font=face(SANS_BOLD, 28), fill=FLARE)
+    draw.text((d(52), d(1448)), "SEATS", font=face(SANS_BOLD, 28), fill=WHITE)
+
+    team = (d(454), d(1340), d(1052), d(1520))
+    shadow(canvas, team, d(24), alpha=28)
+    draw.rounded_rectangle(team, radius=d(24), fill=WHITE, outline=LINE, width=d(2))
+    draw.rectangle((d(454), d(1364), d(464), d(1496)), fill=ORANGE)
+    role = face(SANS_BOLD, 13)
+    person = face(SANS_SEMI, 18)
+    draw.text((d(488), d(1360)), "ORGANISING CHAIRPERSON", font=role, fill=ORANGE)
+    draw.text((d(488), d(1382)), "Dr. Shwetha Prabhu", font=person, fill=NAVY)
+    draw.text((d(488), d(1424)), "ORGANISING SECRETARY", font=role, fill=ORANGE)
+    draw.text((d(488), d(1446)), "Ms. Swathi Chinnasamy", font=person, fill=NAVY)
+    draw.text((d(488), d(1474)), "Ms. Rachana R Uchil", font=person, fill=NAVY)
+
+    draw.text((d(36), d(1552)), "Department of Audiology and Speech Language Pathology", font=face(SANS_SEMI, 16), fill=NAVY)
+    draw.text((d(36), d(1578)), "Yenepoya Medical College Hospital", font=face(SANS, 16), fill=INK)
+    draw.text((d(36), d(1604)), "Yenepoya (Deemed to be University)   ·   yenepoya-cre.vercel.app", font=face(SANS, 16), fill=MUTED)
     return canvas
 
 
