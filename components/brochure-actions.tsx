@@ -2,36 +2,94 @@
 
 import { programme } from "@/lib/programme";
 
-export function BrochureActions() {
+type FlyerKind = "programme" | "save";
+
+export function BrochureActions({ kind = "programme" }: { kind?: FlyerKind }) {
+  switch (kind) {
+    case "programme":
+      return (
+        <FlyerActions
+          href={programme.brochurePdf}
+          download="beyond-the-diagnosis-brochure.pdf"
+          downloadLabel="Download the PDF"
+          shareLabel="WhatsApp the brochure"
+          message={() =>
+            [
+              programme.title,
+              programme.subtitle,
+              programme.dateLabel,
+              "Online, on Cisco Webex, from 10:00 IST.",
+              `Brochure: ${fileUrl(programme.brochurePdf)}`,
+              `Register: ${originUrl("/registration")}`,
+            ].join("\n")
+          }
+        />
+      );
+    case "save":
+      return (
+        <FlyerActions
+          href={programme.saveTheDatePdf}
+          download="block-the-date.pdf"
+          downloadLabel="Download the first flyer"
+          shareLabel="WhatsApp this flyer"
+          message={() =>
+            [
+              "Block the date",
+              programme.title,
+              programme.dateLabel,
+              "Online workshop, from 10:00 IST.",
+              "Disability assessment, certification and entitlements under the RPwD Act, 2016.",
+              `Flyer: ${fileUrl(programme.saveTheDateImage)}`,
+              originUrl("/"),
+            ].join("\n")
+          }
+        />
+      );
+    default: {
+      const unknown: never = kind;
+      return unknown;
+    }
+  }
+}
+
+function FlyerActions({
+  href,
+  download,
+  downloadLabel,
+  shareLabel,
+  message,
+}: {
+  href: string;
+  download: string;
+  downloadLabel: string;
+  shareLabel: string;
+  message: () => string;
+}) {
   function shareOnWhatsApp() {
-    const file = `${window.location.origin}${programme.brochurePdf}`;
-    const message = [
-      `${programme.title}`,
-      programme.subtitle,
-      programme.dateLabel,
-      "Online, on Cisco Webex, from 10:00 IST.",
-      `Brochure: ${file}`,
-      `Register: ${window.location.origin}/registration`,
-    ].join("\n");
-    window.open(`https://wa.me/?text=${encodeURIComponent(message)}`, "_blank", "noopener,noreferrer");
+    window.open(`https://wa.me/?text=${encodeURIComponent(message())}`, "_blank", "noopener,noreferrer");
   }
 
   return (
     <div className="flex flex-wrap gap-3">
-      <a
-        className="ticked inline-flex min-h-12 items-center rounded-full bg-navy px-5 font-semibold text-white"
-        href={programme.brochurePdf}
-        download="beyond-the-diagnosis-brochure.pdf"
-      >
-        Download the PDF
+      <a className="ticked inline-flex min-h-12 items-center rounded-full bg-navy px-5 font-semibold text-white" href={href} download={download}>
+        {downloadLabel}
       </a>
       <button
         type="button"
         className="inline-flex min-h-12 items-center rounded-full bg-[#128C7E] px-5 font-semibold text-white"
         onClick={shareOnWhatsApp}
       >
-        WhatsApp the brochure
+        {shareLabel}
       </button>
     </div>
   );
+}
+
+function originUrl(path: string): string {
+  if (typeof window === "undefined") return path;
+  return `${window.location.origin}${path}`;
+}
+
+function fileUrl(path: string): string {
+  return originUrl(path.split("?")[0] ?? path);
 }

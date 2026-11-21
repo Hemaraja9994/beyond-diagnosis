@@ -27,6 +27,8 @@ export const programme = {
   brochurePdf: "/brochure/beyond-the-diagnosis.pdf?v=5",
   brochureImage: "/brochure/beyond-the-diagnosis-1.png?v=5",
   brochureImageBack: "/brochure/beyond-the-diagnosis-2.png?v=5",
+  saveTheDatePdf: "/brochure/block-the-date.pdf?v=1",
+  saveTheDateImage: "/brochure/block-the-date.png?v=1",
   paymentUrl: "https://rzp.io/rzp/FCDoSjbc",
   // Drop the official emblem at public/brand/yenepoya-emblem.svg.
   // Use a file supplied by the university. Do not download a logo from an image site.

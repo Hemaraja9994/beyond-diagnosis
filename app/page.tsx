@@ -32,27 +32,26 @@ export default function HomePage() {
       </section>
 
       <section id="brochure" className="mx-auto grid max-w-6xl items-center gap-8 px-4 py-12 lg:grid-cols-[280px_1fr]">
-        <div className="grid gap-3">
-          <img
-            src={programme.brochureImage}
-            alt="Flyer page 1: the programme, with the four speakers and their topics."
-            className="w-full rounded-3xl shadow-lg ring-1 ring-line"
-          />
-          <img
-            src={programme.brochureImageBack}
-            alt="Flyer page 2: the organising team, who it is for, and how to join."
-            className="w-full rounded-3xl shadow-lg ring-1 ring-line"
-          />
-        </div>
+        <img
+          src={programme.saveTheDateImage}
+          alt="Block the date: Saturday 19 December 2026, an online workshop from 10:00 IST."
+          className="w-full rounded-3xl shadow-lg ring-1 ring-line"
+        />
         <div>
-          <p className="text-sm font-semibold uppercase tracking-[0.16em] text-green">Brochure</p>
-          <h2 className="mt-2 font-serif text-2xl text-navy sm:text-3xl">Download it, or send it on WhatsApp</h2>
+          <p className="text-sm font-semibold uppercase tracking-[0.16em] text-green">First flyer</p>
+          <h2 className="mt-2 font-serif text-2xl text-navy sm:text-3xl">Block the date</h2>
           <p className="mt-3 max-w-xl leading-7 text-muted">
-            Two pages. The first has the four sessions, the speakers, and the topics. The second has the organising team and how to join. The download is that flyer as a PDF.
+            Share this before the full programme. {programme.dateLabel}, online, from {programme.start}. The download is a PDF. WhatsApp sends the picture.
           </p>
           <div className="mt-5">
-            <BrochureActions />
+            <BrochureActions kind="save" />
           </div>
+          <p className="mt-6 max-w-xl text-sm leading-6 text-muted">
+            The two-page flyer, with the speakers, topics, and organising team, stays on the brochure page.
+          </p>
+          <Link href="/brochure" className="mt-2 inline-flex font-semibold text-green">
+            Open the programme flyer
+          </Link>
         </div>
       </section>
 
