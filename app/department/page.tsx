@@ -11,7 +11,7 @@ export default function DepartmentPage() {
       <PageBanner
         kicker="Organising department"
         title="Audiology and Speech Language Pathology"
-        lede="Yenepoya Medical College hosts this CRE. The notes below follow the college department page, with the staff list brought up to date."
+        lede="The host department of this CRE, offering clinical services, teaching and research in communication disorders at Yenepoya Medical College Hospital."
       />
 
       <section className="mx-auto grid max-w-6xl gap-6 px-4 py-10 lg:grid-cols-[1.2fr_0.8fr]">
@@ -84,7 +84,7 @@ export default function DepartmentPage() {
       <section className="mx-auto max-w-6xl px-4 py-10">
         <h2 className="font-serif text-2xl sm:text-3xl text-navy">Staff</h2>
         <p className="mt-3 max-w-3xl leading-7 text-muted">
-          Photographs are the ones published by Yenepoya Medical College. Ms. Merin Mathews and Ms. Shana Mariyam Basheer are shown with initials because that page uses a placeholder instead of a portrait. Ms. Ananya Shettigar has joined the department. Ms. Niha Kuraisha has left, and Ms. Praneetha is not on the staff. The college page has not yet caught up with those three changes, and it does not yet carry Ms. Ananya Shettigar’s photograph or designation.
+          The faculty and clinical staff of the Department of Audiology and Speech Language Pathology.
         </p>
         <ul className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {departmentStaff.map((person) => (

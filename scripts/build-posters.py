@@ -1,62 +1,80 @@
-"""Poster-style flyers: a first share sheet, and the two-page programme flyer."""
+"""Builds the one-page poster and the two-page programme flyer.
 
+The designs are plain HTML and CSS (scripts/posters/poster.css) rendered by a
+headless Chrome, so the type matches the website (Fraunces and Outfit).
+
+Outputs, in public/brochure/:
+  block-the-date.png / .pdf          one-page poster
+  beyond-the-diagnosis-1.png / -2.png two flyer pages
+  beyond-the-diagnosis.pdf           both flyer pages
+
+Run:  python3 scripts/build-posters.py
+Needs: pip install playwright qrcode pillow, and Chrome or Chromium.
+"""
+
+from __future__ import annotations
+
+import html
+import io
+import os
+import shutil
+import tempfile
 from pathlib import Path
 
-from PIL import Image, ImageDraw, ImageFilter, ImageFont
-from pptx import Presentation
-from pptx.util import Emu
+import qrcode
+import qrcode.image.svg
+from PIL import Image
+from playwright.sync_api import sync_playwright
 
 ROOT = Path(__file__).resolve().parents[1]
-BRAND = ROOT / "public" / "brand"
 PUBLIC = ROOT / "public"
-OUT = Path("/opt/cursor/artifacts")
+BRAND = PUBLIC / "brand"
+KIT = Path(__file__).resolve().parent / "posters"
+OUT = PUBLIC / "brochure"
 
-SCALE = 2
-NAVY = (12, 35, 64, 255)
-ORANGE = (194, 65, 12, 255)
-FLARE = (255, 122, 26, 255)
-WHITE = (255, 255, 255, 255)
-INK = (17, 24, 39, 255)
-MUTED = (75, 85, 99, 255)
-LINE = (229, 231, 235, 255)
-SOFT = (214, 222, 232, 255)
-
-SERIF = "/usr/share/fonts/truetype/liberation/LiberationSerif-Bold.ttf"
-SANS = "/usr/share/fonts/truetype/macos/Inter-Regular.ttf"
-SANS_MED = "/usr/share/fonts/truetype/macos/Inter-Medium.ttf"
-SANS_SEMI = "/usr/share/fonts/truetype/macos/Inter-SemiBold.ttf"
-SANS_BOLD = "/usr/share/fonts/truetype/macos/Inter-Bold.ttf"
+SITE = "yenepoya-cre.vercel.app"
+REGISTER_URL = f"https://{SITE}/registration"
+WIDTH, HEIGHT = 1080, 1528
+PNG_SCALE = 1.5
 
 TALKS = [
     {
-        "time": "10:00 AM",
+        "time": "10:00",
+        "meridiem": "AM",
         "title": "The RPwD Act, 2016: Rights, Responsibilities and Reach – An Overview",
         "person": "Dr. Shwetha Prabhu",
         "role": "Associate Professor and Head of the Department",
+        "short": "Associate Professor and HOD, ASLP",
         "crr": "CRR A18456",
         "photo": PUBLIC / "department" / "shwetha-prabhu.jpg",
     },
     {
-        "time": "11:00 AM",
+        "time": "11:00",
+        "meridiem": "AM",
         "title": "Know the 21: Types of Disabilities Recognised under the RPwD Act, 2016",
         "person": "Ms. Swathi Chinnasamy",
         "role": "Assistant Professor",
+        "short": "Assistant Professor",
         "crr": "CRR A81760",
         "photo": PUBLIC / "faculty" / "swathi-c.jpg",
     },
     {
-        "time": "12:00 PM",
+        "time": "12:00",
+        "meridiem": "PM",
         "title": "Learning, Intellectual and Autism Spectrum Disabilities: Rights and Entitlements under the RPwD Act, 2016 – A Psychologist’s Perspective",
         "person": "Ms. Vasudha K G",
         "role": "Assistant Professor, Department of Psychiatry, KMC Mangaluru (MAHE)",
+        "short": "Assistant Professor, Dept. of Psychiatry, KMC Mangaluru (MAHE)",
         "crr": "CRR A85535",
         "photo": PUBLIC / "faculty" / "vasudha-kg.jpg",
     },
     {
-        "time": "01:00 PM",
+        "time": "01:00",
+        "meridiem": "PM",
         "title": "Rights and Privileges of Persons with Communication Disorders: ASLPs to Deal with Legal and Legislative Aspects",
         "person": "Dr. Satyapal Puri Goswami",
         "role": "",
+        "short": "CRR A00260",
         "crr": "CRR A00260",
         "photo": PUBLIC / "faculty" / "satyapal-goswami.jpg",
     },
@@ -66,59 +84,39 @@ TEAM = [
     {
         "name": "Dr. Shwetha Prabhu",
         "role": "Organising chairperson",
-        "detail": "Associate Professor and\nHead of the Department",
-        "crr": "CRR A18456",
+        "detail": "Associate Professor and<br>Head of the Department",
         "photo": PUBLIC / "department" / "shwetha-prabhu.jpg",
     },
     {
         "name": "Ms. Swathi Chinnasamy",
         "role": "Organising secretary",
         "detail": "Assistant Professor",
-        "crr": "CRR A81760",
         "photo": PUBLIC / "faculty" / "swathi-c.jpg",
     },
     {
         "name": "Ms. Rachana R Uchil",
         "role": "Organising secretary",
         "detail": "Clinical Supervisor",
-        "crr": "",
         "photo": PUBLIC / "department" / "rachana-uchil.jpg",
     },
 ]
 
-
-def d(value: float) -> int:
-    return int(value * SCALE)
-
-
-def face(path: str, size: int) -> ImageFont.FreeTypeFont:
-    return ImageFont.truetype(path, d(size))
-
-
-def wrap(text: str, font: ImageFont.FreeTypeFont, width: int) -> list[str]:
-    lines: list[str] = []
-    current = ""
-    for word in text.split():
-        trial = word if current == "" else f"{current} {word}"
-        if font.getlength(trial) <= width:
-            current = trial
-        else:
-            if current:
-                lines.append(current)
-            current = word
-    if current:
-        lines.append(current)
-    return lines
+AUDIENCE = [
+    "Audiologists",
+    "Speech-language pathologists",
+    "Clinical psychologists",
+    "Special educators",
+    "Occupational therapists",
+    "Rehabilitation professionals",
+]
 
 
-def shadow(canvas: Image.Image, box: tuple[int, int, int, int], radius: int, blur: int = 14, alpha: int = 46) -> None:
-    layer = Image.new("RGBA", canvas.size, (0, 0, 0, 0))
-    left, top, right, bottom = box
-    ImageDraw.Draw(layer).rounded_rectangle((left, top + d(8), right, bottom + d(8)), radius=radius, fill=(12, 35, 64, alpha))
-    canvas.alpha_composite(layer.filter(ImageFilter.GaussianBlur(blur)))
+def esc(text: str) -> str:
+    return html.escape(text, quote=True)
 
 
-def crop_square(path: Path, size: int) -> Image.Image:
+def crop_square(path: Path, size: int = 480) -> Image.Image:
+    """Trim a white studio background, then take a head-and-shoulders square."""
     image = Image.open(path).convert("RGB")
     width, height = image.size
     pixels = image.load()
@@ -138,360 +136,240 @@ def crop_square(path: Path, size: int) -> Image.Image:
     return image.crop((left, top, left + side, top + side)).resize((size, size), Image.Resampling.LANCZOS)
 
 
-def circled(path: Path, size: int) -> Image.Image:
-    photo = crop_square(path, size)
-    ring = d(6)
-    gap = d(4)
-    outer = size + (ring + gap) * 2
-    canvas = Image.new("RGBA", (outer, outer), (0, 0, 0, 0))
-    draw = ImageDraw.Draw(canvas)
-    draw.ellipse((0, 0, outer - 1, outer - 1), fill=ORANGE)
-    draw.ellipse((ring, ring, outer - 1 - ring, outer - 1 - ring), fill=WHITE)
-    mask = Image.new("L", (size, size), 0)
-    ImageDraw.Draw(mask).ellipse((1, 1, size - 2, size - 2), fill=255)
-    framed = Image.new("RGBA", (size, size))
-    framed.paste(photo, (0, 0))
-    framed.putalpha(mask)
-    canvas.alpha_composite(framed, (ring + gap, ring + gap))
-    return canvas
+def qr_svg(url: str) -> str:
+    image = qrcode.make(url, image_factory=qrcode.image.svg.SvgPathImage, box_size=10, border=0)
+    buffer = io.BytesIO()
+    image.save(buffer)
+    svg = buffer.getvalue().decode("utf-8")
+    svg = svg[svg.index("<svg") :]
+    return svg.replace('fill="#000000"', 'fill="#0c2340"')
 
 
-def logo(path: Path, height: int) -> Image.Image:
-    mark = Image.open(path).convert("RGBA")
-    ratio = height / mark.height
-    return mark.resize((max(1, int(mark.width * ratio)), height), Image.Resampling.LANCZOS)
+def photo(build: Path, path: Path) -> str:
+    name = f"p-{path.stem}.jpg"
+    target = build / name
+    if not target.exists():
+        crop_square(path).save(target, "JPEG", quality=92)
+    return name
 
 
-def downscale(image: Image.Image) -> Image.Image:
-    return image.resize((image.width // SCALE, image.height // SCALE), Image.Resampling.LANCZOS).convert("RGB")
+def header() -> str:
+    return f"""
+    <header class="head">
+      <img class="college" src="{(BRAND / 'yenepoya-medical-college.png').as_uri()}" alt="">
+      <p class="dept">Department of Audiology and<br>Speech Language Pathology
+        <small>Yenepoya Medical College Hospital · Yenepoya (Deemed to be University), Mangaluru</small></p>
+      <img class="council" src="{(BRAND / 'rci.png').as_uri()}" alt="">
+    </header>"""
 
 
-def save_pptx(path: Path, pages: list[Image.Image]) -> None:
-    presentation = Presentation()
-    first = pages[0]
-    presentation.slide_width = Emu(first.width * 914400 / 144)
-    presentation.slide_height = Emu(first.height * 914400 / 144)
-    presentation.core_properties.title = path.stem.replace("-", " ").title()
-    for page in pages:
-        slide = presentation.slides.add_slide(presentation.slide_layouts[6])
-        holder = OUT / f".{path.stem}-{id(page)}.png"
-        page.save(holder, "PNG")
-        slide.shapes.add_picture(str(holder), 0, 0, width=presentation.slide_width, height=presentation.slide_height)
-        holder.unlink()
-    presentation.save(path)
+def footer(qr: str, page: str = "") -> str:
+    page_line = f'<small class="page-no">{page}</small>' if page else ""
+    return f"""
+    <footer class="foot">
+      <div class="org">
+        <strong>Department of Audiology and Speech Language Pathology</strong>
+        <span>Yenepoya Medical College Hospital, Deralakatte, Mangaluru<br>Yenepoya (Deemed to be University)</span>
+      </div>
+      <div class="cta">
+        <div>
+          <p>Register now</p>
+          <b>{SITE}</b>
+          <small>yenepoyaaslpconference@gmail.com</small>
+          {page_line}
+        </div>
+        <div class="qr">{qr}</div>
+      </div>
+    </footer>"""
 
 
-def draw_logos(canvas: Image.Image, x: int, y: int) -> None:
-    college = logo(BRAND / "yenepoya-medical-college.png", d(58))
-    council = logo(BRAND / "rci.png", d(60))
-    canvas.alpha_composite(college, (d(x), d(y)))
-    canvas.alpha_composite(council, (d(x) + college.width + d(16), d(y - 1)))
+def poster(build: Path, qr: str) -> str:
+    speakers = "".join(
+        f"""<div><div class="portrait"><img src="{photo(build, t['photo'])}" alt=""></div>
+        <h3>{esc(t['person'])}</h3><p>{esc(t['short'])}</p></div>"""
+        for t in TALKS
+    )
+    rows = "".join(
+        f"""<li><time class="serif">{t['time']}<small>{t['meridiem']}</small></time>
+        <span class="topic">{esc(t['title'])}</span><span class="who">{esc(t['person'])}</span></li>"""
+        for t in TALKS
+    )
+    return f"""
+    <section class="sheet poster">
+      {header()}
+      <div class="hero">
+        <div>
+          <p class="kicker">Zonal CRE Programme</p>
+          <h1 class="title serif">Beyond the<br><em>Diagnosis</em></h1>
+          <p class="subtitle">Disability Assessment, Certification and Entitlements under the RPwD Act, 2016</p>
+          <div class="meta"><span>Zonal CRE</span><span>English</span><span>One day · Four sessions</span></div>
+        </div>
+        <aside class="datecard">
+          <p class="dow">Saturday</p>
+          <div class="day serif"><b>19</b><span>December<br>2026</span></div>
+          <dl>
+            <div><dt>Starts</dt><dd>10:00 AM IST</dd></div>
+            <div><dt>Mode</dt><dd>Online · Cisco Webex</dd></div>
+          </dl>
+          <div class="chips">
+            <span class="chip chip-line"><i></i>RCI CRE approval awaited</span>
+            <span class="chip chip-solid">Limited to 50 seats</span>
+          </div>
+        </aside>
+      </div>
+      <div class="speakers">
+        <p class="section-label">Resource <span>speakers</span></p>
+        <div class="speaker-row">{speakers}</div>
+      </div>
+      <div class="schedule">
+        <p class="section-label">Programme <span>schedule</span></p>
+        <ol class="schedule-list">{rows}</ol>
+      </div>
+      <div class="team">
+        <div><p>Organising chairperson</p><b>Dr. Shwetha Prabhu</b></div>
+        <div><p>Organising secretaries</p><b>Ms. Swathi Chinnasamy<br>Ms. Rachana R Uchil</b></div>
+      </div>
+      {footer(qr)}
+    </section>"""
 
 
-def centered(draw: ImageDraw.ImageDraw, text: str, font: ImageFont.FreeTypeFont, y: int, fill: tuple[int, int, int, int], width: int = 1080) -> None:
-    draw.text(((d(width) - font.getlength(text)) / 2, d(y)), text, font=font, fill=fill)
+def flyer_cover(build: Path, qr: str) -> str:
+    sessions = "".join(
+        f"""<article class="session">
+          <div class="portrait"><img src="{photo(build, t['photo'])}" alt=""></div>
+          <div>
+            <div class="when"><time>{t['time']} {t['meridiem']}</time><span class="n">· Session {index + 1}</span></div>
+            <h3 class="serif">{esc(t['title'])}</h3>
+            <p class="by"><b>{esc(t['person'])}</b> <span>· {esc(', '.join(x for x in (t['role'], t['crr']) if x))}</span></p>
+          </div>
+        </article>"""
+        for index, t in enumerate(TALKS)
+    )
+    return f"""
+    <section class="sheet flyer">
+      {header()}
+      <div class="intro">
+        <p class="kicker">Zonal CRE Programme · RCI CRE approval awaited</p>
+        <h1 class="title serif">Beyond the <em>Diagnosis</em></h1>
+        <p class="subtitle">Disability Assessment, Certification and Entitlements under the RPwD Act, 2016</p>
+      </div>
+      <dl class="factbar">
+        <div><dt>Date</dt><dd>Sat, 19 December 2026</dd></div>
+        <div><dt>Time</dt><dd>From 10:00 AM IST</dd></div>
+        <div><dt>Mode</dt><dd>Online · Cisco Webex</dd></div>
+        <div><dt>Level</dt><dd>Zonal · English</dd></div>
+      </dl>
+      <div class="sessions">
+        <p class="section-label">The <span>programme</span></p>
+        <div class="session-list">{sessions}</div>
+      </div>
+      {footer(qr, "Page 1 of 2")}
+    </section>"""
 
 
-def burst(draw: ImageDraw.ImageDraw, x: int, y: int, flip: bool) -> None:
-    sign = -1 if flip else 1
-    for x1, y1, x2, y2 in ((0, -16, 18, -26), (0, 0, 24, 0), (0, 16, 18, 26)):
-        draw.line((d(x + sign * x1), d(y + y1), d(x + sign * x2), d(y + y2)), fill=FLARE, width=d(4))
+def flyer_team(build: Path, qr: str) -> str:
+    team = "".join(
+        f"""<div><div class="portrait"><img src="{photo(build, p['photo'])}" alt=""></div>
+        <p>{esc(p['role'])}</p><h3>{esc(p['name'])}</h3><span>{p['detail']}</span></div>"""
+        for p in TEAM
+    )
+    tags = "".join(f"<span>{esc(a)}</span>" for a in AUDIENCE)
+    return f"""
+    <section class="sheet flyer">
+      {header()}
+      <div class="team-head">
+        <p class="kicker">Beyond the Diagnosis · 19 December 2026</p>
+        <h2 class="serif">Organising team</h2>
+      </div>
+      <div class="team-row">{team}</div>
+      <div class="info-grid">
+        <div class="info">
+          <h4>Who should attend</h4>
+          <div class="tags">{tags}</div>
+        </div>
+        <div class="info tinted">
+          <h4>How to register</h4>
+          <ol>
+            <li><b>1</b><span>Register at <strong>{SITE}</strong> with your name and CRR number.</span></li>
+            <li><b>2</b><span>Pay the fee on Razorpay using the link on the site.</span></li>
+            <li><b>3</b><span>Add your payment ID or receipt to confirm your seat.</span></li>
+          </ol>
+        </div>
+        <div class="info">
+          <h4>Contact</h4>
+          <div class="lines">
+            <div><small>Email</small>yenepoyaaslpconference@gmail.com</div>
+            <div><small>Phone</small>+91 73377 98055</div>
+            <div><small>Department</small>aslp@yenepoya.edu.in</div>
+          </div>
+        </div>
+        <div class="info">
+          <h4>Venue</h4>
+          <p class="big serif">Online on<br>Cisco Webex</p>
+          <div class="lines"><div>The joining link is shared with registered participants. Seats are limited to 50.</div></div>
+        </div>
+      </div>
+      <div class="refs">
+        <img src="{(BRAND / 'rci.png').as_uri()}" alt="">
+        <p><b>Rehabilitation Council of India</b> · CRE approval awaited<br>
+          <span>Acknowledgement CRE-26111620026773 · Institute code KK048</span></p>
+        <img src="{(BRAND / 'swavlamban.png').as_uri()}" alt="">
+      </div>
+      {footer(qr, "Page 2 of 2")}
+    </section>"""
 
 
-def first_flyer() -> Image.Image:
-    width, height = 1080, 1500
-    canvas = Image.new("RGBA", (d(width), d(height)), WHITE)
-    draw = ImageDraw.Draw(canvas)
-    draw.rectangle((0, 0, d(width), d(10)), fill=ORANGE)
-
-    college = logo(BRAND / "yenepoya-medical-college.png", d(68))
-    council = logo(BRAND / "rci.png", d(78))
-    canvas.alpha_composite(college, (d(28), d(22)))
-    canvas.alpha_composite(council, (d(width - 28) - council.width, d(18)))
-    draw = ImageDraw.Draw(canvas)
-    draw.line((d(28) + college.width + d(14), d(30), d(28) + college.width + d(14), d(86)), fill=NAVY, width=d(2))
-    draw.line((d(width - 42) - council.width, d(30), d(width - 42) - council.width, d(86)), fill=NAVY, width=d(2))
-    dept = face(SANS_BOLD, 18)
-    dept_lines = ["DEPARTMENT OF AUDIOLOGY AND", "SPEECH LANGUAGE PATHOLOGY"]
-    left_edge = 28 + college.width / SCALE + 28
-    right_edge = width - 42 - council.width / SCALE - 16
-    for index, line in enumerate(dept_lines):
-        line_w = dept.getlength(line) / SCALE
-        draw.text((d(left_edge + (right_edge - left_edge - line_w) / 2), d(32 + index * 26)), line, font=dept, fill=NAVY)
-
-    draw.rounded_rectangle((d(28), d(118), d(292), d(156)), radius=d(19), fill=ORANGE)
-    draw.text((d(48), d(128)), "ZONAL CRE PROGRAMME", font=face(SANS_BOLD, 13), fill=WHITE)
-    draw.text((d(28), d(168)), "BEYOND THE", font=face(SERIF, 46), fill=NAVY)
-    diagnosis = face(SERIF, 48)
-    word = "DIAGNOSIS"
-    word_w = diagnosis.getlength(word)
-    highlight = (d(28), d(226), d(28) + word_w + d(28), d(292))
-    draw.rounded_rectangle(highlight, radius=d(10), fill=ORANGE)
-    draw.text((d(42), d(234)), word, font=diagnosis, fill=WHITE)
-    burst(draw, 18, 258, True)
-    burst(draw, 36 + word_w / SCALE + 20, 258, False)
-    sub = face(SANS_SEMI, 16)
-    draw.text((d(28), d(308)), "Disability Assessment, Certification and", font=sub, fill=NAVY)
-    draw.text((d(28), d(330)), "Entitlements under the RPwD Act, 2016", font=sub, fill=NAVY)
-    draw.text((d(28), d(362)), "Zonal CRE", font=face(SANS_BOLD, 18), fill=NAVY)
-    draw.text((d(148), d(362)), "|", font=face(SANS_BOLD, 18), fill=ORANGE)
-    draw.text((d(168), d(362)), "English", font=face(SANS_BOLD, 18), fill=NAVY)
-
-    card = (d(560), d(148), d(1052), d(360))
-    shadow(canvas, card, d(22), alpha=34)
-    draw.rounded_rectangle(card, radius=d(22), fill=NAVY)
-    badge = face(SANS_BOLD, 16)
-    badge_text = "RCI Approval Awaited"
-    badge_w = badge.getlength(badge_text)
-    badge_box = (d(806) - badge_w / 2 - d(22), d(112), d(806) + badge_w / 2 + d(22), d(156))
-    draw.rounded_rectangle(badge_box, radius=d(22), fill=ORANGE)
-    draw.text((badge_box[0] + d(22), d(124)), badge_text, font=badge, fill=WHITE)
-    draw.text((d(588), d(176)), "19", font=face(SERIF, 64), fill=WHITE)
-    draw.line((d(720), d(184), d(720), d(250)), fill=WHITE, width=d(2))
-    draw.text((d(740), d(186)), "December 2026", font=face(SANS_BOLD, 22), fill=WHITE)
-    draw.text((d(740), d(218)), "(Saturday)", font=face(SANS, 18), fill=SOFT)
-    draw.text((d(588), d(272)), "From 10:00 AM IST", font=face(SANS_SEMI, 18), fill=WHITE)
-    draw.text((d(588), d(304)), "Online – Cisco Webex", font=face(SANS_SEMI, 18), fill=WHITE)
-    seats_font = face(SANS_BOLD, 18)
-    seats_text = "50 Seats Limited!"
-    seats_w = seats_font.getlength(seats_text)
-    seats_box = ((d(560) + d(1052) - seats_w) / 2 - d(28), d(336), (d(560) + d(1052) + seats_w) / 2 + d(28), d(384))
-    draw.rounded_rectangle(seats_box, radius=d(24), fill=ORANGE)
-    draw.text((seats_box[0] + d(28), d(348)), seats_text, font=seats_font, fill=WHITE)
-
-    rule = face(SANS_BOLD, 16)
-    rule_text = "RESOURCE SPEAKERS"
-    rule_w = rule.getlength(rule_text)
-    mid = d(width) / 2
-    draw.line((d(80), d(430), mid - rule_w / 2 - d(16), d(430)), fill=ORANGE, width=d(3))
-    draw.line((mid + rule_w / 2 + d(16), d(430), d(1000), d(430)), fill=ORANGE, width=d(3))
-    pill = (mid - rule_w / 2 - d(18), d(408), mid + rule_w / 2 + d(18), d(452))
-    draw.rounded_rectangle(pill, radius=d(22), fill=NAVY)
-    centered(draw, rule_text, rule, 418, WHITE)
-
-    speakers = [
-        ("Dr. Satyapal Puri Goswami", [], TALKS[3]["photo"]),
-        ("Ms. Vasudha K G", ["Assistant Professor,", "Department of Psychiatry,", "KMC Mangaluru (MAHE)"], TALKS[2]["photo"]),
-        ("Dr. Shwetha Prabhu", ["Associate Professor and", "Head of the Department"], TALKS[0]["photo"]),
-        ("Ms. Swathi Chinnasamy", ["Assistant Professor"], TALKS[1]["photo"]),
-    ]
-    name_font = face(SANS_BOLD, 15)
-    role_font = face(SANS, 13)
-    for index, (person, lines, photo) in enumerate(speakers):
-        column = 40 + index * 260
-        portrait = circled(photo, d(112))
-        canvas.alpha_composite(portrait, (d(column + 130) - portrait.width // 2, d(468)))
-        draw = ImageDraw.Draw(canvas)
-        wrapped = wrap(person, name_font, d(155))
-        for line_index, line in enumerate(wrapped):
-            line_w = name_font.getlength(line)
-            draw.text((d(column + 130) - line_w / 2, d(600 + line_index * 20)), line, font=name_font, fill=NAVY)
-        for line_index, line in enumerate(lines):
-            line_w = role_font.getlength(line)
-            draw.text((d(column + 130) - line_w / 2, d(644 + line_index * 18)), line, font=role_font, fill=MUTED)
-
-    schedule = face(SANS_BOLD, 16)
-    schedule_text = "PROGRAMME SCHEDULE"
-    schedule_w = schedule.getlength(schedule_text)
-    schedule_pill = (mid - schedule_w / 2 - d(36), d(728), mid + schedule_w / 2 + d(36), d(772))
-    draw.rounded_rectangle(schedule_pill, radius=d(22), fill=ORANGE)
-    centered(draw, schedule_text, schedule, 740, WHITE)
-
-    talk_lines = {
-        "10:00 AM": ["The RPwD Act, 2016: Rights,", "Responsibilities and Reach – An Overview"],
-        "11:00 AM": ["Know the 21: Types of Disabilities", "Recognised under the RPwD Act, 2016"],
-        "12:00 PM": ["Learning, Intellectual and Autism", "Spectrum Disabilities: Rights and", "Entitlements under the RPwD Act, 2016 –", "A Psychologist’s Perspective"],
-        "01:00 PM": ["Rights and Privileges of Persons", "with Communication Disorders:", "ASLPs to Deal with Legal and", "Legislative Aspects"],
-    }
-    topic_font = face(SANS, 15)
-    time_font = face(SANS_BOLD, 16)
-    who_font = face(SANS_BOLD, 15)
-    table = (d(28), d(792), d(1052), d(1204))
-    draw.rounded_rectangle(table, radius=d(16), outline=LINE, width=d(2))
-    for index, talk in enumerate(TALKS):
-        top = 792 + index * 103
-        if index:
-            draw.line((d(44), d(top), d(1036), d(top)), fill=LINE, width=d(2))
-        lines = talk_lines[talk["time"]]
-        block = 22 * len(lines)
-        text_top = top + (103 - block) / 2
-        time_w = time_font.getlength(talk["time"])
-        draw.text((d(48) + (d(120) - time_w) / 2, d(text_top + 4)), talk["time"], font=time_font, fill=ORANGE)
-        for line_index, line in enumerate(lines):
-            draw.text((d(190), d(text_top + line_index * 22)), line, font=topic_font, fill=INK)
-        who = wrap(talk["person"], who_font, d(168))
-        who_top = top + (103 - 20 * len(who)) / 2
-        for line_index, line in enumerate(who):
-            line_w = who_font.getlength(line)
-            draw.text((d(1032) - line_w, d(who_top + line_index * 20)), line, font=who_font, fill=NAVY)
-
-    draw.line((d(540), d(1248), d(540), d(1336)), fill=LINE, width=d(2))
-    chair = face(SANS_BOLD, 14)
-    chair_text = "Organising Chairperson"
-    chair_w = chair.getlength(chair_text)
-    draw.rounded_rectangle((d(150), d(1232), d(150) + chair_w + d(36), d(1270)), radius=d(19), fill=NAVY)
-    draw.text((d(168), d(1240)), chair_text, font=chair, fill=WHITE)
-    draw.text((d(150), d(1284)), "Dr. Shwetha Prabhu", font=face(SANS_BOLD, 18), fill=NAVY)
-    secretaries = "Organising Secretaries"
-    secretaries_w = chair.getlength(secretaries)
-    draw.rounded_rectangle((d(620), d(1232), d(620) + secretaries_w + d(36), d(1270)), radius=d(19), fill=NAVY)
-    draw.text((d(638), d(1240)), secretaries, font=chair, fill=WHITE)
-    draw.text((d(620), d(1284)), "Ms. Swathi Chinnasamy", font=face(SANS_BOLD, 18), fill=NAVY)
-    draw.text((d(620), d(1312)), "Ms. Rachana R Uchil", font=face(SANS_BOLD, 18), fill=NAVY)
-
-    draw.text((d(36), d(1372)), "Department of Audiology and Speech Language Pathology", font=face(SANS_BOLD, 16), fill=NAVY)
-    draw.text((d(36), d(1398)), "Yenepoya Medical College Hospital", font=face(SANS, 15), fill=INK)
-    draw.text((d(36), d(1424)), "Yenepoya (Deemed to be University)    |    yenepoya-cre.vercel.app", font=face(SANS, 15), fill=MUTED)
-    wave = Image.new("RGBA", canvas.size, (0, 0, 0, 0))
-    wave_draw = ImageDraw.Draw(wave)
-    wave_draw.ellipse((d(760), d(height - 70), d(1280), d(height + 90)), fill=NAVY)
-    wave_draw.ellipse((d(900), d(height - 36), d(1240), d(height + 70)), fill=ORANGE)
-    canvas.alpha_composite(wave)
-    return canvas
+def document(build: Path, body: str) -> Path:
+    page = f"""<!doctype html><html><head><meta charset="utf-8">
+    <link rel="stylesheet" href="poster.css">
+    <style>@page {{ size: {WIDTH}px {HEIGHT}px; margin: 0; }} .sheet {{ break-after: page; }}</style>
+    </head><body>{body}</body></html>"""
+    path = build / f"doc-{abs(hash(body))}.html"
+    path.write_text(page, encoding="utf-8")
+    return path
 
 
-def programme_cover() -> Image.Image:
-    width, height = 1080, 1528
-    canvas = Image.new("RGBA", (d(width), d(height)), WHITE)
-    draw = ImageDraw.Draw(canvas)
-    draw.rectangle((0, 0, d(width), d(12)), fill=ORANGE)
-    draw_logos(canvas, 36, 28)
-    draw.text((d(760), d(36)), "RCI CRE", font=face(SANS_BOLD, 12), fill=ORANGE)
-    draw.text((d(760), d(54)), "APPROVAL AWAITED", font=face(SANS_BOLD, 12), fill=ORANGE)
-
-    draw.text((d(36), d(118)), "BEYOND THE", font=face(SERIF, 48), fill=NAVY)
-    draw.text((d(36), d(176)), "DIAGNOSIS", font=face(SERIF, 48), fill=ORANGE)
-    draw.text((d(36), d(246)), "Disability assessment, certification and entitlements", font=face(SANS, 18), fill=MUTED)
-    draw.text((d(36), d(272)), "under the RPwD Act, 2016.", font=face(SANS, 18), fill=MUTED)
-
-    draw.rounded_rectangle((d(28), d(316), d(1052), d(386)), radius=d(16), fill=NAVY)
-    bits = ["19 December 2026", "From 10:00 IST", "Online · Cisco Webex", "Zonal · English"]
-    for index, bit in enumerate(bits):
-        draw.text((d(52 + index * 250), d(340)), bit, font=face(SANS_BOLD, 16), fill=WHITE if index else FLARE)
-
-    top = 418
-    for talk in TALKS:
-        box = (d(28), d(top), d(1052), d(top + 250))
-        shadow(canvas, box, d(20), alpha=32)
-        draw.rounded_rectangle(box, radius=d(20), fill=WHITE, outline=LINE, width=d(2))
-        portrait = circled(talk["photo"], d(132))
-        canvas.alpha_composite(portrait, (d(48), d(top + 36)))
-        draw = ImageDraw.Draw(canvas)
-        draw.rounded_rectangle((d(250), d(top + 28), d(390), d(top + 58)), radius=d(15), fill=ORANGE)
-        draw.text((d(268), d(top + 34)), talk["time"], font=face(SANS_BOLD, 16), fill=WHITE)
-        draw.text((d(250), d(top + 72)), talk["person"], font=face(SANS_BOLD, 22), fill=NAVY)
-        meta = talk["role"]
-        if talk["crr"]:
-            meta = f"{meta}  ·  {talk['crr']}" if meta else talk["crr"]
-        role_font = face(SANS, 16)
-        role_lines = wrap(meta, role_font, d(740))[:2]
-        for line_index, line in enumerate(role_lines):
-            draw.text((d(250), d(top + 106 + line_index * 22)), line, font=role_font, fill=MUTED)
-        title_font = face(SANS_MED, 18)
-        title_y = top + 112 + len(role_lines) * 22 + 8
-        for line_index, line in enumerate(wrap(talk["title"], title_font, d(740))[:3]):
-            draw.text((d(250), d(title_y + line_index * 24)), line, font=title_font, fill=INK)
-        top += 258
-
-    draw.rectangle((0, d(1468), d(width), d(height)), fill=NAVY)
-    draw.text((d(36), d(1488)), "yenepoya-cre.vercel.app", font=face(SANS_BOLD, 14), fill=WHITE)
-    draw.text((d(860), d(1488)), "1  /  2", font=face(SANS_BOLD, 14), fill=FLARE)
-    return canvas
-
-
-def programme_team() -> Image.Image:
-    width, height = 1080, 1528
-    canvas = Image.new("RGBA", (d(width), d(height)), WHITE)
-    draw = ImageDraw.Draw(canvas)
-    draw.rectangle((0, 0, d(width), d(12)), fill=ORANGE)
-    draw_logos(canvas, 36, 26)
-    draw.text((d(36), d(108)), "Organising team", font=face(SERIF, 40), fill=NAVY)
-    draw.rounded_rectangle((d(680), d(116), d(1044), d(160)), radius=d(22), fill=ORANGE)
-    draw.text((d(704), d(128)), "RCI CRE APPROVAL AWAITED", font=face(SANS_BOLD, 14), fill=WHITE)
-
-    for index, person in enumerate(TEAM):
-        left = 70 + index * 340
-        portrait = circled(person["photo"], d(168))
-        canvas.alpha_composite(portrait, (d(left + 36), d(188)))
-        draw = ImageDraw.Draw(canvas)
-        role = face(SANS_BOLD, 13)
-        role_w = role.getlength(person["role"].upper())
-        draw.text((d(left + 130) - role_w / 2, d(396)), person["role"].upper(), font=role, fill=ORANGE)
-        name = face(SANS_BOLD, 18)
-        name_w = name.getlength(person["name"])
-        draw.text((d(left + 130) - name_w / 2, d(418)), person["name"], font=name, fill=NAVY)
-        detail = face(SANS, 15)
-        lines = []
-        for part in person["detail"].split("\n"):
-            lines.extend(wrap(part, detail, d(300)))
-        if person["crr"]:
-            lines.append(person["crr"])
-        for line_index, line in enumerate(lines[:3]):
-            line_w = detail.getlength(line)
-            draw.text((d(left + 130) - line_w / 2, d(448 + line_index * 20)), line, font=detail, fill=MUTED)
-
-    cards = [
-        ("WHO IT IS FOR", "Audiologists\nSpeech-language pathologists\nSpecial educators and occupational therapists\nAnd others"),
-        ("HOW TO JOIN", "Register on yenepoya-cre.vercel.app.\nPay on Razorpay.\nThen add the payment id or the receipt screenshot."),
-        ("DESK", "yenepoyaaslpconference@gmail.com\n7337798055\naslp@yenepoya.edu.in"),
-        ("PLACE", "The CRE day is online,\non Cisco Webex."),
-    ]
-    for index, (label, body) in enumerate(cards):
-        column = index % 2
-        row = index // 2
-        left = 28 + column * 526
-        top = 560 + row * 250
-        box = (d(left), d(top), d(left + 500), d(top + 232))
-        shadow(canvas, box, d(18), alpha=30)
-        draw.rounded_rectangle(box, radius=d(18), fill=WHITE, outline=LINE, width=d(2))
-        draw.rectangle((d(left), d(top), d(left + 8), d(top + 232)), fill=ORANGE)
-        draw.text((d(left + 28), d(top + 18)), label, font=face(SANS_BOLD, 15), fill=ORANGE)
-        body_font = face(SANS, 17)
-        for line_index, line in enumerate(body.split("\n")):
-            draw.text((d(left + 28), d(top + 52 + line_index * 26)), line, font=body_font, fill=INK)
-
-    draw.rectangle((0, d(1088), d(width), d(1248)), fill=NAVY)
-    emblem = logo(BRAND / "india-emblem.png", d(78))
-    tree = logo(BRAND / "swavlamban.png", d(86))
-    council = logo(BRAND / "rci.png", d(78))
-    canvas.alpha_composite(emblem, (d(40), d(1112)))
-    draw = ImageDraw.Draw(canvas)
-    draw.text((d(130), d(1126)), "GOVERNMENT OF INDIA", font=face(SANS_BOLD, 16), fill=WHITE)
-    draw.text((d(130), d(1152)), "Unique Disability ID  ·  Swavlamban", font=face(SANS, 15), fill=SOFT)
-    canvas.alpha_composite(tree, (d(620), d(1108)))
-    plate = (d(820), d(1104), d(1040), d(1224))
-    draw.rounded_rectangle(plate, radius=d(16), fill=WHITE)
-    canvas.alpha_composite(council, (d(860), d(1124)))
-
-    draw.text((d(36), d(1284)), "Department of Audiology and Speech Language Pathology", font=face(SANS_SEMI, 17), fill=NAVY)
-    draw.text((d(36), d(1312)), "Yenepoya Medical College Hospital", font=face(SANS, 16), fill=INK)
-    draw.text((d(36), d(1338)), "Yenepoya (Deemed to be University)", font=face(SANS, 16), fill=MUTED)
-    draw.rectangle((0, d(1372), d(width), d(height)), fill=NAVY)
-    draw.text((d(36), d(1418)), "CRE-26111620026773   ·   Institute KK048", font=face(SANS_BOLD, 16), fill=WHITE)
-    draw.text((d(940), d(1418)), "2  /  2", font=face(SANS_BOLD, 16), fill=FLARE)
-    return canvas
+def chrome() -> str | None:
+    for candidate in (os.environ.get("CHROME_PATH"), "/usr/bin/google-chrome", "/usr/bin/chromium", "/usr/bin/chromium-browser"):
+        if candidate and Path(candidate).exists():
+            return candidate
+    return None
 
 
 def build() -> None:
     OUT.mkdir(parents=True, exist_ok=True)
-    public = PUBLIC / "brochure"
-    first = downscale(first_flyer())
-    cover = downscale(programme_cover())
-    team = downscale(programme_team())
+    with tempfile.TemporaryDirectory() as tmp:
+        work = Path(tmp)
+        shutil.copy(KIT / "poster.css", work / "poster.css")
+        shutil.copytree(KIT / "fonts", work / "fonts")
+        qr = qr_svg(REGISTER_URL)
 
-    first.save(OUT / "block-the-date.png", "PNG", optimize=True)
-    first.save(OUT / "block-the-date.pdf", "PDF", resolution=150.0)
-    first.save(public / "block-the-date.png", "PNG", optimize=True)
-    first.save(public / "block-the-date.pdf", "PDF", resolution=150.0)
-    save_pptx(OUT / "block-the-date.pptx", [first])
+        jobs = {
+            "block-the-date": [poster(work, qr)],
+            "beyond-the-diagnosis": [flyer_cover(work, qr), flyer_team(work, qr)],
+        }
 
-    cover.save(public / "beyond-the-diagnosis-1.png", "PNG", optimize=True)
-    team.save(public / "beyond-the-diagnosis-2.png", "PNG", optimize=True)
-    cover.save(OUT / "beyond-the-diagnosis.pdf", "PDF", resolution=150.0, save_all=True, append_images=[team])
-    cover.save(public / "beyond-the-diagnosis.pdf", "PDF", resolution=150.0, save_all=True, append_images=[team])
-    save_pptx(OUT / "beyond-the-diagnosis.pptx", [cover, team])
-    print(public / "block-the-date.png")
-    print(public / "beyond-the-diagnosis.pdf")
+        with sync_playwright() as play:
+            path = chrome()
+            browser = play.chromium.launch(executable_path=path) if path else play.chromium.launch()
+            for name, sheets in jobs.items():
+                doc = document(work, "".join(sheets))
+                context = browser.new_context(viewport={"width": WIDTH, "height": HEIGHT}, device_scale_factor=PNG_SCALE)
+                page = context.new_page()
+                page.goto(doc.as_uri())
+                page.evaluate("document.fonts.ready")
+                page.wait_for_timeout(300)
+                elements = page.query_selector_all(".sheet")
+                for index, element in enumerate(elements):
+                    suffix = "" if len(elements) == 1 else f"-{index + 1}"
+                    target = OUT / f"{name}{suffix}.png"
+                    element.screenshot(path=str(target))
+                    Image.open(target).convert("RGB").save(target, "PNG", optimize=True)
+                    print(target.relative_to(ROOT))
+                page.pdf(path=str(OUT / f"{name}.pdf"), width=f"{WIDTH}px", height=f"{HEIGHT}px", print_background=True)
+                print((OUT / f"{name}.pdf").relative_to(ROOT))
+                context.close()
+            browser.close()
 
 
 if __name__ == "__main__":

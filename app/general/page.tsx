@@ -10,8 +10,8 @@ export default function GeneralPage() {
     <div className="pb-24 md:pb-0">
       <PageBanner
         kicker="General information"
-        title="The Act, the guidelines, and the papers for the day"
-        lede="Official texts stay on the government sites that publish them. The schedule, checklist, and certificate note below are handouts for this CRE only."
+        title="Resources for the day"
+        lede="Links to the official RPwD Act and assessment guidelines, a checklist for the day, and certificate information."
       />
       <OfficialMarks />
       <section className="mx-auto max-w-6xl px-4 py-10">
@@ -49,12 +49,11 @@ export default function GeneralPage() {
             <li>A quiet connection for the Webex session from 10:00 IST.</li>
             <li>The 2024 assessment guidelines, if you want them beside you during the sessions.</li>
           </ul>
-          <p className="mt-3 text-sm text-muted">This checklist is a programme handout. It is not a government certificate form.</p>
         </article>
         <article className="rounded-3xl bg-card p-5 ring-1 ring-line">
           <h2 className="font-serif text-2xl text-navy">Certificate</h2>
           <p className="mt-3 leading-7 text-muted">
-            RCI CRE approval is awaited. The reference on file is {programme.acknowledgement}. If the council approves the programme, {programme.organiser} issues the certificate afterwards. Use the same name and CRR number at registration. The download steps will come from {programme.email}. This website does not generate certificates.
+            RCI CRE approval has been applied for (reference {programme.acknowledgement}). Once approved, the {programme.organiser} will issue certificates after the programme. Please register with the same name and CRR number you want on the certificate. Instructions will be emailed from {programme.email}.
           </p>
         </article>
       </section>

@@ -18,14 +18,14 @@ const marks = [
   },
   {
     href: "/#marks",
-    label: "Drawing of the Unique Disability ID card. Fields are blank.",
+    label: "Unique Disability ID card illustration",
     src: "/brand/udid-sample.svg",
     width: 1000,
     height: 580,
   },
   {
     href: "https://swavlambancard.gov.in/",
-    label: "Obscured Unique Disability ID card. Open the Swavlamban Card portal.",
+    label: "Sample UDID card. Open the Swavlamban Card portal.",
     src: "/brand/udid-card.png",
     width: 484,
     height: 240,

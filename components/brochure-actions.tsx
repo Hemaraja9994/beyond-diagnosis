@@ -11,15 +11,15 @@ export function BrochureActions({ kind = "programme" }: { kind?: FlyerKind }) {
         <FlyerActions
           href={programme.brochurePdf}
           download="beyond-the-diagnosis-brochure.pdf"
-          downloadLabel="Download the PDF"
-          shareLabel="WhatsApp the brochure"
+          downloadLabel="Download the flyer"
+          shareLabel="WhatsApp the flyer"
           message={() =>
             [
               programme.title,
               programme.subtitle,
               programme.dateLabel,
-              "Online, on Cisco Webex, from 10:00 IST.",
-              `Brochure: ${fileUrl(programme.brochurePdf)}`,
+              "Zonal CRE · Online on Cisco Webex · from 10:00 AM IST",
+              `Flyer: ${fileUrl(programme.brochurePdf)}`,
               `Register: ${originUrl("/registration")}`,
             ].join("\n")
           }
@@ -29,18 +29,17 @@ export function BrochureActions({ kind = "programme" }: { kind?: FlyerKind }) {
       return (
         <FlyerActions
           href={programme.saveTheDatePdf}
-          download="block-the-date.pdf"
-          downloadLabel="Download the first flyer"
-          shareLabel="WhatsApp this flyer"
+          download="beyond-the-diagnosis-poster.pdf"
+          downloadLabel="Download the poster"
+          shareLabel="WhatsApp the poster"
           message={() =>
             [
               programme.title,
               programme.dateLabel,
-              "Online, Cisco Webex, from 10:00 IST. Zonal. English.",
-              "Resource speakers, organising chairperson and organising secretaries.",
-              "50 seats limited. RCI CRE approval awaited.",
-              `Flyer: ${fileUrl(programme.saveTheDateImage)}`,
-              originUrl("/"),
+              "Zonal CRE · Online on Cisco Webex · from 10:00 AM IST",
+              "Limited to 50 seats. RCI CRE approval awaited.",
+              `Poster: ${fileUrl(programme.saveTheDateImage)}`,
+              `Register: ${originUrl("/registration")}`,
             ].join("\n")
           }
         />

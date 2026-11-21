@@ -24,11 +24,11 @@ export const programme = {
     "https://www.google.com/maps/search/?api=1&query=Yenepoya+Medical+College+Hospital+Deralakatte+Mangaluru",
   mapsEmbed:
     "https://maps.google.com/maps?q=Yenepoya+Medical+College+Hospital,+Deralakatte,+Mangaluru&z=16&output=embed",
-  brochurePdf: "/brochure/beyond-the-diagnosis.pdf?v=8",
-  brochureImage: "/brochure/beyond-the-diagnosis-1.png?v=8",
-  brochureImageBack: "/brochure/beyond-the-diagnosis-2.png?v=8",
-  saveTheDatePdf: "/brochure/block-the-date.pdf?v=8",
-  saveTheDateImage: "/brochure/block-the-date.png?v=8",
+  brochurePdf: "/brochure/beyond-the-diagnosis.pdf?v=9",
+  brochureImage: "/brochure/beyond-the-diagnosis-1.png?v=9",
+  brochureImageBack: "/brochure/beyond-the-diagnosis-2.png?v=9",
+  saveTheDatePdf: "/brochure/block-the-date.pdf?v=9",
+  saveTheDateImage: "/brochure/block-the-date.png?v=9",
   paymentUrl: "https://rzp.io/rzp/FCDoSjbc",
   // Drop the official emblem at public/brand/yenepoya-emblem.svg.
   // Use a file supplied by the university. Do not download a logo from an image site.
@@ -55,7 +55,7 @@ export function deskCoordinatorLine(): string {
 
 export const invitation = [
   "The Department of Audiology and Speech Language Pathology invites audiologists, speech-language pathologists, clinical psychologists, and other rehabilitation professionals to a zonal Continuing Rehabilitation Education programme.",
-  "The day stays with one question: once a diagnosis is made, what does the Rights of Persons with Disabilities Act, 2016 require of assessment, certification, and the entitlements a person can claim?",
+  "The day centres on one question: once a diagnosis is made, what does the Rights of Persons with Disabilities Act, 2016 require of assessment, certification, and the entitlements a person can claim?",
   "Sessions move from the Act as a whole, to the 21 recognised disabilities, to learning, intellectual and autism spectrum disabilities, and then to the legal work of clinicians who serve people with communication disorders.",
 ];
 

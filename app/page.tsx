@@ -20,7 +20,7 @@ export default function HomePage() {
             <p className="mt-4 max-w-xl leading-7 text-muted">{programme.aim}</p>
             <div className="mt-6 flex flex-wrap gap-3">
               <Link id="register" href="/registration" className="ticked inline-flex min-h-12 items-center rounded-lg bg-navy px-5 font-semibold text-white">
-                Register on this site
+                Register now
               </Link>
               <Link id="webex" href="/join" className="ticked inline-flex min-h-12 items-center rounded-lg border border-navy bg-white px-5 font-semibold text-navy">
                 Join on Webex
@@ -32,41 +32,41 @@ export default function HomePage() {
       </section>
 
       <section id="brochure" className="mx-auto max-w-6xl px-4 py-12">
-        <div className="grid items-center gap-8 lg:grid-cols-[280px_1fr]">
-          <div className="grid gap-3">
+        <div className="grid items-center gap-8 lg:grid-cols-[minmax(0,460px)_1fr]">
+          <div className="grid grid-cols-2 gap-3">
             <img
               src={programme.brochureImage}
               alt="Flyer page 1: the programme, with the four speakers and their topics."
-              className="w-full rounded-3xl shadow-lg ring-1 ring-line"
+              className="w-full rounded-2xl shadow-lg ring-1 ring-line"
             />
             <img
               src={programme.brochureImageBack}
               alt="Flyer page 2: the organising team, who it is for, and how to join."
-              className="w-full rounded-3xl shadow-lg ring-1 ring-line"
+              className="w-full rounded-2xl shadow-lg ring-1 ring-line"
             />
           </div>
           <div>
-            <p className="text-sm font-semibold uppercase tracking-[0.16em] text-green">Brochure</p>
+            <p className="text-sm font-semibold uppercase tracking-[0.16em] text-green">Programme flyer</p>
             <h2 className="mt-2 font-serif text-2xl text-navy sm:text-3xl">Download it, or send it on WhatsApp</h2>
             <p className="mt-3 max-w-xl leading-7 text-muted">
-              Two pages. The first has the four sessions, the speakers, and the topics. The second has the organising team and how to join. The download is that flyer as a PDF.
+              Two pages: the four sessions with their speakers, then the organising team and how to join. Download the PDF or send it straight to a colleague.
             </p>
             <div className="mt-5">
               <BrochureActions />
             </div>
           </div>
         </div>
-        <div className="mt-12 grid items-center gap-8 border-t border-line pt-12 lg:grid-cols-[280px_1fr]">
+        <div className="mt-12 grid items-center gap-8 border-t border-line pt-12 lg:grid-cols-[minmax(0,300px)_1fr]">
           <img
             src={programme.saveTheDateImage}
-            alt="One-page flyer: Beyond the Diagnosis, the programme schedule, resource speakers, and the organising chairperson and secretaries."
-            className="w-full rounded-3xl shadow-lg ring-1 ring-line"
+            alt="Poster: Beyond the Diagnosis, 19 December 2026, with the resource speakers, programme schedule and organising team."
+            className="w-full rounded-2xl shadow-lg ring-1 ring-line"
           />
           <div>
-            <p className="text-sm font-semibold uppercase tracking-[0.16em] text-green">Also share</p>
-            <h2 className="mt-2 font-serif text-2xl text-navy sm:text-3xl">Share this flyer</h2>
+            <p className="text-sm font-semibold uppercase tracking-[0.16em] text-green">Poster</p>
+            <h2 className="mt-2 font-serif text-2xl text-navy sm:text-3xl">Spread the word</h2>
             <p className="mt-3 max-w-xl leading-7 text-muted">
-              The one-page poster: highlighted title, RCI mark, approval awaited, 50 seats, the four resource speakers, the schedule, and the organising chairperson and secretaries. The two-page programme flyer above stays as well.
+              The whole day on a single page, sized for WhatsApp, email and notice boards. Seats are limited to 50.
             </p>
             <div className="mt-5">
               <BrochureActions kind="save" />
@@ -98,7 +98,7 @@ export default function HomePage() {
           <h2 className="font-serif text-3xl sm:text-4xl">Three steps</h2>
           <ol className="mt-8 grid gap-8 sm:grid-cols-3">
             {[
-              ["1", "Register on this site"],
+              ["1", "Register now"],
               ["2", "Pay on Razorpay"],
               ["3", "Join Webex"],
             ].map(([step, title]) => (
@@ -109,7 +109,7 @@ export default function HomePage() {
             ))}
           </ol>
           <p className="mt-6 max-w-2xl text-sm leading-6 text-white/80">
-            After you pay, add the payment id or upload the receipt screenshot on the registration page. It stays with your reference.
+            After paying, return to the registration page and add your payment ID or a screenshot of the receipt to complete your registration.
           </p>
         </div>
       </section>
@@ -221,10 +221,10 @@ export default function HomePage() {
             ))}
           </ul>
           <p className="mt-6 leading-7 text-muted">
-            RCI CRE approval is awaited. The reference on file is {programme.acknowledgement}, institute code {programme.instituteCode}. Credit hours, if any, are those the council records once it approves the programme. This site does not state a point value.
+            RCI CRE approval has been applied for (reference {programme.acknowledgement}, institute code {programme.instituteCode}). Credit hours will be as approved by the Rehabilitation Council of India.
           </p>
-          <Link href="/attend" className="ticked mt-4 inline-flex font-semibold text-green">
-            Single link for the RCI listing
+          <Link href="/registration" className="ticked mt-4 inline-flex font-semibold text-green">
+            Reserve your seat
           </Link>
         </div>
       </section>

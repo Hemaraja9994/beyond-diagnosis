@@ -11,7 +11,7 @@ const announcements = [
     label: `${session.time} ${session.meridiem} · ${session.person}`,
     alert: false,
   })),
-  { href: "/registration", label: "Register on this site", alert: false },
+  { href: "/registration", label: "Register now", alert: false },
   { href: "/join", label: "Join on Webex", alert: false },
   { href: "/brochure", label: "Download the brochure", alert: false },
   { href: "/attend", label: `Institute ${programme.instituteCode} · ${programme.acknowledgement}`, alert: false },

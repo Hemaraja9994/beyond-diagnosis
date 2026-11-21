@@ -21,7 +21,7 @@ export default async function RegistrationPage({
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-green">Registration</p>
           <h1 className="mt-3 max-w-3xl font-serif text-3xl leading-tight tracking-tight text-navy sm:text-5xl">Register on this website</h1>
           <p className="mt-4 max-w-2xl leading-7 text-muted">
-            Use the same name and CRR number that should appear on the certificate. Pay on Razorpay after this form is saved, then add the receipt on the confirmation screen.
+            Enter your name and CRR number exactly as they should appear on the certificate. After submitting, pay on Razorpay and add your receipt on the confirmation screen.
           </p>
         </div>
       </section>

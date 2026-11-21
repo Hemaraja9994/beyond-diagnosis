@@ -10,12 +10,12 @@ export default function BrochurePage() {
     <div className="pb-24 md:pb-10">
       <PageBanner
         kicker="Brochure"
-        title="Take the flyer with you"
-        lede="Two pages: the speakers and their topics, then the organising team. A one-page flyer is there to share as well."
+        title="Flyer and poster"
+        lede="Download the programme flyer or the one-page poster, and share them with colleagues and students."
       />
       <div className="mx-auto grid max-w-6xl gap-10 px-4 py-10">
         <div className="grid items-start gap-6 lg:grid-cols-[auto_1fr]">
-          <div className="grid max-w-md gap-4">
+          <div className="grid max-w-xl grid-cols-2 gap-4">
             <img
               src={programme.brochureImage}
               alt="Flyer page 1: the programme, with the four speakers and their topics."
@@ -31,24 +31,24 @@ export default function BrochurePage() {
             <p className="text-sm font-semibold uppercase tracking-[0.16em] text-green">Programme flyer</p>
             <h2 className="mt-2 font-serif text-2xl text-navy sm:text-3xl">Speakers and the organising team</h2>
             <p className="mt-3 max-w-md leading-7 text-muted">
-              The download is a PDF. WhatsApp opens with the brochure link ready to send.
+              A two-page PDF with every session, speaker and topic, followed by the organising team and how to join.
             </p>
             <div className="mt-5">
               <BrochureActions />
             </div>
           </div>
         </div>
-        <div className="grid items-start gap-6 border-t border-line pt-10 lg:grid-cols-[280px_1fr]">
+        <div className="grid items-start gap-6 border-t border-line pt-10 lg:grid-cols-[minmax(0,320px)_1fr]">
           <img
             src={programme.saveTheDateImage}
-            alt="One-page flyer: Beyond the Diagnosis, the programme schedule, resource speakers, and the organising chairperson and secretaries."
+            alt="Poster: Beyond the Diagnosis, 19 December 2026, with the resource speakers, programme schedule and organising team."
             className="w-full rounded-3xl shadow-lg ring-1 ring-line"
           />
           <div>
-            <p className="text-sm font-semibold uppercase tracking-[0.16em] text-green">Also share</p>
-            <h2 className="mt-2 font-serif text-2xl text-navy sm:text-3xl">Share this flyer</h2>
+            <p className="text-sm font-semibold uppercase tracking-[0.16em] text-green">Poster</p>
+            <h2 className="mt-2 font-serif text-2xl text-navy sm:text-3xl">Spread the word</h2>
             <p className="mt-3 max-w-xl leading-7 text-muted">
-              {programme.dateLabel}, from {programme.start}. This is the one-page poster: resource speakers, the schedule, 50 seats, and the organising chairperson and secretaries. The programme flyer above stays.
+              {programme.dateLabel}, from {programme.start}. The whole day on a single page. Seats are limited to 50.
             </p>
             <div className="mt-5">
               <BrochureActions kind="save" />

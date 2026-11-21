@@ -10,7 +10,7 @@ const marks = [
   { id: "session-1100", label: "11:00", hint: "11:00 AM session", href: "/programme#session-1100" },
   { id: "session-1200", label: "12:00", hint: "12:00 PM session", href: "/programme#session-1200" },
   { id: "session-0100", label: "01:00", hint: "01:00 PM session", href: "/programme#session-0100" },
-  { id: "register", label: "Register", hint: "Register on this site", href: "/registration" },
+  { id: "register", label: "Register", hint: "Reserve your seat", href: "/registration" },
   { id: "webex", label: "Webex", hint: "Join on Cisco Webex", href: "/join" },
   { id: "brochure", label: "Brochure", hint: "Download or WhatsApp the brochure", href: "/brochure" },
   { id: "rci", label: "RCI", hint: "RCI CRE approval is awaited", href: "/attend" },

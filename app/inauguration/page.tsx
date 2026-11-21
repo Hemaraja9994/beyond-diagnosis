@@ -14,7 +14,7 @@ export default function InaugurationPage() {
       <PageBanner
         kicker="Opening"
         title="Inauguration"
-        lede="The chief guest and guest of honour will be named here when the department confirms them."
+        lede="Details of the chief guest and guest of honour will be announced soon."
       />
       <div className="mx-auto grid max-w-6xl gap-5 px-4 py-10 sm:grid-cols-2">
         {seats.map((seat) => (

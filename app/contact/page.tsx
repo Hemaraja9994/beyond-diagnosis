@@ -13,7 +13,7 @@ export default function ContactPage() {
       <PageBanner
         kicker="Support"
         title="Write to the organising secretaries"
-        lede="Queries sent here are stored for the organising team and can be exported from the coordinator desk."
+        lede="Questions about registration, payment, certificates or the sessions? Write to us and the organising team will reply by email."
       />
       <div className="mx-auto grid max-w-6xl gap-8 px-4 py-10 lg:grid-cols-[0.8fr_1.2fr]">
         <aside className="rounded-3xl bg-navy p-6 text-white">

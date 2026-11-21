@@ -10,7 +10,7 @@ export default function InstallPage() {
       <PageBanner
         kicker="On your phone"
         title="Install and use it"
-        lede="This is the same programme website, saved to the home screen. There is no separate App Store or Play Store download. Once the icon is there, use it to read the programme, register, and join Webex."
+        lede="Add this programme website to your phone's home screen for one-tap access to the schedule, registration and the Webex session. No app store download is needed."
       />
       <div className="mx-auto max-w-6xl px-4 py-10">
         <InstallApp />

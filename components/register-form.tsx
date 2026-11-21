@@ -101,7 +101,7 @@ export function RegisterForm({ source }: { source: ArrivalSource }) {
         <p className="text-xs font-semibold uppercase tracking-[0.16em] text-green">You are registered</p>
         <h2 className="mt-2 font-serif text-4xl leading-none tracking-tight text-navy sm:text-5xl">{success.reference}</h2>
         <p className="mt-4 max-w-xl leading-7 text-muted">
-          Keep this reference. Pay on Razorpay first. When the receipt is ready, add the payment id or a screenshot here. It stays with this registration.
+          Please note this reference. Complete payment on Razorpay, then add your payment ID or a screenshot of the receipt below to confirm your seat.
         </p>
         <a
           className="mt-5 inline-flex min-h-12 items-center rounded-lg bg-navy px-5 font-semibold text-white"
@@ -197,7 +197,7 @@ export function RegisterForm({ source }: { source: ArrivalSource }) {
         <label className="flex items-start gap-3 text-sm leading-6">
           <input className="mt-1 h-5 w-5" type="checkbox" name="consent" required />
           <span>
-            I agree that {programme.organiser} may keep these details, including the payment note, for registration and attendance. RCI CRE approval is awaited. The reference on file is {programme.acknowledgement}.
+            I agree that {programme.organiser} may keep these details, including the payment note, for registration, attendance and certification.
           </span>
         </label>
       </fieldset>

@@ -9,9 +9,9 @@ export default function FacultyPage() {
   return (
     <div className="pb-20 md:pb-0">
       <PageBanner
-        kicker="Resource persons"
-        title="Who is teaching"
-        lede="Names and CRR numbers are those given for this programme. Portraits are shown for Dr. Shwetha Prabhu, Ms. Swathi Chinnasamy, Vasudha K G, and Dr. Goswami."
+        kicker="Faculty"
+        title="Resource persons"
+        lede="Four experienced clinicians and academics lead the sessions, from the Act as a whole to its application in everyday clinical practice."
       />
       <ul className="mx-auto grid max-w-6xl gap-5 px-4 py-10 sm:grid-cols-2">
         {sessions.map((session) => {
