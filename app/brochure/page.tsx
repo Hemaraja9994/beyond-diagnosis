@@ -48,7 +48,7 @@ export default function BrochurePage() {
             <p className="text-sm font-semibold uppercase tracking-[0.16em] text-green">Also share</p>
             <h2 className="mt-2 font-serif text-2xl text-navy sm:text-3xl">Share this flyer</h2>
             <p className="mt-3 max-w-xl leading-7 text-muted">
-              {programme.dateLabel}, from {programme.start}. Resource speakers are named beside each talk. The organising chairperson and secretaries are at the foot. The programme flyer above stays.
+              {programme.dateLabel}, from {programme.start}. This is the one-page poster: resource speakers, the schedule, 50 seats, and the organising chairperson and secretaries. The programme flyer above stays.
             </p>
             <div className="mt-5">
               <BrochureActions kind="save" />

@@ -66,7 +66,7 @@ export default function HomePage() {
             <p className="text-sm font-semibold uppercase tracking-[0.16em] text-green">Also share</p>
             <h2 className="mt-2 font-serif text-2xl text-navy sm:text-3xl">Share this flyer</h2>
             <p className="mt-3 max-w-xl leading-7 text-muted">
-              One page for WhatsApp. The title is up front, then the schedule with the resource speakers by name, and the organising chairperson and secretaries. Seats are limited. RCI CRE approval is still awaited. The programme flyer above stays as well.
+              The one-page poster: highlighted title, RCI mark, approval awaited, 50 seats, the four resource speakers, the schedule, and the organising chairperson and secretaries. The two-page programme flyer above stays as well.
             </p>
             <div className="mt-5">
               <BrochureActions kind="save" />
