@@ -1,4 +1,4 @@
-const cacheName = "beyond-diagnosis-v8";
+const cacheName = "beyond-diagnosis-v10";
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
