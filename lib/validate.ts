@@ -6,6 +6,7 @@ export type RegistrationDraft = {
   mobile: string;
   crrNumber: string;
   profession: Profession;
+  professionDetail: string;
   designation: string;
   institution: string;
   stateName: string;
@@ -69,6 +70,7 @@ export function parseRegistration(body: unknown): { value: RegistrationDraft } |
   const email = readString(record, "email").toLowerCase();
   const mobile = normaliseMobile(readString(record, "mobile"));
   const professionRaw = readString(record, "profession");
+  const professionDetail = readString(record, "professionDetail");
   const designation = readString(record, "designation");
   const institution = readString(record, "institution");
   const stateName = readString(record, "stateName");
@@ -84,9 +86,12 @@ export function parseRegistration(body: unknown): { value: RegistrationDraft } |
   if (!validEmail(email)) return { error: "Enter a valid email address." };
   if (!mobile) return { error: "Enter a 10-digit Indian mobile number." };
   if (!professionValues.has(professionRaw)) return { error: "Choose a professional category." };
+  if (professionRaw === "other" && (professionDetail.length < 2 || professionDetail.length > 80)) {
+    return { error: "Write the profession in a few words." };
+  }
   if (!crrNumber) return { error: "Enter the CRR number in the form A followed by digits. Students may leave it blank." };
   if (designation.length > 120) return { error: "The designation is too long." };
-  if (institution.length < 2 || institution.length > 160) return { error: "Enter the institution or place of work." };
+  if (institution.length < 2 || institution.length > 160) return { error: "Enter the workplace." };
   if (!stateValues.has(stateName)) return { error: "Choose a state or Union Territory." };
   if (paymentReference.length > 64 || /[^A-Za-z0-9 _./-]/.test(paymentReference)) {
     return { error: "The payment reference can use letters, numbers, and simple punctuation only." };
@@ -104,6 +109,7 @@ export function parseRegistration(body: unknown): { value: RegistrationDraft } |
       mobile,
       crrNumber,
       profession,
+      professionDetail: profession === "other" ? professionDetail : "",
       designation,
       institution,
       stateName,

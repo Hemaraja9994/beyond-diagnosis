@@ -13,7 +13,6 @@ const marks = [
   { id: "register", label: "Register", hint: "Register on this site", href: "/registration" },
   { id: "webex", label: "Webex", hint: "Join on Cisco Webex", href: "/join" },
   { id: "brochure", label: "Brochure", hint: "Download or WhatsApp the brochure", href: "/brochure" },
-  { id: "hospital", label: "Hospital", hint: "Yenepoya Medical College Hospital", href: "/#hospital" },
   { id: "rci", label: "RCI", hint: "RCI CRE approval is awaited", href: "/attend" },
 ] as const;
 

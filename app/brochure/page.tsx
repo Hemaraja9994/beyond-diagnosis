@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { BrochureActions } from "@/components/brochure-actions";
-import { HospitalMap } from "@/components/hospital-map";
 import { PageBanner } from "@/components/page-banner";
 import { programme } from "@/lib/programme";
 
@@ -34,7 +33,6 @@ export default function BrochurePage() {
           </p>
         </div>
       </div>
-      <HospitalMap />
     </div>
   );
 }

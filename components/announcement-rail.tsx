@@ -13,7 +13,6 @@ const announcements = [
   { href: "/registration", label: "Register on this site", alert: false },
   { href: "/join", label: "Join on Webex", alert: false },
   { href: "/brochure", label: "Download the brochure", alert: false },
-  { href: "/#hospital", label: programme.hospital, alert: false },
   { href: "/attend", label: `Institute ${programme.instituteCode} · ${programme.acknowledgement}`, alert: false },
 ] as const;
 

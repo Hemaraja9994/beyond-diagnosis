@@ -34,32 +34,32 @@ SESSIONS = [
         "time": "10:00 AM",
         "title": "The RPwD Act, 2016: Rights, Responsibilities and Reach – An Overview",
         "person": "Dr. Shwetha Prabhu",
-        "meta": "CRR A18456  ·  Organising chairperson",
-        "topic": "The rights the Act names, the duties it places on institutions, and how far those duties reach into rehabilitation practice.",
+        "designation": "Associate Professor and Head of the Department",
+        "crr": "CRR A18456",
         "photo": PUBLIC / "department" / "shwetha-prabhu.jpg",
     },
     {
         "time": "11:00 AM",
         "title": "Know the 21: Types of Disabilities Recognised under the RPwD Act, 2016",
         "person": "Ms. Swathi Chinnasamy",
-        "meta": "CRR A81760  ·  Organising secretary",
-        "topic": "The specified disabilities a certificate can name, so assessment follows the schedule of the Act.",
+        "designation": "Assistant Professor",
+        "crr": "CRR A81760",
         "photo": PUBLIC / "faculty" / "swathi-c.jpg",
     },
     {
         "time": "12:00 PM",
         "title": "Learning, Intellectual and Autism Spectrum Disabilities: Rights and Entitlements under the RPwD Act, 2016 – A Psychologist’s Perspective",
         "person": "Ms. Vasudha K G",
-        "meta": "CRR A85535  ·  Clinical psychologist, KMC Mangaluru (MAHE)",
-        "topic": "Learning disability, intellectual disability, and autism spectrum disorder: certification, rights, and entitlements.",
+        "designation": "Assistant Professor, Department of Psychiatry, KMC Mangaluru (MAHE)",
+        "crr": "CRR A85535",
         "photo": PUBLIC / "faculty" / "vasudha-kg.jpg",
     },
     {
         "time": "01:00 PM",
         "title": "Rights and Privileges of Persons with Communication Disorders: ASLPs to Deal with Legal and Legislative Aspects",
         "person": "Dr. Satyapal Puri Goswami",
-        "meta": "CRR A00260",
-        "topic": "Communication disorders, and the legal and legislative work audiologists and speech-language pathologists are asked to do.",
+        "designation": "",
+        "crr": "CRR A00260",
         "photo": PUBLIC / "faculty" / "satyapal-goswami.jpg",
     },
 ]
@@ -68,13 +68,13 @@ TEAM = [
     {
         "name": "Dr. Shwetha Prabhu",
         "role": "Organising chairperson",
-        "detail": "Associate Professor and Head of the Department",
+        "detail": "Associate Professor and Head of the Department\nCRR A18456",
         "photo": PUBLIC / "department" / "shwetha-prabhu.jpg",
     },
     {
         "name": "Ms. Swathi Chinnasamy",
         "role": "Organising secretary",
-        "detail": "Resource person  ·  CRR A81760",
+        "detail": "Assistant Professor\nCRR A81760",
         "photo": PUBLIC / "faculty" / "swathi-c.jpg",
     },
     {
@@ -233,11 +233,12 @@ def build() -> Path:
     top = 3.86
     for session in SESSIONS:
         title_lines = lines_for(session["title"], 12, 5.35)
-        topic_lines = lines_for(session["topic"], 10, 5.35)
-        height = 0.16 + 0.2 + title_lines * 0.23 + 0.22 + 0.16 + topic_lines * 0.16 + 0.1
-        height = max(1.38, height)
+        designation = session["designation"]
+        designation_lines = lines_for(designation, 11, 5.35) if designation else 0
+        height = 0.16 + 0.2 + title_lines * 0.23 + 0.22 + designation_lines * 0.18 + 0.2 + 0.1
+        height = max(1.28, height)
         rrect(cover, 0.28, top, 7.71, height, PAPER, 0.08, LINE)
-        photo = min(1.16, height - 0.24)
+        photo = min(1.12, height - 0.2)
         cover.shapes.add_picture(str(thumbs[str(session["photo"])]), Inches(0.42), Inches(top + (height - photo) / 2), height=Inches(photo))
         cursor = top + 0.1
         text(cover, 1.78, cursor, 5.9, 0.2, session["time"], 11, ORANGE, True)
@@ -245,11 +246,12 @@ def build() -> Path:
         text(cover, 1.78, cursor, 5.9, title_lines * 0.23, session["title"], 12, NAVY, True)
         cursor += title_lines * 0.23 + 0.02
         text(cover, 1.78, cursor, 5.9, 0.2, session["person"], 12, INK, True)
-        cursor += 0.2
-        text(cover, 1.78, cursor, 5.9, 0.18, session["meta"], 10, MUTED)
-        cursor += 0.18
-        text(cover, 1.78, cursor, 5.9, topic_lines * 0.16 + 0.04, session["topic"], 10, MUTED)
-        top += height + 0.08
+        cursor += 0.22
+        if designation:
+            text(cover, 1.78, cursor, 5.9, designation_lines * 0.18, designation, 11, MUTED)
+            cursor += designation_lines * 0.18
+        text(cover, 1.78, cursor, 5.9, 0.18, session["crr"], 11, MUTED)
+        top += height + 0.1
 
     rect(cover, 0, 11.22, 8.27, 0.47, NAVY)
     text(cover, 0.32, 11.34, 6.2, 0.24, "yenepoya-cre.vercel.app", 13, WHITE, True)
@@ -267,20 +269,20 @@ def build() -> Path:
         team.shapes.add_picture(str(thumbs[str(person["photo"])]), Inches(left + 0.28), Inches(2.52), height=Inches(1.85))
         text(team, left, 4.48, 2.45, 0.22, person["role"].upper(), 10, ORANGE, True, align="center")
         text(team, left, 4.72, 2.45, 0.48, person["name"], 14, NAVY, True, align="center")
-        text(team, left, 5.22, 2.45, 0.48, person["detail"], 11, MUTED, align="center")
+        text(team, left, 5.22, 2.45, 0.66, person["detail"], 11, MUTED, align="center")
 
     cards = [
-        ("WHO IT IS FOR", "Audiologists\nSpeech-language pathologists\nClinical psychologists\nOther rehabilitation professionals"),
-        ("HOW TO JOIN", "Register on yenepoya-cre.vercel.app.\nPay on Razorpay.\nAdd the payment id or the receipt screenshot on the same form."),
+        ("WHO IT IS FOR", "Audiologists\nSpeech-language pathologists\nSpecial educators and occupational therapists\nAnd others"),
+        ("HOW TO JOIN", "Register on yenepoya-cre.vercel.app.\nPay on Razorpay.\nThen add the payment id or the receipt screenshot."),
         ("DESK", "yenepoyaaslpconference@gmail.com\n7337798055\naslp@yenepoya.edu.in"),
-        ("PLACE", "The CRE day is online, on Cisco Webex.\nYenepoya Medical College Hospital, University Road, Deralakatte, Mangaluru 575018, for anyone coming in person."),
+        ("PLACE", "The CRE day is online, on Cisco Webex."),
     ]
     for index, (label, body) in enumerate(cards):
         column = index % 2
         row = index // 2
         left = 0.28 + column * 3.95
-        card_top = 5.82 + row * 1.72
-        rrect(team, left, card_top, 3.78, 1.6, PAPER, 0.1, LINE)
+        card_top = 5.98 + row * 1.58
+        rrect(team, left, card_top, 3.78, 1.48, PAPER, 0.1, LINE)
         text(team, left + 0.16, card_top + 0.12, 3.46, 0.22, label, 11, ORANGE, True)
         text(team, left + 0.16, card_top + 0.38, 3.46, 1.12, body, 12, INK)
 

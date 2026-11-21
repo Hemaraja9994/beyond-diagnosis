@@ -21,7 +21,7 @@ export default async function RegistrationPage({
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-green">Registration</p>
           <h1 className="mt-3 max-w-3xl font-serif text-4xl leading-[0.95] tracking-tight text-navy sm:text-6xl">Register on this website</h1>
           <p className="mt-4 max-w-2xl leading-7 text-muted">
-            Use the same name and CRR number that should appear on the certificate. The payment id and the receipt screenshot are saved here. You do not send them by email.
+            Use the same name and CRR number that should appear on the certificate. Pay on Razorpay after this form is saved, then add the receipt on the confirmation screen.
           </p>
         </div>
       </section>
@@ -33,7 +33,7 @@ export default async function RegistrationPage({
             {[
               ["1", "Register and keep the reference shown on this page."],
               ["2", "Pay on Razorpay. The amount is the one shown there."],
-              ["3", "Paste the payment id or upload the screenshot in the form."],
+              ["3", "After payment, add the payment id or the screenshot on the confirmation screen."],
             ].map(([step, text]) => (
               <li key={step} className="grid grid-cols-[2rem_1fr] gap-2 text-sm leading-6">
                 <span className="font-serif text-2xl text-green">{step}</span>

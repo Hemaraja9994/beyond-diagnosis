@@ -17,6 +17,7 @@ export function RegisterForm({ source }: { source: ArrivalSource }) {
   const [paymentMessage, setPaymentMessage] = useState("");
   const [preview, setPreview] = useState("");
   const [proofName, setProofName] = useState("");
+  const [profession, setProfession] = useState("");
 
   function onProof(event: React.ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
@@ -36,8 +37,6 @@ export function RegisterForm({ source }: { source: ArrivalSource }) {
     setPending(true);
     const form = new FormData(event.currentTarget);
     const email = String(form.get("email") ?? "");
-    const paymentReference = String(form.get("paymentReference") ?? "").trim();
-    const proof = form.get("proof");
     const response = await fetch("/api/register", {
       method: "POST",
       headers: { "content-type": "application/json" },
@@ -47,10 +46,11 @@ export function RegisterForm({ source }: { source: ArrivalSource }) {
         mobile: form.get("mobile"),
         crrNumber: form.get("crrNumber"),
         profession: form.get("profession"),
+        professionDetail: form.get("professionDetail"),
         designation: form.get("designation"),
         institution: form.get("institution"),
         stateName: form.get("stateName"),
-        paymentReference,
+        paymentReference: "",
         accessNeeds: form.get("accessNeeds"),
         fax_number: form.get("fax_number"),
         source,
@@ -64,16 +64,9 @@ export function RegisterForm({ source }: { source: ArrivalSource }) {
       return;
     }
 
-    let proofSaved = false;
-    let note = "";
-    if ((proof instanceof File && proof.size > 0) || paymentReference !== "") {
-      const saved = await sendPayment(body.reference, email, paymentReference, proof instanceof File ? proof : null);
-      proofSaved = saved.ok && proof instanceof File && proof.size > 0;
-      note = saved.ok ? "Payment details are saved on this registration." : saved.error;
-    }
     setPending(false);
-    setPaymentMessage(note);
-    setSuccess({ reference: body.reference, email, paymentReference, proofSaved });
+    setPaymentMessage("");
+    setSuccess({ reference: body.reference, email, paymentReference: "", proofSaved: false });
     setPreview("");
     setProofName("");
   }
@@ -108,7 +101,7 @@ export function RegisterForm({ source }: { source: ArrivalSource }) {
         <p className="text-xs font-semibold uppercase tracking-[0.16em] text-green">You are registered</p>
         <h2 className="mt-2 font-serif text-4xl leading-none tracking-tight text-navy sm:text-5xl">{success.reference}</h2>
         <p className="mt-4 max-w-xl leading-7 text-muted">
-          Keep this reference. Pay on Razorpay, then add the payment id or a screenshot here. It is stored with this registration, so there is no separate email to send.
+          Keep this reference. Pay on Razorpay first. When the receipt is ready, add the payment id or a screenshot here. It stays with this registration.
         </p>
         <a
           className="mt-5 inline-flex min-h-12 items-center rounded-lg bg-navy px-5 font-semibold text-white"
@@ -148,7 +141,13 @@ export function RegisterForm({ source }: { source: ArrivalSource }) {
         <Field label="Mobile" name="mobile" type="tel" autoComplete="tel" required hint="10-digit Indian mobile number" />
         <label className="grid gap-1 text-sm font-semibold text-navy">
           Professional category
-          <select className="field" name="profession" required defaultValue="">
+          <select
+            className="field"
+            name="profession"
+            required
+            value={profession}
+            onChange={(event) => setProfession(event.target.value)}
+          >
             <option value="" disabled>
               Choose one
             </option>
@@ -159,6 +158,9 @@ export function RegisterForm({ source }: { source: ArrivalSource }) {
             ))}
           </select>
         </label>
+        {profession === "other" ? (
+          <Field label="Your profession" name="professionDetail" required hint="A few words, for example private practitioner." />
+        ) : null}
         <Field label="CRR number" name="crrNumber" hint="Example A81760. Students may leave this blank." />
       </fieldset>
       <fieldset className="grid gap-4 rounded-3xl bg-white p-5 ring-1 ring-line">
@@ -166,7 +168,7 @@ export function RegisterForm({ source }: { source: ArrivalSource }) {
           <span className="mr-2 text-green">2</span>Where you work
         </legend>
         <Field label="Designation" name="designation" />
-        <Field label="Institution" name="institution" required />
+        <Field label="Workplace" name="institution" required hint="A college, hospital, clinic, or private practice." />
         <label className="grid gap-1 text-sm font-semibold text-navy">
           State or Union Territory
           <select className="field" name="stateName" required defaultValue="">
@@ -186,9 +188,8 @@ export function RegisterForm({ source }: { source: ArrivalSource }) {
           <span className="mr-2 text-green">3</span>Payment and access
         </legend>
         <p className="text-sm leading-6 text-muted">
-          The fee is collected on Razorpay, not on this form. If you have already paid, add the payment id, a screenshot, or both. Card numbers are never entered here, and you do not email the receipt.
+          Register first. The next screen opens Razorpay, and only then asks for the payment id or the receipt screenshot. Card numbers are never entered here.
         </p>
-        <PaymentFields preview={preview} proofName={proofName} onProof={onProof} />
         <label className="grid gap-1 text-sm font-semibold text-navy">
           Access needs for the online session
           <textarea className="field min-h-28" name="accessNeeds" maxLength={500} />

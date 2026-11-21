@@ -16,6 +16,7 @@ export type Registration = {
   mobile: string;
   crrNumber: string;
   profession: Profession;
+  professionDetail: string;
   designation: string;
   institution: string;
   stateName: string;
@@ -54,7 +55,7 @@ export async function listRegistrations(): Promise<Registration[]> {
   if (storageMode() === "blob") return listJson("registrations/", parseRegistration);
   await ensurePaymentColumns();
   const rows = await sql<Record<string, unknown>>(
-    "select id, reference, created_at, full_name, email, mobile, crr_number, profession, designation, institution, state_name, payment_reference, payment_proof, access_needs, source, consent from registrations order by created_at desc",
+    "select id, reference, created_at, full_name, email, mobile, crr_number, profession, profession_detail, designation, institution, state_name, payment_reference, payment_proof, access_needs, source, consent from registrations order by created_at desc",
   );
   return rows.map(registrationFromRow);
 }
@@ -186,6 +187,7 @@ async function ensurePaymentColumns(): Promise<void> {
   if (columnsReady || storageMode() === "blob") return;
   await sql("alter table registrations add column if not exists payment_proof text not null default ''");
   await sql("alter table registrations add column if not exists payment_proof_data text not null default ''");
+  await sql("alter table registrations add column if not exists profession_detail text not null default ''");
   columnsReady = true;
 }
 
@@ -199,9 +201,9 @@ async function createRegistrationSql(draft: RegistrationDraft): Promise<{ refere
   try {
     await sql(
       `insert into registrations (
-        id, reference, created_at, full_name, email, mobile, crr_number, profession, designation,
+        id, reference, created_at, full_name, email, mobile, crr_number, profession, profession_detail, designation,
         institution, state_name, payment_reference, access_needs, source, consent
-      ) values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15)`,
+      ) values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16)`,
       [
         record.id,
         record.reference,
@@ -211,6 +213,7 @@ async function createRegistrationSql(draft: RegistrationDraft): Promise<{ refere
         record.mobile,
         record.crrNumber,
         record.profession,
+        record.professionDetail,
         record.designation,
         record.institution,
         record.stateName,
@@ -300,6 +303,7 @@ function registrationFromRow(row: Record<string, unknown>): Registration {
     mobile: String(row.mobile),
     crrNumber: String(row.crr_number),
     profession: String(row.profession) as Profession,
+    professionDetail: String(row.profession_detail ?? ""),
     designation: String(row.designation ?? ""),
     institution: String(row.institution),
     stateName: String(row.state_name),
@@ -316,6 +320,7 @@ function parseRegistration(value: unknown): Registration | null {
   const row = value as Registration;
   if (typeof row.reference !== "string" || typeof row.email !== "string") return null;
   if (typeof row.paymentProof !== "string") row.paymentProof = "";
+  if (typeof row.professionDetail !== "string") row.professionDetail = "";
   return row;
 }
 

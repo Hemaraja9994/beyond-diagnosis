@@ -1,11 +1,10 @@
 import Link from "next/link";
 import { BrochureActions } from "@/components/brochure-actions";
-import { HospitalMap } from "@/components/hospital-map";
 import { OfficialMarks } from "@/components/official-marks";
 import { PassCard } from "@/components/pass-card";
 import { Portrait } from "@/components/portrait";
 import { departmentUrl } from "@/lib/department";
-import { audience, committee, facultyProfile, invitation, objectives, programme, sessionTickId, sessions } from "@/lib/programme";
+import { audience, committee, invitation, objectives, programme, sessionTickId, sessions } from "@/lib/programme";
 
 export default function HomePage() {
   return (
@@ -56,8 +55,6 @@ export default function HomePage() {
           </div>
         </div>
       </section>
-
-      <HospitalMap />
 
       <OfficialMarks />
 
@@ -175,10 +172,8 @@ export default function HomePage() {
                   className="h-16 w-16 overflow-hidden rounded-2xl text-xl"
                 />
                 <p className="mt-4 font-serif text-xl text-navy">{session.person}</p>
+                {session.designation ? <p className="mt-1 text-sm leading-6 text-muted">{session.designation}</p> : null}
                 <p className="text-sm text-muted">CRR {session.crr}</p>
-                {facultyProfile(session.crr) ? (
-                  <p className="mt-1 text-sm leading-6 text-muted">{facultyProfile(session.crr)?.role}</p>
-                ) : null}
                 <p className="mt-2 text-sm leading-6">{session.time} {session.meridiem} IST</p>
               </li>
             ))}

@@ -88,7 +88,10 @@ export default async function AdminPage() {
                       <td className="px-3 py-3">{row.fullName}</td>
                       <td className="px-3 py-3">{row.email}</td>
                       <td className="px-3 py-3">{row.crrNumber}</td>
-                      <td className="px-3 py-3">{professionLabel(row.profession as Profession)}</td>
+                      <td className="px-3 py-3">
+                        {professionLabel(row.profession as Profession)}
+                        {row.professionDetail ? <span className="block text-muted">{row.professionDetail}</span> : null}
+                      </td>
                       <td className="px-3 py-3">
                         <p>{row.paymentReference || "—"}</p>
                         {row.paymentProof ? (

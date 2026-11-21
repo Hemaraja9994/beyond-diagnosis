@@ -28,13 +28,14 @@ export default function FacultyPage() {
                 <div>
                   <h2 className="font-serif text-2xl text-navy">{session.person}</h2>
                   {profile ? <p className="text-sm text-muted">{profile.fullName}</p> : null}
+                  {session.designation ? <p className="mt-1 text-sm leading-6 text-navy">{session.designation}</p> : null}
                   <p className="text-sm text-muted">CRR {session.crr}</p>
                   <p className="mt-1 text-sm font-semibold text-green">
                     {session.time} {session.meridiem} IST
                   </p>
                 </div>
               </div>
-              {profile ? (
+              {profile && !session.designation ? (
                 <p className="mt-4 text-sm leading-6">
                   <span className="font-semibold text-navy">{profile.role}</span>
                   <span className="text-muted">, {profile.affiliation}.</span>

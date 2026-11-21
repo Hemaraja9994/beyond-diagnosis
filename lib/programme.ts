@@ -24,9 +24,9 @@ export const programme = {
     "https://www.google.com/maps/search/?api=1&query=Yenepoya+Medical+College+Hospital+Deralakatte+Mangaluru",
   mapsEmbed:
     "https://maps.google.com/maps?q=Yenepoya+Medical+College+Hospital,+Deralakatte,+Mangaluru&z=16&output=embed",
-  brochurePdf: "/brochure/beyond-the-diagnosis.pdf?v=3",
-  brochureImage: "/brochure/beyond-the-diagnosis-1.png?v=3",
-  brochureImageBack: "/brochure/beyond-the-diagnosis-2.png?v=3",
+  brochurePdf: "/brochure/beyond-the-diagnosis.pdf?v=4",
+  brochureImage: "/brochure/beyond-the-diagnosis-1.png?v=4",
+  brochureImageBack: "/brochure/beyond-the-diagnosis-2.png?v=4",
   paymentUrl: "https://rzp.io/rzp/FCDoSjbc",
   // Drop the official emblem at public/brand/yenepoya-emblem.svg.
   // Use a file supplied by the university. Do not download a logo from an image site.
@@ -47,7 +47,10 @@ export type Profession =
   | "audiologist"
   | "speech_language_pathologist"
   | "clinical_psychologist"
+  | "special_educator"
+  | "occupational_therapist"
   | "rehabilitation_professional"
+  | "other"
   | "student";
 
 export type ArrivalSource = "rci" | "site" | "join" | "direct";
@@ -56,7 +59,9 @@ export const professions: { value: Profession; label: string }[] = [
   { value: "audiologist", label: "Audiologist" },
   { value: "speech_language_pathologist", label: "Speech-language pathologist" },
   { value: "clinical_psychologist", label: "Clinical psychologist" },
-  { value: "rehabilitation_professional", label: "Other rehabilitation professional" },
+  { value: "special_educator", label: "Special educator" },
+  { value: "occupational_therapist", label: "Occupational therapist" },
+  { value: "other", label: "Other" },
   { value: "student", label: "Student" },
 ];
 
@@ -68,8 +73,14 @@ export function professionLabel(profession: Profession): string {
       return "Speech-language pathologist";
     case "clinical_psychologist":
       return "Clinical psychologist";
+    case "special_educator":
+      return "Special educator";
+    case "occupational_therapist":
+      return "Occupational therapist";
     case "rehabilitation_professional":
       return "Other rehabilitation professional";
+    case "other":
+      return "Other";
     case "student":
       return "Student";
     default: {
@@ -112,6 +123,7 @@ export const sessions = [
     crr: "A18456",
     initials: "SP",
     photo: "/department/shwetha-prabhu.jpg",
+    designation: "Associate Professor and Head of the Department",
     relevance:
       "Opens the Act: the rights it names, the duties it places on institutions, and how far those duties reach into rehabilitation practice.",
   },
@@ -123,6 +135,7 @@ export const sessions = [
     crr: "A81760",
     initials: "SC",
     photo: "/faculty/swathi-c.jpg",
+    designation: "Assistant Professor",
     relevance:
       "Walks through the specified disabilities a certificate can name, so assessment is matched to the schedule of the Act rather than to habit.",
   },
@@ -135,6 +148,7 @@ export const sessions = [
     crr: "A85535",
     initials: "VK",
     photo: "/faculty/vasudha-kg.jpg",
+    designation: "Assistant Professor, Department of Psychiatry, KMC Mangaluru (MAHE)",
     relevance:
       "Takes learning disability, intellectual disability, and autism spectrum disorder from a psychologist’s side of certification, rights, and entitlements.",
   },
@@ -147,6 +161,7 @@ export const sessions = [
     crr: "A00260",
     initials: "SG",
     photo: "/faculty/satyapal-goswami.jpg",
+    designation: "",
     relevance:
       "Turns to communication disorders and the legal and legislative work audiologists and speech-language pathologists are asked to do.",
   },
@@ -155,11 +170,9 @@ export const sessions = [
 export const facultyProfiles = {
   A85535: {
     fullName: "Vasudha Kadikadka Gangadhara",
-    role: "Assistant Professor and Consultant Clinical Psychologist",
-    affiliation:
-      "Department of Psychiatry, Kasturba Medical College, Mangaluru (Manipal Academy of Higher Education)",
-    focus:
-      "Clinical psychology, mental health, social and emotional learning, stress and coping, relationship dynamics, and cognitive and psychological well-being.",
+    role: "Assistant Professor, Department of Psychiatry",
+    affiliation: "Kasturba Medical College, Mangaluru (Manipal Academy of Higher Education)",
+    focus: "Department of Psychiatry, Kasturba Medical College, Mangaluru (MAHE).",
     profileUrl: "https://www.manipal.edu/faculty/vasudha-k-g",
     profileLabel: "MAHE faculty page",
     scholarUrl: "https://scholar.google.com/citations?user=d-N4iWYAAAAJ&hl=en",
@@ -184,7 +197,9 @@ export const audience = [
   "Audiologists",
   "Speech-language pathologists",
   "Clinical psychologists",
-  "Other rehabilitation professionals",
+  "Special educators",
+  "Occupational therapists",
+  "Others",
 ];
 
 export const states = [
