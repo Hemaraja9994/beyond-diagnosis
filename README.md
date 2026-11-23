@@ -10,7 +10,7 @@ A mobile-first site for the zonal Continuing Rehabilitation Education programme 
 - **Organising chairperson:** Dr. Shwetha Prabhu
 - **Organising secretaries:** Ms. Swathi Chinnasamy and Ms. Rachana R Uchil, yenepoyaaslpconference@gmail.com
 
-Registration and queries are collected on this site. Payment stays on the Razorpay link supplied by the department. The coordinator desk exports both lists as CSV and publishes the Webex address.
+Participants pay ₹354 on the department's Razorpay page first, then register here with the payment ID and the receipt. Receipts, CRR certificates and RCI confirmation mails are read automatically on the site's own server (free Tesseract OCR; nothing goes to an outside AI service). Coordinators confirm payments, RCI registrations, Webex attendance, the RCI online examination and CRE points on the desk, and participants see their status and download an A4 acknowledgement PDF.
 
 ## Run locally
 
@@ -29,7 +29,11 @@ Open http://127.0.0.1:3457. Without those two variables the public site still ru
 | `/programme` | The four sessions |
 | `/faculty` | Resource persons |
 | `/department` | Organising department, services, and current staff |
-| `/registration` | On-site registration |
+| `/registration` | Pay first, then register with payment ID + receipt (+ optional CRR certificate, RCI mail) |
+| `/registration/rci` | Upload the RCI confirmation mail later (claiming CRE points) |
+| `/registration/status` | Look up status with reference + email; download / WhatsApp the acknowledgement PDF |
+| `/registration/update` | Older registrations add title, CRR, receipt or files |
+| `/status/[reference]?t=…` | Participant's private status page and CRE journey (QR on the PDF opens it) |
 | `/attend` | Single link for an RCI listing: register or join |
 | `/join` | Opens the Cisco Webex session |
 | `/general` | Official Act, guidelines, and programme handouts |
@@ -40,12 +44,25 @@ Give RCI `/attend` if the listing allows one URL. Give `/registration?from=rci` 
 
 ## Coordinator desk
 
-Sign in with `yenepoyaaslpconference@gmail.com` and the access code. Ms. Swathi Chinnasamy, Ms. Rachana R Uchil, and Ms. Pavana M J share that mailbox and that code. The desk can:
+`/admin`. Each coordinator signs in with her own username — `rachana`, `swathi`, `pavana` — and password. Starting passwords are kept in `lib/desk-defaults.ts` only as slow scrypt hashes; a password saved on the desk (stored as a hash in the site's database) replaces the starting one. The owner can still sign in with `yenepoyaaslpconference@gmail.com` and `ADMIN_ACCESS_CODE` to reset any coordinator's password.
 
-- export registrations and queries as CSV
-- save a Cisco Webex link (`https://…webex.com/…`), which `/join` then opens
+The desk can:
 
-To let another organiser email in, set `ADMIN_EMAILS` to a comma-separated list. Do not commit the access code or the session secret.
+- search and filter registrations (needs attention, payment confirmed, claiming CRE, RCI awaited)
+- see the automatic check (Verified / Needs review / Mismatch) with details, open the receipt, CRR certificate and RCI mail, and check again
+- mark payment verified or rejected, RCI registration confirmed or rejected, Webex attendance, RCI online exam passed / not passed, CRE points credited — every decision is stamped with the coordinator's name, and a coordinator's decision always wins over the automatic check
+- bulk-update by pasting emails, CRR numbers or references (e.g. the Webex attendance report)
+- WhatsApp or email one participant, open their status page / PDF
+- download the participant register (A4 landscape PDF or Word, with logo and signature lines), CSV of everything, the RCI list of CRE claimants, and queries
+- publish the Webex link
+
+## Optional: Razorpay check
+
+If the university's Razorpay account can provide API keys, set `RAZORPAY_KEY_ID` and `RAZORPAY_KEY_SECRET` and each `pay_…` id is also confirmed with Razorpay (captured, ₹354). Without them the receipt is read by OCR only.
+
+## Programme wording to update later
+
+`lib/programme.ts`: `rciApprovalLine` (printed on acknowledgements), `feeRupees`, `whatsappUrl`, `creSteps` and `dayFormat` (Webex + Slido, RCI online exam, points on the RCI profile).
 
 ## Photographs and the emblem
 

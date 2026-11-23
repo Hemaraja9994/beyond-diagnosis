@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { OfficialMarks } from "@/components/official-marks";
+import { CreSteps } from "@/components/cre-steps";
 import { PageBanner } from "@/components/page-banner";
 import { officialLinks, programme, sessions } from "@/lib/programme";
 
@@ -28,6 +29,9 @@ export default function GeneralPage() {
           ))}
         </ul>
       </section>
+      <div className="mx-auto max-w-6xl px-4 pb-6">
+        <CreSteps />
+      </div>
       <section className="mx-auto grid max-w-6xl gap-4 px-4 pb-10 lg:grid-cols-3" id="downloads">
         <article className="card p-5">
           <h2 className="font-display text-2xl text-navy">Schedule</h2>
@@ -47,7 +51,8 @@ export default function GeneralPage() {
           <ul className="mt-3 grid list-disc gap-2 pl-5 text-sm leading-6">
             <li>Your CRR number, written as it appears on the Central Rehabilitation Register.</li>
             <li>The name you want on the certificate.</li>
-            <li>A quiet connection for the Webex session from 10:00 IST.</li>
+            <li>A quiet connection for the Webex session from 10:00 IST, with your Webex display name the same as your registered name.</li>
+            <li>Slido opens inside Webex for questions and polls — no separate download.</li>
             <li>The 2024 assessment guidelines, if you want them beside you during the sessions.</li>
           </ul>
         </article>

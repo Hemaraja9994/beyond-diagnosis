@@ -30,6 +30,10 @@ export const programme = {
   saveTheDatePdf: "/brochure/block-the-date.pdf?v=12",
   saveTheDateImage: "/brochure/block-the-date.png?v=12",
   paymentUrl: "https://rzp.io/rzp/FCDoSjbc",
+  /** One fee for everyone, as shown on the Razorpay page (Yenepoya Deemed to be University). */
+  feeRupees: 354,
+  feeLabel: "₹354",
+  whatsappUrl: "https://chat.whatsapp.com/HUwQZlIs0zB90pSS3EC2r1",
   // Drop the official emblem at public/brand/yenepoya-emblem.svg.
   // Use a file supplied by the university. Do not download a logo from an image site.
 } as const;
@@ -45,6 +49,36 @@ export const deskCoordinators = [
   "Ms. Rachana R Uchil",
   "Ms. Pavana M J",
 ] as const;
+
+/** Individual desk logins. Passwords are set from the desk (Coordinator accounts), never stored in code. */
+export const deskAccounts = [
+  { username: "rachana", name: "Ms. Rachana R Uchil" },
+  { username: "swathi", name: "Ms. Swathi Chinnasamy" },
+  { username: "pavana", name: "Ms. Pavana M J" },
+] as const;
+
+export type DeskUsername = (typeof deskAccounts)[number]["username"];
+
+export function deskAccountName(username: string): string | null {
+  return deskAccounts.find((account) => account.username === username)?.name ?? null;
+}
+
+/** How the day runs online, and how RCI CRE points are earned. Shown on Programme, Information, Attend and status pages. */
+export const dayFormat = [
+  "All four sessions run live on Cisco Webex. Questions to speakers and polls during the sessions run on Slido inside Webex — no separate app is needed.",
+  "Keep your Webex display name the same as your registered name, so attendance can be matched.",
+];
+
+export const creSteps = [
+  { title: "Register here and pay", text: `Pay ${programme.feeLabel} on Razorpay and register on this site with your CRR number and receipt.` },
+  { title: "Register on the RCI website", text: "Once RCI lists this programme, register for it on the RCI website and upload RCI's confirmation mail here." },
+  { title: "Attend on Cisco Webex", text: "Attend all sessions live. Slido inside Webex is used for questions and polls." },
+  { title: "Online examination by RCI", text: "After the sessions, the online examination is conducted by RCI (RCI admin) as per its CRE guidelines." },
+  { title: "Points on your RCI profile", text: "CRE points are credited by RCI to your individual profile on the RCI website. Check them there after RCI processes the programme." },
+] as const;
+
+/** RCI approval line printed on the acknowledgement. Change it here once RCI approves the programme. */
+export const rciApprovalLine = "RCI CRE approval awaited";
 
 export function deskCoordinatorLine(): string {
   const names = [...deskCoordinators];
@@ -70,6 +104,12 @@ export type Profession =
   | "student";
 
 export type ArrivalSource = "rci" | "site" | "join" | "direct";
+
+export const titles = ["Dr.", "Prof.", "Mr.", "Ms.", "Mrs."] as const;
+export type Title = (typeof titles)[number];
+
+/** "yes" when the participant will claim RCI CRE points (CRR number then required). */
+export type CreClaim = "yes" | "no";
 
 export const professions: { value: Profession; label: string }[] = [
   { value: "audiologist", label: "Audiologist" },

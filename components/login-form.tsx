@@ -37,11 +37,11 @@ export function LoginForm({ ready }: { ready: boolean }) {
   return (
     <form className="grid max-w-md gap-4 card p-5" onSubmit={onSubmit}>
       <label className="grid gap-1 text-sm font-semibold text-navy">
-        Email
-        <input className="field" name="email" type="email" autoComplete="username" defaultValue={programme.email} required />
+        Username
+        <input className="field" name="email" type="text" autoComplete="username" autoCapitalize="none" placeholder="rachana, swathi or pavana" required />
       </label>
       <label className="grid gap-1 text-sm font-semibold text-navy">
-        Access code
+        Password
         <input className="field" name="code" type="password" autoComplete="current-password" required />
       </label>
       {error ? (
@@ -53,7 +53,8 @@ export function LoginForm({ ready }: { ready: boolean }) {
         {pending ? "Checking…" : "Open the desk"}
       </button>
       <p className="text-sm leading-6 text-muted">
-        The desk is for {deskCoordinatorLine()}. They use {programme.email} and the same access code.
+        The desk is for {deskCoordinatorLine()}. Each signs in with her own username and password. The owner may still sign in with{" "}
+        {programme.email} and the access code to set or reset passwords.
       </p>
     </form>
   );

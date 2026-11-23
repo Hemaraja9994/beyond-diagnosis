@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { CopyLink } from "@/components/copy-link";
+import { CreSteps } from "@/components/cre-steps";
 import { PageBanner } from "@/components/page-banner";
 import { programme } from "@/lib/programme";
 import { getMeetingUrl } from "@/lib/store";
@@ -17,13 +18,13 @@ export default async function AttendPage() {
         kicker="Attend"
         title="Register, or"
         accent="join the session"
-        lede="New here? Register first and reserve your seat. Already registered? Join the Cisco Webex session on the day."
+        lede="New here? Pay on Razorpay, then register with your receipt. Already registered? Join the Cisco Webex session on the day."
       />
       <div className="mx-auto grid max-w-6xl gap-6 px-4 py-10 lg:grid-cols-2">
         <article className="card p-6">
           <h2 className="font-display text-2xl sm:text-3xl text-navy">Register</h2>
           <p className="mt-3 leading-7 text-muted">
-            Fill in your details and CRR number, then complete payment on Razorpay to confirm your seat.
+            Pay {programme.feeLabel} on Razorpay first, then fill in your details, CRR number and payment receipt to confirm your seat.
           </p>
           <Link
             href="/registration?from=rci"
@@ -43,6 +44,9 @@ export default async function AttendPage() {
             Join the session
           </Link>
         </article>
+      </div>
+      <div className="mx-auto max-w-6xl px-4 pb-8">
+        <CreSteps />
       </div>
       <section className="mx-auto grid max-w-6xl gap-3 px-4 pb-10">
         <h2 className="font-display text-2xl text-navy">Share these links</h2>

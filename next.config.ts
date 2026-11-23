@@ -1,7 +1,17 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  serverExternalPackages: ["@electric-sql/pglite"],
+  // tesseract.js starts a worker thread from its own folder, so it must stay outside the bundle.
+  serverExternalPackages: ["@electric-sql/pglite", "tesseract.js"],
+  // The free OCR engine reads its language data and WebAssembly core from node_modules at run time.
+  outputFileTracingIncludes: {
+    "/api/**/*": [
+      "./node_modules/@tesseract.js-data/eng/4.0.0_best_int/**",
+      "./node_modules/tesseract.js/**",
+      "./node_modules/tesseract.js-core/**",
+      "./public/brand/yenepoya-medical-college.png",
+    ],
+  },
   async headers() {
     return [
       {

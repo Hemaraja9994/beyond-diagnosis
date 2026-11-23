@@ -36,6 +36,9 @@ export default function ContactPage() {
               {programme.email}
             </a>
           </p>
+          <a className="pill pill-solid mt-5" href={programme.whatsappUrl} target="_blank" rel="noopener noreferrer">
+            Join the participants&apos; WhatsApp group
+          </a>
           <p className="mt-6 text-sm leading-6 text-mint">
             Department line, published by Yenepoya Medical College: {programme.departmentPhone}. Department email: {programme.departmentEmail}.
             This is the department number, not a separate CRE helpline.

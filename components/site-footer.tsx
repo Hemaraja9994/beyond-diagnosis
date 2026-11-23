@@ -8,6 +8,9 @@ const links = [
   { href: "/programme", label: "Programme schedule" },
   { href: "/faculty", label: "Resource persons" },
   { href: "/registration", label: "Registration" },
+  { href: "/registration/update", label: "Update my registration" },
+  { href: "/registration/rci", label: "Add RCI confirmation" },
+  { href: "/registration/status", label: "Status and acknowledgement" },
   { href: "/attend", label: "Register or join" },
   { href: "/general", label: "Guidelines and downloads" },
   { href: "/brochure", label: "Flyer and poster" },
@@ -35,6 +38,9 @@ export function SiteFooter() {
             <Link href="/join" className="pill pill-ghost">
               Join on Webex
             </Link>
+            <a href={programme.whatsappUrl} className="pill pill-ghost" target="_blank" rel="noopener noreferrer">
+              WhatsApp group
+            </a>
           </div>
         </div>
 
@@ -76,6 +82,11 @@ export function SiteFooter() {
                   </Link>
                 </li>
               ))}
+              <li>
+                <a href={programme.whatsappUrl} target="_blank" rel="noopener noreferrer" className="hover:text-white hover:underline">
+                  Participants&apos; WhatsApp group
+                </a>
+              </li>
               <li>
                 <a href={programme.brochurePdf} download className="hover:text-white hover:underline">
                   Download the flyer (PDF)

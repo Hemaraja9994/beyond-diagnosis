@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Face } from "@/components/face";
+import { CreSteps } from "@/components/cre-steps";
 import { PageBanner } from "@/components/page-banner";
 import { facultyProfile, programme, sessionTickId, sessions } from "@/lib/programme";
 
@@ -47,6 +48,9 @@ export default function ProgrammePage() {
           );
         })}
       </ol>
+      <div className="mx-auto max-w-5xl px-4 pb-8">
+        <CreSteps />
+      </div>
       <div className="mx-auto flex max-w-5xl flex-wrap gap-3 px-4">
         <Link href="/registration" className="pill pill-solid">
           Register today

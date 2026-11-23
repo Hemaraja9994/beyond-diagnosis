@@ -21,18 +21,20 @@ export default async function RegistrationPage({
         kicker="Registration"
         title="Reserve"
         accent="your seat"
-        lede="Enter your name and CRR number exactly as they should appear on the certificate. After submitting, pay on Razorpay and add your receipt on the confirmation screen."
+        lede={`Pay ${programme.feeLabel} on Razorpay first, then register here with your payment ID and receipt. Enter your name and CRR number exactly as they should appear on the certificate.`}
       />
       <div className="mx-auto grid max-w-6xl gap-8 px-4 py-10 lg:grid-cols-[1fr_18rem] lg:items-start">
         <RegisterForm source={source} />
         <aside className="info-card accent-1 h-fit lg:sticky lg:top-32">
-          <h2>How payment works</h2>
+          <h2>How registration works</h2>
           <div>
           <ol className="grid gap-4">
             {[
-              ["1", "Register and keep the reference shown on this page."],
-              ["2", "Pay on Razorpay. The amount is the one shown there."],
-              ["3", "After payment, add the payment id or the screenshot on the confirmation screen."],
+              ["1", `Pay ${programme.feeLabel} on Razorpay — same fee for everyone.`],
+              ["2", "Save the receipt and note the Payment ID (pay_…)."],
+              ["3", "Fill the form, attach the receipt, and keep your YDU- reference."],
+              ["4", "Download or WhatsApp your acknowledgement PDF."],
+              ["5", "Claiming CRE points? Register on the RCI website, then upload RCI's confirmation mail here."],
             ].map(([step, text]) => (
               <li key={step} className="grid grid-cols-[2rem_1fr] gap-3 text-sm leading-6">
                 <span className="grid h-8 w-8 place-items-center rounded-full bg-accent font-display font-bold text-white">{step}</span>
@@ -47,6 +49,15 @@ export default async function RegistrationPage({
             rel="noopener noreferrer"
           >
             Open Razorpay
+          </a>
+          <a className="pill pill-outline mt-3 w-full" href="/registration/rci">
+            Add RCI confirmation
+          </a>
+          <a className="pill pill-outline mt-3 w-full" href="/registration/status">
+            Status and acknowledgement
+          </a>
+          <a className="pill pill-outline mt-3 w-full" href="/registration/update">
+            Update my registration
           </a>
           </div>
         </aside>
