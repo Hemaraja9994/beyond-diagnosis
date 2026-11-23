@@ -2,7 +2,7 @@ import { adminFromRequest, deskUser, sameOrigin } from "@/lib/admin";
 import { json } from "@/lib/http";
 import { after } from "next/server";
 import { notifyParticipant } from "@/lib/notify";
-import { getRegistration, saveDeskReview } from "@/lib/store";
+import { getRegistration, saveDeskReview, setCreClaim } from "@/lib/store";
 import type { DeskReview } from "@/lib/verify-types";
 
 export const runtime = "nodejs";
@@ -20,12 +20,27 @@ export async function POST(request: Request, context: { params: Promise<{ refere
 
   const form = await request.formData().catch(() => null);
   const action = String(form?.get("action") ?? "");
+  const back = (message?: string) =>
+    Response.redirect(new URL(`/admin${message ? `?note=${encodeURIComponent(message)}` : ""}#${key}`, request.url), 303);
+
+  if (action === "cre-yes" || action === "cre-no") {
+    const result = await setCreClaim(key, action === "cre-yes" ? "yes" : "no");
+    if ("error" in result) return back(result.error);
+    return back(`${key}: marked as ${action === "cre-yes" ? "claiming" : "not claiming"} RCI CRE points.`);
+  }
+
   const stamp = { by: user.name, at: new Date().toISOString() };
   const review: DeskReview = { ...(registration.deskReview ?? {}) };
   switch (action) {
-    case "pay-verified":
-      review.payment = { decision: "verified", ...stamp };
+    case "pay-verified": {
+      // The automatic check did not pass: the coordinator must say she checked the payment herself.
+      const override = registration.verification?.status !== "verified";
+      if (override && form?.get("checked") !== "yes") {
+        return back(`${key}: tick “I checked this payment myself” before marking it verified.`);
+      }
+      review.payment = { decision: "verified", ...stamp, ...(override ? { override: true } : {}) };
       break;
+    }
     case "pay-rejected":
       review.payment = { decision: "rejected", ...stamp };
       break;
@@ -74,5 +89,5 @@ export async function POST(request: Request, context: { params: Promise<{ refere
   await saveDeskReview(key, review);
   const origin = new URL(request.url).origin;
   after(() => notifyParticipant(key, origin).catch((error) => console.error("review: email failed", error)));
-  return Response.redirect(new URL(`/admin#${key}`, request.url), 303);
+  return back();
 }

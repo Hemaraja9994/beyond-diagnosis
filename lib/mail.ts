@@ -7,11 +7,26 @@ import { programme } from "@/lib/programme";
  * With either missing, nothing is sent and nothing fails.
  */
 export function mailReady(): boolean {
-  return gmailUser() !== "" && appPassword() !== "";
+  return senderValid() && appPassword() !== "";
+}
+
+/**
+ * What the desk shows about email. The raw GMAIL_USER value is only ever shown when it is an email
+ * address, so a password pasted into the wrong setting is never printed on the page.
+ */
+export function mailSetup(): { state: "on"; sender: string } | { state: "off" } | { state: "wrong-sender" } | { state: "no-password" } {
+  if (gmailUser() === "" && appPassword() === "") return { state: "off" };
+  if (!senderValid()) return { state: "wrong-sender" };
+  if (appPassword() === "") return { state: "no-password" };
+  return { state: "on", sender: gmailUser() };
 }
 
 export function mailSender(): string {
-  return gmailUser();
+  return senderValid() ? gmailUser() : "";
+}
+
+function senderValid(): boolean {
+  return /^[^\s@]+@[^\s@]+\.[a-z]{2,}$/i.test(gmailUser());
 }
 
 function gmailUser(): string {

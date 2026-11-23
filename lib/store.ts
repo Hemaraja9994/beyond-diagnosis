@@ -1,5 +1,5 @@
 import { createHash, randomBytes, randomUUID } from "node:crypto";
-import { get, list, put } from "@vercel/blob";
+import { del, get, list, put } from "@vercel/blob";
 import { sql, storageMode } from "@/lib/db";
 import type { ArrivalSource, CreClaim, Profession, Title } from "@/lib/programme";
 import { isDocKind, isProofKind, type DocKind, type ProofFile } from "@/lib/proof";
@@ -165,6 +165,44 @@ export async function saveDeskReview(reference: string, review: DeskReview): Pro
   }
   await ensureColumns();
   await sql("update registrations set desk_review = $1 where reference = $2", [empty ? "" : JSON.stringify(review), reference]);
+}
+
+/** Coordinator sets whether the participant claims RCI CRE points (for rows saved before the question existed). */
+export async function setCreClaim(reference: string, creClaim: CreClaim): Promise<{ ok: true } | { error: string }> {
+  const current = await getRegistration(reference);
+  if (!current) return { error: "That registration was not found." };
+  if (creClaim === "yes" && !/^A\d{3,8}$/.test(current.crrNumber)) {
+    return { error: "This participant has no CRR number on file, so they cannot be marked as claiming CRE points." };
+  }
+  const crrNumber = creClaim === "no" && current.crrNumber === "" ? "Not applicable" : current.crrNumber;
+  if (storageMode() === "blob") {
+    await writeRegistrationBlob({ ...current, creClaim, crrNumber });
+  } else {
+    await ensureColumns();
+    await sql("update registrations set cre_claim = $1, crr_number = $2 where reference = $3", [creClaim, crrNumber, reference]);
+  }
+  return { ok: true };
+}
+
+/** Removes a registration and its files for good (test entries, duplicates). The reference cannot be reused. */
+export async function deleteRegistration(reference: string): Promise<boolean> {
+  const current = await getRegistration(reference);
+  if (!current) return false;
+  if (storageMode() === "blob") {
+    const paths = [`registrations/${reference}.json`, `email-index/${hash(current.email.toLowerCase())}.txt`, `payments/${reference}`];
+    const key = paymentKey(current.paymentReference);
+    if (key !== "") {
+      const owner = await paymentOwner(current.paymentReference, reference);
+      if (!owner) paths.push(`payment-index/${hash(key)}.txt`);
+    }
+    for (const kind of current.documents) paths.push(`files/${reference}/${kind}`);
+    await del(paths).catch((error: unknown) => console.error("delete: some files could not be removed", error));
+    return true;
+  }
+  await ensureColumns();
+  await sql("delete from registration_files where reference = $1", [reference]);
+  await sql("delete from registrations where reference = $1", [reference]);
+  return true;
 }
 
 /* Coordinator passwords: only a scrypt hash is stored, never the password. */

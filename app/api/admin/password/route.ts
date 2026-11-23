@@ -16,7 +16,7 @@ export async function POST(request: Request) {
   const form = await request.formData().catch(() => null);
   const username = String(form?.get("username") ?? "").trim().toLowerCase();
   const password = String(form?.get("password") ?? "");
-  const back = (message: string) => Response.redirect(new URL(`/admin?password=${encodeURIComponent(message)}#accounts`, request.url), 303);
+  const back = (message: string) => Response.redirect(new URL(`/admin?tab=settings&password=${encodeURIComponent(message)}`, request.url), 303);
   if (!deskAccountName(username)) return back("Unknown coordinator.");
   if (!user.owner && user.id !== `user:${username}`) return back("You can change only your own password.");
   if (password.length < 10) return back("Use at least 10 characters.");

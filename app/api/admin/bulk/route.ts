@@ -29,8 +29,11 @@ export async function POST(request: Request) {
   const action = String(form?.get("action") ?? "");
   const list = String(form?.get("list") ?? "");
   const apply = actions[action];
-  const back = (message: string) => Response.redirect(new URL(`/admin?bulk=${encodeURIComponent(message)}#bulk`, request.url), 303);
+  const back = (message: string) => Response.redirect(new URL(`/admin?tab=bulk&bulk=${encodeURIComponent(message)}`, request.url), 303);
   if (!apply) return back("Choose what to mark.");
+  if (action === "pay-verified" && form?.get("checked") !== "yes") {
+    return back("To mark payments verified in bulk, tick “I checked these payments myself”.");
+  }
 
   const emails = new Set((list.match(/[^\s,;<>"']+@[^\s,;<>"']+\.[a-z]{2,}/gi) ?? []).map((item) => item.toLowerCase()));
   const crrs = new Set((list.toUpperCase().match(/\bA\d{3,8}\b/g) ?? []));
@@ -44,6 +47,7 @@ export async function POST(request: Request) {
     if (!hit) continue;
     const review: DeskReview = { ...(row.deskReview ?? {}) };
     apply(review, stamp);
+    if (action === "pay-verified" && row.verification?.status !== "verified" && review.payment) review.payment.override = true;
     await saveDeskReview(row.reference, review);
     matched.add(row.email.toLowerCase());
     matched.add(row.crrNumber.toUpperCase());

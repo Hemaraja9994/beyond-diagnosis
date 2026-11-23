@@ -38,7 +38,7 @@ export function statusLabel(status: VerificationStatus | undefined): string {
 /** A coordinator's own decision. It always wins over the automatic check. */
 export type DeskDecision = { decision: string; by: string; at: string };
 export type DeskReview = {
-  payment?: DeskDecision & { decision: "verified" | "rejected" };
+  payment?: DeskDecision & { decision: "verified" | "rejected"; /** Verified although the automatic check had not passed. */ override?: boolean };
   rci?: DeskDecision & { decision: "confirmed" | "rejected" };
   /** Attended the Webex sessions (e.g. from the Webex attendance report). */
   attendance?: DeskDecision & { decision: "attended" | "absent" };
