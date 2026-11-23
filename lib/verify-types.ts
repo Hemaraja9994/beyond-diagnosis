@@ -46,6 +46,8 @@ export type DeskReview = {
   exam?: DeskDecision & { decision: "passed" | "not-passed" | "not-taken" };
   /** CRE points shown on the participant's own profile on the RCI website. */
   points?: DeskDecision & { decision: "credited" };
+  /** When each confirmation email went out (ISO time), so none is sent twice. */
+  mailed?: { registration?: string; payment?: string; rci?: string };
 };
 
-export type DeskField = keyof DeskReview;
+export type DeskField = Exclude<keyof DeskReview, "mailed">;

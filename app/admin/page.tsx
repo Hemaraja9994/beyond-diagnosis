@@ -6,6 +6,8 @@ import { adminReady, currentAdmin, deskUser } from "@/lib/admin";
 import { deskAccounts, deskCoordinatorLine, professionLabel, programme, sourceLabel, type ArrivalSource, type Profession } from "@/lib/programme";
 import { docLabels, type DocKind } from "@/lib/proof";
 import { participantToken } from "@/lib/admin";
+import { mailReady, mailSender } from "@/lib/mail";
+import { mailsDue } from "@/lib/notify";
 import { paymentState, paymentText, rciState, rciText } from "@/lib/status";
 import { getDeskPasswordHash, getMeetingUrl, listQueries, listRegistrations, storageMode, type Registration } from "@/lib/store";
 import { statusLabel, type VerificationStatus } from "@/lib/verify-types";
@@ -20,8 +22,8 @@ const badge: Record<VerificationStatus | "none", string> = {
   none: "bg-navy/10 text-navy",
 };
 
-export default async function AdminPage({ searchParams }: { searchParams: Promise<{ checked?: string; password?: string; bulk?: string; q?: string; view?: string }> }) {
-  const { checked, password, bulk, q = "", view = "all" } = await searchParams;
+export default async function AdminPage({ searchParams }: { searchParams: Promise<{ checked?: string; password?: string; bulk?: string; mail?: string; q?: string; view?: string }> }) {
+  const { checked, password, bulk, mail, q = "", view = "all" } = await searchParams;
   const user = deskUser(await currentAdmin());
   if (!user) {
     return (
@@ -61,6 +63,8 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
         return true;
     }
   });
+  const emailOn = mailReady();
+  const emailsDue = registrations.filter((row) => mailsDue(row).length > 0).length;
   const counts = { verified: 0, review: 0, mismatch: 0, none: 0, claiming: 0, confirmed: 0 };
   for (const row of registrations) {
     if (paymentState(row) === "confirmed") counts.confirmed += 1;
@@ -128,6 +132,30 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
               </form>
             ) : null}
             {checked ? <span className="text-muted">Checked {checked} just now.</span> : null}
+          </div>
+          <div className="mt-3 rounded-2xl bg-navy/5 px-4 py-3 text-sm leading-6">
+            {emailOn ? (
+              <div className="flex flex-wrap items-center gap-3">
+                <span>
+                  <strong className="text-navy">Email on</strong> — confirmations go out from {mailSender()} (copies stay in its Sent folder).
+                </span>
+                {emailsDue > 0 ? (
+                  <form action="/api/admin/mail-pending" method="post">
+                    <button className="min-h-9 rounded-full bg-navy px-3 font-semibold text-white" type="submit">
+                      Send pending emails ({emailsDue}, 15 at a time)
+                    </button>
+                  </form>
+                ) : (
+                  <span className="text-muted">No emails pending.</span>
+                )}
+              </div>
+            ) : (
+              <span>
+                <strong className="text-navy">Email off.</strong> To send confirmations, add <code>GMAIL_USER</code> and <code>GMAIL_APP_PASSWORD</code> (a Google
+                App Password) in Vercel → Settings → Environment Variables, then redeploy.
+              </span>
+            )}
+            {mail ? <p className="mt-1 font-semibold text-navy" role="status">{mail}</p> : null}
           </div>
           <form className="mt-3 flex flex-wrap items-end gap-3" action="/admin" method="get">
             <label className="grid gap-1 text-sm font-semibold text-navy">
@@ -404,6 +432,17 @@ function RegistrationRow({ row, token }: { row: Registration; token: string | nu
           </ul>
         )}
         {row.accessNeeds ? <p className="mt-2 max-w-[14rem] text-xs text-muted">Access: {row.accessNeeds}</p> : null}
+        <p className="mt-2 text-xs text-muted">
+          Emailed:{" "}
+          {[row.deskReview?.mailed?.registration ? "registration" : "", row.deskReview?.mailed?.payment ? "payment" : "", row.deskReview?.mailed?.rci ? "RCI" : ""]
+            .filter(Boolean)
+            .join(", ") || "none yet"}
+        </p>
+        <form action={`/api/admin/mail/${row.reference}`} method="post" className="mt-1">
+          <button className="rounded-full border border-line px-2.5 py-0.5 text-xs font-semibold" type="submit">
+            Resend confirmation
+          </button>
+        </form>
       </td>
     </tr>
   );

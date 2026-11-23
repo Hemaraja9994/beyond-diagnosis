@@ -56,6 +56,10 @@ The desk can:
 - download the participant register (A4 landscape PDF or Word, with logo and signature lines), CSV of everything, the RCI list of CRE claimants, and queries
 - publish the Webex link
 
+## Confirmation emails (free, through Gmail)
+
+Set `GMAIL_USER` (yenepoyaaslpconference@gmail.com) and `GMAIL_APP_PASSWORD` (a Google App Password: 2-Step Verification on, then myaccount.google.com → Security → App passwords) in Vercel and redeploy. Participants then get: registration received (acknowledgement PDF attached), payment confirmed, and RCI registration confirmed — each once. Replies go to the conference address, and copies stay in its Sent folder. The desk shows whether email is on, a "Send pending emails" button for people who registered earlier, and "Resend confirmation" per participant. Gmail allows about 500 emails a day. Without the two variables nothing is sent and nothing fails.
+
 ## Optional: Razorpay check
 
 If the university's Razorpay account can provide API keys, set `RAZORPAY_KEY_ID` and `RAZORPAY_KEY_SECRET` and each `pay_…` id is also confirmed with Razorpay (captured, ₹354). Without them the receipt is read by OCR only.

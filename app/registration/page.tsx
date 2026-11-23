@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { PageBanner } from "@/components/page-banner";
 import { RegisterForm } from "@/components/register-form";
+import { RegistrationLinks } from "@/components/registration-links";
 import { programme, type ArrivalSource } from "@/lib/programme";
 
 export const metadata: Metadata = { title: "Registration" };
@@ -50,15 +51,7 @@ export default async function RegistrationPage({
           >
             Open Razorpay
           </a>
-          <a className="pill pill-outline mt-3 w-full" href="/registration/rci">
-            Add RCI confirmation
-          </a>
-          <a className="pill pill-outline mt-3 w-full" href="/registration/status">
-            Status and acknowledgement
-          </a>
-          <a className="pill pill-outline mt-3 w-full" href="/registration/update">
-            Update my registration
-          </a>
+          <RegistrationLinks className="mt-5" />
           </div>
         </aside>
       </div>

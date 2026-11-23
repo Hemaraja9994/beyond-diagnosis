@@ -52,10 +52,6 @@ export function LoginForm({ ready }: { ready: boolean }) {
       <button className="min-h-11 rounded-full bg-green px-5 font-semibold text-white" type="submit" disabled={pending}>
         {pending ? "Checking…" : "Open the desk"}
       </button>
-      <p className="text-sm leading-6 text-muted">
-        The desk is for {deskCoordinatorLine()}. Each signs in with her own username and password. The owner may still sign in with{" "}
-        {programme.email} and the access code to set or reset passwords.
-      </p>
     </form>
   );
 }

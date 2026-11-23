@@ -5,6 +5,7 @@ import { tooMany } from "@/lib/limit";
 import { createRegistration } from "@/lib/store";
 import { readUploads } from "@/lib/uploads";
 import { formRecord, parseRegistration } from "@/lib/validate";
+import { notifyParticipant } from "@/lib/notify";
 import { verifyRegistration } from "@/lib/verify";
 
 export const runtime = "nodejs";
@@ -32,13 +33,15 @@ export async function POST(request: Request) {
   const result = await createRegistration(parsed.value, uploads.value);
   if ("error" in result) return json({ error: result.error }, result.status);
 
-  // Read the receipt after replying, so the participant is not kept waiting.
+  // Read the receipt, then send the confirmation email, after replying, so the participant is not kept waiting.
+  const origin = new URL(request.url).origin;
   after(async () => {
     try {
       await verifyRegistration(result.reference);
     } catch (error) {
       console.error("register: verification failed", error);
     }
+    await notifyParticipant(result.reference, origin).catch((error) => console.error("register: email failed", error));
   });
   return json({ reference: result.reference, token: participantToken(result.reference) });
 }

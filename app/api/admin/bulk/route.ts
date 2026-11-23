@@ -1,5 +1,7 @@
 import { adminFromRequest, deskUser, sameOrigin } from "@/lib/admin";
 import { json } from "@/lib/http";
+import { after } from "next/server";
+import { notifyParticipant } from "@/lib/notify";
 import { listRegistrations, saveDeskReview } from "@/lib/store";
 import type { DeskReview } from "@/lib/verify-types";
 
@@ -46,6 +48,13 @@ export async function POST(request: Request) {
     matched.add(row.email.toLowerCase());
     matched.add(row.crrNumber.toUpperCase());
     matched.add(row.reference);
+  }
+  if (action === "pay-verified" || action === "rci-confirmed") {
+    const origin = new URL(request.url).origin;
+    const touched = [...matched].filter((item) => item.startsWith("YDU-"));
+    after(async () => {
+      for (const reference of touched) await notifyParticipant(reference, origin).catch(() => []);
+    });
   }
   const unmatched = [...emails, ...crrs, ...references].filter((item) => !matched.has(item));
   const updated = new Set([...matched].filter((item) => item.startsWith("YDU-"))).size;

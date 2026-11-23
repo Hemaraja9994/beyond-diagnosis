@@ -5,6 +5,7 @@ import { tooMany } from "@/lib/limit";
 import { updateRegistration } from "@/lib/store";
 import { readUploads } from "@/lib/uploads";
 import { formRecord, parseUpdate } from "@/lib/validate";
+import { notifyParticipant } from "@/lib/notify";
 import { verifyRegistration } from "@/lib/verify";
 
 export const runtime = "nodejs";
@@ -30,12 +31,14 @@ export async function POST(request: Request) {
   if ("error" in result) return json({ error: result.error }, result.status);
 
   const reference = result.registration.reference;
+  const origin = new URL(request.url).origin;
   after(async () => {
     try {
       await verifyRegistration(reference);
     } catch (error) {
       console.error("update: verification failed", error);
     }
+    await notifyParticipant(reference, origin).catch((error) => console.error("update: email failed", error));
   });
   const saved = result.registration;
   return json({

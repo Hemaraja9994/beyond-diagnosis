@@ -62,13 +62,13 @@ export function UpdateForm() {
   return (
     <form key={formKey} className="grid gap-6" onSubmit={onSubmit} noValidate>
       <fieldset className="card grid gap-4 p-5">
-        <legend className="px-1 font-display text-lg text-navy">Find your registration</legend>
+        <legend className="float-left mb-1 w-full font-display text-lg text-navy">Find your registration</legend>
         <Field label="Registration reference" name="reference" required hint="Starts with YDU-, shown after you registered." defaultValue={saved?.reference} />
         <Field label="Email used at registration" name="email" type="email" required autoComplete="email" />
       </fieldset>
 
       <fieldset className="card grid gap-4 p-5">
-        <legend className="px-1 font-display text-lg text-navy">Add or correct</legend>
+        <legend className="float-left mb-1 w-full font-display text-lg text-navy">Add or correct</legend>
         <p className="text-sm leading-6 text-muted">Leave anything blank to keep it as it is. To change your name or email, write to {programme.email}.</p>
         <label className="grid max-w-xs gap-1 text-sm font-semibold text-navy">
           Title

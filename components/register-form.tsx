@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { AckActions } from "@/components/ack-actions";
 import { DocumentInput } from "@/components/document-input";
+import { RegistrationLinks } from "@/components/registration-links";
 import { professions, programme, states, titles, type ArrivalSource } from "@/lib/programme";
 
 type Success = { reference: string; email: string; claiming: boolean; token: string | null };
@@ -82,14 +83,20 @@ export function RegisterForm({ source }: { source: ArrivalSource }) {
         <p className="mt-2 text-sm leading-6 text-muted">
           One fee for everyone — professionals and students. Use the same name, email and mobile on Razorpay that you will enter below.
         </p>
-        <ol className="mt-3 grid gap-1 text-sm leading-6">
-          <li>· Pay on the Razorpay page (opens in a new tab).</li>
-          <li>· Keep the receipt: a screenshot of the success screen, or the Razorpay email / PDF receipt.</li>
-          <li>
-            · Note the <strong>Payment ID</strong> (starts with <code>pay_</code>). If you only have a UPI app screenshot, the UPI transaction number
-            works too.
-          </li>
-        </ol>
+        <ul className="mt-4 grid gap-2 text-sm leading-6">
+          {[
+            "Pay on the Razorpay page — it opens in a new tab.",
+            "Keep the receipt: a screenshot of the success screen, or the Razorpay email / PDF receipt.",
+            "Note the Payment ID (starts with pay_). With only a UPI app screenshot, the UPI transaction number works too.",
+          ].map((line) => (
+            <li key={line} className="grid grid-cols-[1.25rem_1fr] gap-2">
+              <span aria-hidden="true" className="font-bold text-green">
+                ✓
+              </span>
+              <span>{line}</span>
+            </li>
+          ))}
+        </ul>
         <a className="pill pill-solid mt-4" href={programme.paymentUrl} target="_blank" rel="noopener noreferrer">
           Pay {programme.feeLabel} on Razorpay
         </a>
@@ -100,7 +107,7 @@ export function RegisterForm({ source }: { source: ArrivalSource }) {
           <span className="mr-2 text-green">2</span>Register with your payment
         </p>
         <fieldset className="card grid gap-4 p-5">
-          <legend className="px-1 font-display text-lg text-navy">Who is attending</legend>
+          <legend className="float-left mb-1 w-full font-display text-lg text-navy">Who is attending</legend>
           <div className="grid gap-4 sm:grid-cols-[8rem_1fr]">
             <label className="grid gap-1 text-sm font-semibold text-navy">
               Title
@@ -138,7 +145,7 @@ export function RegisterForm({ source }: { source: ArrivalSource }) {
         </fieldset>
 
         <fieldset className="card grid gap-4 p-5">
-          <legend className="px-1 font-display text-lg text-navy">RCI CRE points</legend>
+          <legend className="float-left mb-1 w-full font-display text-lg text-navy">RCI CRE points</legend>
           <p className="text-sm leading-6 text-muted">
             Everyone may attend. Only participants registered on the Central Rehabilitation Register (CRR) of RCI can claim CRE points.
           </p>
@@ -170,7 +177,7 @@ export function RegisterForm({ source }: { source: ArrivalSource }) {
         </fieldset>
 
         <fieldset className="card grid gap-4 p-5">
-          <legend className="px-1 font-display text-lg text-navy">Where you work</legend>
+          <legend className="float-left mb-1 w-full font-display text-lg text-navy">Where you work</legend>
           <Field label="Designation" name="designation" />
           <Field label="Workplace" name="institution" required hint="A college, hospital, clinic, or private practice." />
           <label className="grid gap-1 text-sm font-semibold text-navy">
@@ -189,7 +196,7 @@ export function RegisterForm({ source }: { source: ArrivalSource }) {
         </fieldset>
 
         <fieldset className="card grid gap-4 p-5">
-          <legend className="px-1 font-display text-lg text-navy">Payment details</legend>
+          <legend className="float-left mb-1 w-full font-display text-lg text-navy">Payment details</legend>
           <div className="grid gap-4 sm:grid-cols-2">
             <label className="grid content-start gap-1 text-sm font-semibold text-navy">
               <span>
@@ -209,7 +216,7 @@ export function RegisterForm({ source }: { source: ArrivalSource }) {
         </fieldset>
 
         <fieldset className="card grid gap-4 p-5">
-          <legend className="px-1 font-display text-lg text-navy">Access and consent</legend>
+          <legend className="float-left mb-1 w-full font-display text-lg text-navy">Access and consent</legend>
           <label className="grid gap-1 text-sm font-semibold text-navy">
             Access needs for the online session
             <textarea className="field min-h-24" name="accessNeeds" maxLength={500} />
@@ -238,20 +245,7 @@ export function RegisterForm({ source }: { source: ArrivalSource }) {
         <button className="pill pill-solid disabled:opacity-60" type="submit" disabled={pending}>
           {pending ? "Saving registration…" : "Submit registration"}
         </button>
-        <p className="text-sm text-muted">
-          Registered earlier?{" "}
-          <Link className="font-semibold text-green underline" href="/registration/update">
-            Update my registration
-          </Link>{" "}
-          ·{" "}
-          <Link className="font-semibold text-green underline" href="/registration/rci">
-            Add RCI confirmation
-          </Link>{" "}
-          ·{" "}
-          <Link className="font-semibold text-green underline" href="/registration/status">
-            Status and acknowledgement
-          </Link>
-        </p>
+        <RegistrationLinks className="lg:hidden" />
       </form>
     </div>
   );

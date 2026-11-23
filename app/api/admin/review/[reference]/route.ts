@@ -1,9 +1,12 @@
 import { adminFromRequest, deskUser, sameOrigin } from "@/lib/admin";
 import { json } from "@/lib/http";
+import { after } from "next/server";
+import { notifyParticipant } from "@/lib/notify";
 import { getRegistration, saveDeskReview } from "@/lib/store";
 import type { DeskReview } from "@/lib/verify-types";
 
 export const runtime = "nodejs";
+export const maxDuration = 60;
 
 /** A coordinator's own decision on the payment or the RCI confirmation, recorded with her name. */
 export async function POST(request: Request, context: { params: Promise<{ reference: string }> }) {
@@ -69,5 +72,7 @@ export async function POST(request: Request, context: { params: Promise<{ refere
       return json({ error: "Unknown action." }, 400);
   }
   await saveDeskReview(key, review);
+  const origin = new URL(request.url).origin;
+  after(() => notifyParticipant(key, origin).catch((error) => console.error("review: email failed", error)));
   return Response.redirect(new URL(`/admin#${key}`, request.url), 303);
 }

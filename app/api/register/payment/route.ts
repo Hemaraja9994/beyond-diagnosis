@@ -5,6 +5,7 @@ import { tooMany } from "@/lib/limit";
 import { readProof } from "@/lib/proof";
 import { updateRegistration } from "@/lib/store";
 import { normalisePaymentReference } from "@/lib/validate";
+import { notifyParticipant } from "@/lib/notify";
 import { verifyRegistration } from "@/lib/verify";
 
 export const runtime = "nodejs";
@@ -36,12 +37,14 @@ export async function POST(request: Request) {
     "value" in proof ? [{ kind: "payment", file: proof.value }] : [],
   );
   if ("error" in result) return json({ error: result.error }, result.status);
+  const origin = new URL(request.url).origin;
   after(async () => {
     try {
       await verifyRegistration(reference);
     } catch (error) {
       console.error("payment: verification failed", error);
     }
+    await notifyParticipant(reference, origin).catch((error) => console.error("payment: email failed", error));
   });
   return json({ ok: true, token: participantToken(reference) });
 }

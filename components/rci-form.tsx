@@ -57,7 +57,7 @@ export function RciForm() {
   return (
     <form className="grid gap-5" onSubmit={onSubmit} noValidate>
       <fieldset className="card grid gap-4 p-5">
-        <legend className="px-1 font-display text-lg text-navy">Your registration here</legend>
+        <legend className="float-left mb-1 w-full font-display text-lg text-navy">Your registration here</legend>
         <label className="grid gap-1 text-sm font-semibold text-navy">
           Registration reference
           <input className="field" name="reference" required placeholder="YDU-…" autoCapitalize="characters" />
@@ -73,7 +73,7 @@ export function RciForm() {
         </label>
       </fieldset>
       <fieldset className="card grid gap-4 p-5">
-        <legend className="px-1 font-display text-lg text-navy">RCI confirmation mail</legend>
+        <legend className="float-left mb-1 w-full font-display text-lg text-navy">RCI confirmation mail</legend>
         <DocumentInput
           label="Screenshot or PDF of the mail from RCI"
           hint="Make sure your name or CRR number is visible in the screenshot."
