@@ -5,7 +5,7 @@ import { PageBanner } from "@/components/page-banner";
 import { adminReady, currentAdmin, deskUser, participantToken, type DeskUser } from "@/lib/admin";
 import { mailSetup } from "@/lib/mail";
 import { mailsDue } from "@/lib/notify";
-import { deskAccounts, deskCoordinatorLine, professionLabel, programme, sourceLabel, type ArrivalSource, type Profession } from "@/lib/programme";
+import { afterSessionsOpen, deskAccounts, deskCoordinatorLine, professionLabel, programme, sourceLabel, type ArrivalSource, type Profession } from "@/lib/programme";
 import { docLabels, type DocKind } from "@/lib/proof";
 import { paymentState, paymentText, rciState, rciText } from "@/lib/status";
 import { getDeskPasswordHash, getMeetingUrl, listQueries, listRegistrations, storageMode, type Registration } from "@/lib/store";
@@ -358,12 +358,14 @@ function ExportsTab() {
 }
 
 function BulkTab({ message }: { message: string | undefined }) {
+  const dayOpen = afterSessionsOpen();
   return (
     <section id="bulk" className="rounded-3xl bg-card p-5 ring-1 ring-line">
       <h2 className="font-display text-2xl text-navy">Bulk update</h2>
       <p className="mt-1 text-sm leading-6 text-muted">
         Paste emails, CRR numbers or YDU- references — one per line, or copied straight from the Webex attendance report or a list from RCI. Every matching
         participant gets the decision you choose, recorded with your name.
+        {dayOpen ? "" : ` Webex attendance, the RCI exam and CRE points open on ${programme.dateLabel} — enter them for everyone at once from the Webex attendance report.`}
       </p>
       {message ? (
         <p className="mt-3 rounded-2xl bg-navy/5 px-4 py-3 text-sm font-semibold text-navy" role="status">
@@ -374,11 +376,11 @@ function BulkTab({ message }: { message: string | undefined }) {
         <textarea className="field min-h-36 font-mono text-xs" name="list" required placeholder={"name@example.com\nA81760\nYDU-…"} />
         <label className="grid gap-1 text-sm font-semibold text-navy sm:max-w-sm">
           Mark them as
-          <select className="field" name="action" defaultValue="att-attended">
-            <option value="att-attended">Attended on Webex</option>
-            <option value="exam-passed">RCI online exam — passed</option>
-            <option value="exam-not-passed">RCI online exam — not passed</option>
-            <option value="pts-credited">CRE points credited on RCI profile</option>
+          <select className="field" name="action" defaultValue={dayOpen ? "att-attended" : "rci-confirmed"}>
+            <option value="att-attended" disabled={!dayOpen}>Attended on Webex{dayOpen ? "" : ` (from ${programme.day} ${programme.month})`}</option>
+            <option value="exam-passed" disabled={!dayOpen}>RCI online exam — passed</option>
+            <option value="exam-not-passed" disabled={!dayOpen}>RCI online exam — not passed</option>
+            <option value="pts-credited" disabled={!dayOpen}>CRE points credited on RCI profile</option>
             <option value="rci-confirmed">RCI registration confirmed</option>
             <option value="pay-verified">Payment verified</option>
           </select>
@@ -763,6 +765,7 @@ function DecisionButtons({ reference, prefix, yes, yesLabel, set }: { reference:
 
 function Journey({ row }: { row: Registration }) {
   const review = row.deskReview ?? {};
+  const dayOpen = afterSessionsOpen();
   const item = (label: string, value: string | undefined, by: string | undefined) => (
     <p className="text-xs">
       <span className="font-semibold text-navy">{label}:</span> {value ?? "—"}
@@ -779,15 +782,28 @@ function Journey({ row }: { row: Registration }) {
       {item("Webex", review.attendance?.decision, review.attendance?.by)}
       {row.creClaim === "yes" ? item("RCI exam", review.exam?.decision.replace("-", " "), review.exam?.by) : null}
       {row.creClaim === "yes" ? item("Points", review.points ? "credited" : undefined, review.points?.by) : null}
-      <form action={`/api/admin/review/${row.reference}`} method="post" className="mt-1 flex flex-wrap gap-1">
-        {review.attendance?.decision !== "attended" ? button("att-attended", "Attended") : button("att-clear", "Undo attended")}
-        {row.creClaim === "yes" ? (
-          <>
-            {review.exam ? button("exam-clear", "Undo exam") : [button("exam-passed", "Exam passed"), button("exam-not-passed", "Not passed")]}
-            {review.points ? button("pts-clear", "Undo points") : button("pts-credited", "Points credited")}
-          </>
-        ) : null}
-      </form>
+      {dayOpen ? (
+        <form action={`/api/admin/review/${row.reference}`} method="post" className="mt-1 flex flex-wrap gap-1">
+          {review.attendance?.decision !== "attended" ? button("att-attended", "Attended") : button("att-clear", "Undo attended")}
+          {row.creClaim === "yes" ? (
+            <>
+              {review.exam ? button("exam-clear", "Undo exam") : [button("exam-passed", "Exam passed"), button("exam-not-passed", "Not passed")]}
+              {review.points ? button("pts-clear", "Undo points") : button("pts-credited", "Points credited")}
+            </>
+          ) : null}
+        </form>
+      ) : (
+        <>
+          <p className="mt-1 text-xs text-muted">Entered from {programme.dateLabel}, for everyone at once under Bulk update.</p>
+          {review.attendance || review.exam || review.points ? (
+            <form action={`/api/admin/review/${row.reference}`} method="post" className="mt-1 flex flex-wrap gap-1">
+              {review.attendance ? button("att-clear", "Clear early attendance mark") : null}
+              {review.exam ? button("exam-clear", "Clear exam mark") : null}
+              {review.points ? button("pts-clear", "Clear points mark") : null}
+            </form>
+          ) : null}
+        </>
+      )}
     </div>
   );
 }

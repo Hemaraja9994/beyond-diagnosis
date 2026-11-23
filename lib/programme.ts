@@ -2,6 +2,8 @@ export const programme = {
   title: "Beyond the Diagnosis",
   subtitle: "Disability Assessment, Certification and Entitlements under the RPwD Act, 2016",
   dateLabel: "Saturday, 19 December 2026",
+  /** From this moment the desk can record Webex attendance, the RCI exam and CRE points. */
+  sessionsOpenAt: "2026-12-19T00:00:00+05:30",
   day: "19",
   month: "December 2026",
   start: "10:00 IST",
@@ -380,3 +382,8 @@ export const bottomNav = [
   { href: "/join", label: "Join" },
   { href: "/general", label: "Info" },
 ] as const;
+
+/** Attendance, RCI exam results and CRE points are entered only from the programme day, usually in bulk. */
+export function afterSessionsOpen(now = Date.now()): boolean {
+  return now >= Date.parse(programme.sessionsOpenAt);
+}

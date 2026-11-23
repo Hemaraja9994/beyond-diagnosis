@@ -4,6 +4,7 @@ import { after } from "next/server";
 import { notifyParticipant } from "@/lib/notify";
 import { listRegistrations, saveDeskReview } from "@/lib/store";
 import type { DeskReview } from "@/lib/verify-types";
+import { afterSessionsOpen, programme } from "@/lib/programme";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -31,6 +32,9 @@ export async function POST(request: Request) {
   const apply = actions[action];
   const back = (message: string) => Response.redirect(new URL(`/admin?tab=bulk&bulk=${encodeURIComponent(message)}`, request.url), 303);
   if (!apply) return back("Choose what to mark.");
+  if (/^(att|exam|pts)-/.test(action) && !afterSessionsOpen()) {
+    return back(`Attendance, RCI exam and CRE points can be entered from ${programme.dateLabel}.`);
+  }
   if (action === "pay-verified" && form?.get("checked") !== "yes") {
     return back("To mark payments verified in bulk, tick “I checked these payments myself”.");
   }

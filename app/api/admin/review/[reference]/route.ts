@@ -3,6 +3,7 @@ import { json } from "@/lib/http";
 import { after } from "next/server";
 import { notifyParticipant } from "@/lib/notify";
 import { getRegistration, saveDeskReview, setCreClaim } from "@/lib/store";
+import { afterSessionsOpen, programme } from "@/lib/programme";
 import type { DeskReview } from "@/lib/verify-types";
 
 export const runtime = "nodejs";
@@ -27,6 +28,11 @@ export async function POST(request: Request, context: { params: Promise<{ refere
     const result = await setCreClaim(key, action === "cre-yes" ? "yes" : "no");
     if ("error" in result) return back(result.error);
     return back(`${key}: marked as ${action === "cre-yes" ? "claiming" : "not claiming"} RCI CRE points.`);
+  }
+
+  const dayAction = /^(att|exam|pts)-/.test(action) && !action.endsWith("-clear");
+  if (dayAction && !afterSessionsOpen()) {
+    return back(`Attendance, RCI exam and CRE points can be entered from ${programme.dateLabel}.`);
   }
 
   const stamp = { by: user.name, at: new Date().toISOString() };
