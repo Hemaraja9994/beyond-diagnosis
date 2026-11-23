@@ -2,7 +2,9 @@ import { after } from "next/server";
 import { participantToken, sameOrigin } from "@/lib/admin";
 import { json } from "@/lib/http";
 import { tooMany } from "@/lib/limit";
-import { updateRegistration } from "@/lib/store";
+import { creSeatsLeft } from "@/lib/seats";
+import { creSeatLimit } from "@/lib/settings";
+import { getRegistration, updateRegistration } from "@/lib/store";
 import { readUploads } from "@/lib/uploads";
 import { formRecord, parseUpdate } from "@/lib/validate";
 import { notifyParticipant } from "@/lib/notify";
@@ -27,6 +29,12 @@ export async function POST(request: Request) {
   const uploads = await readUploads(form);
   if ("error" in uploads) return json({ error: uploads.error }, 400);
 
+  if (parsed.value.creClaim === "yes") {
+    const current = await getRegistration(parsed.value.reference);
+    if (current && current.creClaim !== "yes" && (await creSeatsLeft()) <= 0) {
+      return json({ error: `All ${await creSeatLimit()} RCI CRE places are taken, so CRE points cannot be added to this registration.` }, 409);
+    }
+  }
   const result = await updateRegistration(parsed.value, uploads.value);
   if ("error" in result) return json({ error: result.error }, result.status);
 

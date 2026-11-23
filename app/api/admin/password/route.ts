@@ -6,8 +6,8 @@ import { setDeskPasswordHash } from "@/lib/store";
 export const runtime = "nodejs";
 
 /**
- * Sets a coordinator password. The owner (conference email + access code) can set any of the three;
- * a coordinator can change only her own. Only a scrypt hash is stored.
+ * Sets a coordinator password. Every signed-in coordinator (and the owner) can set or reset any of the three.
+ * Only a scrypt hash is stored.
  */
 export async function POST(request: Request) {
   if (!sameOrigin(request)) return json({ error: "Use the coordinator desk." }, 403);
@@ -18,7 +18,6 @@ export async function POST(request: Request) {
   const password = String(form?.get("password") ?? "");
   const back = (message: string) => Response.redirect(new URL(`/admin?tab=settings&password=${encodeURIComponent(message)}`, request.url), 303);
   if (!deskAccountName(username)) return back("Unknown coordinator.");
-  if (!user.owner && user.id !== `user:${username}`) return back("You can change only your own password.");
   if (password.length < 10) return back("Use at least 10 characters.");
   await setDeskPasswordHash(username, hashPassword(password));
   return back(`Password saved for ${username}.`);

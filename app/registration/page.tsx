@@ -3,8 +3,11 @@ import { PageBanner } from "@/components/page-banner";
 import { RegisterForm } from "@/components/register-form";
 import { RegistrationLinks } from "@/components/registration-links";
 import { programme, type ArrivalSource } from "@/lib/programme";
+import { creSeatsLeft } from "@/lib/seats";
+import { creSeatLimit, registrationOpen } from "@/lib/settings";
 
 export const metadata: Metadata = { title: "Registration" };
+export const dynamic = "force-dynamic";
 
 const sources: ArrivalSource[] = ["rci", "site", "join", "direct"];
 
@@ -15,6 +18,11 @@ export default async function RegistrationPage({
 }) {
   const query = await searchParams;
   const source = sources.find((item) => item === query.from) ?? "direct";
+  const [seatsLeft, seatLimit, open] = await Promise.all([
+    creSeatsLeft().catch(() => programme.creSeats),
+    creSeatLimit().catch(() => programme.creSeats),
+    registrationOpen().catch(() => true),
+  ]);
 
   return (
     <div id="register" className="pb-24 md:pb-10">
@@ -25,7 +33,17 @@ export default async function RegistrationPage({
         lede={`Pay ${programme.feeLabel} on Razorpay first, then register here with your payment ID and receipt. Enter your name and CRR number exactly as they should appear on the certificate.`}
       />
       <div className="mx-auto grid max-w-6xl gap-8 px-4 py-10 lg:grid-cols-[1fr_18rem] lg:items-start">
-        <RegisterForm source={source} />
+        {open ? (
+          <RegisterForm source={source} creSeatsLeft={seatsLeft} creSeatLimit={seatLimit} />
+        ) : (
+          <section className="card p-6">
+            <h2 className="font-display text-2xl text-navy">Registration is closed</h2>
+            <p className="mt-2 leading-7 text-muted">
+              Registration for this programme has closed. Already registered? Use the links here to add your RCI confirmation or download your
+              acknowledgement. For anything else, write to {programme.email}.
+            </p>
+          </section>
+        )}
         <aside className="info-card accent-1 h-fit lg:sticky lg:top-32">
           <h2>How registration works</h2>
           <div>

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { SeatsBadge } from "@/components/seats-badge";
 import { BrochureActions } from "@/components/brochure-actions";
 import { Face } from "@/components/face";
 import { OfficialMarks } from "@/components/official-marks";
@@ -128,9 +129,9 @@ export default function HomePage() {
           </h2>
           <ol className="mt-8 grid gap-5 sm:grid-cols-3">
             {[
-              ["1", "Register", "Fill in your details and your CRR number exactly as they should appear on the certificate."],
-              ["2", "Pay on Razorpay", "Complete payment using the secure Razorpay link shown after registration."],
-              ["3", "Confirm", "Add your payment ID or a receipt screenshot on the registration page. Join on Webex on the day."],
+              ["1", "Pay on Razorpay", `Pay ${programme.feeLabel} — the same fee for everyone — and keep the receipt and Payment ID.`],
+              ["2", "Register", "Fill in your details, CRR number (if claiming CRE points) and attach the receipt. Your acknowledgement PDF is ready at once."],
+              ["3", "Join", "Join the participants' WhatsApp group, and the Cisco Webex session on the day. Slido runs inside Webex."],
             ].map(([step, title, body]) => (
               <li key={step} className="rounded-3xl border border-white/12 bg-white/5 p-6">
                 <span className="grid h-12 w-12 place-items-center rounded-full bg-gradient-to-br from-flare to-brass font-display text-2xl font-bold">
@@ -141,9 +142,12 @@ export default function HomePage() {
               </li>
             ))}
           </ol>
-          <Link href="/registration" className="pill pill-solid mt-8">
-            Start registration
-          </Link>
+          <div className="mt-8 flex flex-wrap items-center gap-4">
+            <Link href="/registration" className="pill pill-solid">
+              Start registration
+            </Link>
+            <SeatsBadge tone="dark" />
+          </div>
         </div>
       </section>
 

@@ -4,7 +4,7 @@ import { after } from "next/server";
 import { notifyParticipant } from "@/lib/notify";
 import { getRegistration, saveDeskReview, setCreClaim } from "@/lib/store";
 import { afterSessionsOpen, programme } from "@/lib/programme";
-import type { DeskReview } from "@/lib/verify-types";
+import { withHistory, type DeskReview } from "@/lib/verify-types";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -21,12 +21,16 @@ export async function POST(request: Request, context: { params: Promise<{ refere
 
   const form = await request.formData().catch(() => null);
   const action = String(form?.get("action") ?? "");
+  const fromEdit = String(form?.get("return") ?? "") === "edit";
   const back = (message?: string) =>
-    Response.redirect(new URL(`/admin${message ? `?note=${encodeURIComponent(message)}` : ""}#${key}`, request.url), 303);
+    fromEdit
+      ? Response.redirect(new URL(`/admin/edit/${key}?saved=${encodeURIComponent(message ?? "Decision saved.")}`, request.url), 303)
+      : Response.redirect(new URL(`/admin${message ? `?note=${encodeURIComponent(message)}` : ""}#${key}`, request.url), 303);
 
   if (action === "cre-yes" || action === "cre-no") {
     const result = await setCreClaim(key, action === "cre-yes" ? "yes" : "no");
     if ("error" in result) return back(result.error);
+    await saveDeskReview(key, withHistory((await getRegistration(key))?.deskReview ?? {}, user.name, `Marked ${action === "cre-yes" ? "claiming" : "not claiming"} CRE points`));
     return back(`${key}: marked as ${action === "cre-yes" ? "claiming" : "not claiming"} RCI CRE points.`);
   }
 
@@ -92,8 +96,9 @@ export async function POST(request: Request, context: { params: Promise<{ refere
     default:
       return json({ error: "Unknown action." }, 400);
   }
-  await saveDeskReview(key, review);
+  await saveDeskReview(key, withHistory(review, user.name, `Marked ${action.replace("pay-", "payment ").replace("rci-", "RCI ").replace("att-", "attendance ").replace("exam-", "exam ").replace("pts-", "points ")}`));
   const origin = new URL(request.url).origin;
   after(() => notifyParticipant(key, origin).catch((error) => console.error("review: email failed", error)));
+  if (fromEdit) return Response.redirect(new URL(`/admin/edit/${key}?saved=${encodeURIComponent("Decision saved.")}`, request.url), 303);
   return back();
 }

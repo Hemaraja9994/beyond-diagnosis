@@ -63,8 +63,9 @@ const pace: Record<"registrations" | "queries", number[]> = { registrations: [],
 export async function createRegistration(
   draft: RegistrationDraft,
   uploads: DocumentUpload[],
+  options: { allowDuplicatePayment?: boolean } = {},
 ): Promise<{ reference: string } | StoreError> {
-  if (await paymentOwner(draft.paymentReference)) return { error: paymentUsed, status: 400 };
+  if (!options.allowDuplicatePayment && (await paymentOwner(draft.paymentReference))) return { error: paymentUsed, status: 400 };
   const created = storageMode() === "blob" ? await createRegistrationBlob(draft) : await createRegistrationSql(draft);
   if ("error" in created) return created;
   for (const upload of uploads) await saveDocument(created.reference, upload);
@@ -152,6 +153,96 @@ export async function saveVerification(reference: string, verification: Verifica
   }
   await ensureColumns();
   await sql("update registrations set verification = $1 where reference = $2", [JSON.stringify(verification), reference]);
+}
+
+/** Every field a coordinator may change from the desk. */
+export type DeskEdit = Pick<
+  Registration,
+  | "title"
+  | "creClaim"
+  | "fullName"
+  | "email"
+  | "mobile"
+  | "crrNumber"
+  | "profession"
+  | "professionDetail"
+  | "designation"
+  | "institution"
+  | "stateName"
+  | "paymentReference"
+  | "accessNeeds"
+>;
+
+const deskColumns: [keyof DeskEdit, string][] = [
+  ["title", "title"],
+  ["creClaim", "cre_claim"],
+  ["fullName", "full_name"],
+  ["email", "email"],
+  ["mobile", "mobile"],
+  ["crrNumber", "crr_number"],
+  ["profession", "profession"],
+  ["professionDetail", "profession_detail"],
+  ["designation", "designation"],
+  ["institution", "institution"],
+  ["stateName", "state_name"],
+  ["paymentReference", "payment_reference"],
+  ["accessNeeds", "access_needs"],
+];
+
+/** A coordinator's edit of any field. Returns which fields changed, for the change log. */
+export async function editRegistration(
+  reference: string,
+  edit: DeskEdit,
+  options: { allowDuplicatePayment?: boolean } = {},
+): Promise<{ ok: true; changed: string[] } | StoreError> {
+  const current = await getRegistration(reference);
+  if (!current) return { error: "That registration was not found.", status: 404 };
+  const changed = deskColumns.filter(([key]) => String(current[key]) !== String(edit[key])).map(([key]) => key);
+  if (changed.length === 0) return { ok: true, changed };
+  if (changed.includes("paymentReference") && edit.paymentReference !== "" && !options.allowDuplicatePayment) {
+    const other = await paymentOwner(edit.paymentReference, reference);
+    if (other) return { error: `That payment ID is already on ${other}. Tick “allow a repeated payment ID” to save it anyway.`, status: 400 };
+  }
+  if (storageMode() === "blob") {
+    if (changed.includes("email")) {
+      const index = `email-index/${hash(edit.email)}.txt`;
+      const prior = await get(index, { access: "private", useCache: false });
+      if (prior?.statusCode === 200) return { error: "Another registration already uses that email.", status: 400 };
+      await put(index, reference, { access: "private", contentType: "text/plain", allowOverwrite: false });
+      await del(`email-index/${hash(current.email)}.txt`).catch(() => undefined);
+    }
+    const next: Registration = { ...current, ...edit };
+    await writeRegistrationBlob(next);
+    if (changed.includes("paymentReference")) await indexPayment(edit.paymentReference, reference);
+    return { ok: true, changed };
+  }
+  await ensureColumns();
+  const sets = deskColumns.filter(([key]) => changed.includes(key));
+  try {
+    await sql(
+      `update registrations set ${sets.map(([, column], index) => `${column} = $${index + 1}`).join(", ")} where reference = $${sets.length + 1}`,
+      [...sets.map(([key]) => edit[key]), reference],
+    );
+  } catch (error) {
+    if (isUniqueViolation(error)) return { error: "Another registration already uses that email.", status: 400 };
+    throw error;
+  }
+  return { ok: true, changed };
+}
+
+/* Desk switches kept as settings: registration open or closed, number of RCI CRE places. */
+export async function getSetting(key: string): Promise<string | null> {
+  if (storageMode() === "blob") return readText(`settings/${key}.txt`);
+  const rows = await sql<{ value: string }>("select value from settings where key = $1", [key]);
+  return rows[0]?.value ?? null;
+}
+
+export async function setSetting(key: string, value: string): Promise<void> {
+  if (storageMode() === "blob") {
+    await put(`settings/${key}.txt`, value, { access: "private", contentType: "text/plain", allowOverwrite: true });
+    return;
+  }
+  await sql("insert into settings (key, value) values ($1, $2) on conflict (key) do update set value = excluded.value", [key, value]);
 }
 
 export async function saveDeskReview(reference: string, review: DeskReview): Promise<void> {
@@ -254,6 +345,11 @@ export async function getDocument(reference: string, kind: DocKind): Promise<Pro
 /** Kept for the older admin link /api/admin/payment-proof/… */
 export async function getPaymentProof(reference: string): Promise<ProofFile | null> {
   return getDocument(reference, "payment");
+}
+
+/** A coordinator uploads or replaces documents on a registration. */
+export async function addDocuments(reference: string, uploads: DocumentUpload[]): Promise<void> {
+  for (const upload of uploads) await saveDocument(reference, upload);
 }
 
 async function saveDocument(reference: string, upload: DocumentUpload): Promise<void> {

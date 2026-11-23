@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { LoginForm } from "@/components/login-form";
 import { MeetingForm } from "@/components/meeting-form";
 import { PageBanner } from "@/components/page-banner";
@@ -8,6 +9,8 @@ import { mailsDue } from "@/lib/notify";
 import { afterSessionsOpen, deskAccounts, deskCoordinatorLine, professionLabel, programme, sourceLabel, type ArrivalSource, type Profession } from "@/lib/programme";
 import { docLabels, type DocKind } from "@/lib/proof";
 import { paymentState, paymentText, rciState, rciText } from "@/lib/status";
+import { deskNumbers, type DeskNumbers } from "@/lib/seats";
+import { creSeatLimit, registrationOpen } from "@/lib/settings";
 import { getDeskPasswordHash, getMeetingUrl, listQueries, listRegistrations, storageMode, type Registration } from "@/lib/store";
 import { statusLabel, type VerificationStatus } from "@/lib/verify-types";
 
@@ -102,11 +105,13 @@ export default async function AdminPage({
   const view: View = views.some((item) => item.id === params.view) ? (params.view as View) : "all";
   const q = params.q ?? "";
 
-  const [registrations, queries, meeting, passwordsSet] = await Promise.all([
+  const [registrations, queries, meeting, passwordsSet, seatLimit, isOpen] = await Promise.all([
     listRegistrations(),
     listQueries(),
     getMeetingUrl(),
     Promise.all(deskAccounts.map(async (account) => (await getDeskPasswordHash(account.username)) !== null)),
+    creSeatLimit(),
+    registrationOpen(),
   ]);
   const mail = mailSetup();
   const ownIndex = deskAccounts.findIndex((account) => user.id === `user:${account.username}`);
@@ -118,9 +123,17 @@ export default async function AdminPage({
       <PageBanner kicker="Coordinator desk" title="Registrations and queries" lede={`Signed in as ${user.name}.`} />
       <div className="mx-auto grid max-w-6xl gap-5 px-4 py-6">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <p className="text-sm text-muted">
-            {registrations.length} registration{registrations.length === 1 ? "" : "s"} · {queries.length} quer{queries.length === 1 ? "y" : "ies"}
-          </p>
+          <div className="flex flex-wrap items-center gap-2">
+            <Link className="inline-flex min-h-11 items-center rounded-full bg-green px-4 text-sm font-semibold text-white" href="/admin/new">
+              + Add a registration
+            </Link>
+            <a className="inline-flex min-h-11 items-center rounded-full border border-line bg-card px-4 text-sm font-semibold" href="/guides/coordinator-desk-guide.pdf" target="_blank" rel="noopener noreferrer">
+              Coordinator guide (PDF)
+            </a>
+            <a className={`${chip} ${isOpen ? tone.ok : tone.stop}`} href={deskHref("settings")}>
+              Registration {isOpen ? "open" : "closed"}
+            </a>
+          </div>
           <form action="/api/admin/logout" method="post">
             <button className="min-h-11 rounded-full border border-line bg-card px-4 text-sm font-semibold" type="submit">
               Sign out
@@ -176,12 +189,17 @@ export default async function AdminPage({
           </ul>
         </nav>
 
-        {tab === "registrations" ? <RegistrationsTab registrations={registrations} view={view} q={q} mail={mail} /> : null}
+        {tab === "registrations" ? (
+          <>
+            <Dashboard numbers={deskNumbers(registrations, seatLimit)} />
+            <RegistrationsTab registrations={registrations} view={view} q={q} mail={mail} />
+          </>
+        ) : null}
         {tab === "exports" ? <ExportsTab /> : null}
         {tab === "bulk" ? <BulkTab message={params.bulk} /> : null}
         {tab === "queries" ? <QueriesTab queries={queries} /> : null}
         {tab === "settings" ? (
-          <SettingsTab user={user} passwordsSet={passwordsSet} message={params.password} meeting={meeting} mail={mail} />
+          <SettingsTab user={user} passwordsSet={passwordsSet} message={params.password} meeting={meeting} mail={mail} seatLimit={seatLimit} isOpen={isOpen} />
         ) : null}
       </div>
     </div>
@@ -426,25 +444,50 @@ function QueriesTab({ queries }: { queries: Awaited<ReturnType<typeof listQuerie
 }
 
 function SettingsTab({
-  user,
   passwordsSet,
   message,
   meeting,
   mail,
+  seatLimit,
+  isOpen,
 }: {
   user: DeskUser;
   passwordsSet: boolean[];
   message: string | undefined;
   meeting: string | null;
   mail: ReturnType<typeof mailSetup>;
+  seatLimit: number;
+  isOpen: boolean;
 }) {
   return (
     <div className="grid gap-4">
+      <section id="switches" className="rounded-3xl bg-card p-5 ring-1 ring-line">
+        <h2 className="font-display text-2xl text-navy">Site switches</h2>
+        <p className="mt-1 text-sm leading-6 text-muted">
+          Apply on the website at once. CRE places are first registered, first served; places given from the desk beyond the limit are allowed and counted.
+        </p>
+        <form className="mt-3 grid gap-3 sm:flex sm:flex-wrap sm:items-end" action="/api/admin/settings" method="post">
+          <label className="grid gap-1 text-sm font-semibold text-navy">
+            RCI CRE places
+            <input className="field w-28" name="creSeats" type="number" min={0} max={2000} defaultValue={seatLimit} />
+          </label>
+          <label className="grid gap-1 text-sm font-semibold text-navy">
+            Registration
+            <select className="field" name="registrationOpen" defaultValue={isOpen ? "yes" : "no"}>
+              <option value="yes">Open</option>
+              <option value="no">Closed</option>
+            </select>
+          </label>
+          <button className="min-h-11 rounded-full bg-navy px-5 font-semibold text-white" type="submit">
+            Save switches
+          </button>
+        </form>
+      </section>
       <section id="accounts" className="rounded-3xl bg-card p-5 ring-1 ring-line">
         <h2 className="font-display text-2xl text-navy">Coordinator accounts</h2>
         <p className="mt-1 text-sm leading-6 text-muted">
           Each coordinator signs in with her username and her own password (10 characters or more). Passwords are stored only as a scrambled hash.
-          {user.owner ? " As the owner you can set or reset any password." : " You can change your own password here."}
+           Any coordinator can set or reset any of these passwords — for example, when someone forgets hers.
         </p>
         {message ? (
           <p className="mt-3 rounded-2xl bg-navy/5 px-4 py-3 text-sm font-semibold text-navy" role="status">
@@ -453,7 +496,7 @@ function SettingsTab({
         ) : null}
         <ul className="mt-3 grid gap-4">
           {deskAccounts.map((account, index) =>
-            user.owner || user.id === `user:${account.username}` ? (
+            (
               <li key={account.username}>
                 <form className="grid gap-2 sm:flex sm:flex-wrap sm:items-end sm:gap-3" action="/api/admin/password" method="post">
                   <input type="hidden" name="username" value={account.username} />
@@ -473,7 +516,7 @@ function SettingsTab({
                   </button>
                 </form>
               </li>
-            ) : null,
+            ),
           )}
         </ul>
       </section>
@@ -576,7 +619,10 @@ function RegistrationCard({ row, token }: { row: Registration; token: string | n
           {row.professionDetail ? ` · ${row.professionDetail}` : ""}
           {row.institution ? ` · ${row.institution}` : ""}
         </p>
-        <p className="mt-1 flex flex-wrap gap-3 text-xs font-semibold">
+        <p className="mt-1 flex flex-wrap items-center gap-3 text-xs font-semibold">
+          <Link className="rounded-full bg-navy px-2.5 py-1 text-white" href={`/admin/edit/${row.reference}`}>
+            Edit / control
+          </Link>
           <a className="text-green underline" href={whatsapp} target="_blank" rel="noopener noreferrer">
             WhatsApp
           </a>
@@ -814,5 +860,56 @@ function Alert({ kind, status, children }: { kind: "info" | "warn" | "stop"; sta
     <p className={`rounded-2xl px-4 py-3 text-sm leading-6 ring-1 ${style}`} role={status ? "status" : undefined}>
       {children}
     </p>
+  );
+}
+
+function Dashboard({ numbers }: { numbers: DeskNumbers }) {
+  const cre = numbers.cre;
+  const share = cre.seats > 0 ? Math.min(100, Math.round((cre.taken / cre.seats) * 100)) : 0;
+  const tile = (label: string, value: number | string, note?: string, strong = false) => (
+    <div key={label} className={`rounded-2xl p-3 ring-1 ring-line ${strong ? "bg-navy text-white" : "bg-white"}`}>
+      <p className={`text-xs font-semibold uppercase tracking-[0.1em] ${strong ? "text-white/70" : "text-muted"}`}>{label}</p>
+      <p className="mt-1 font-display text-3xl leading-none">{value}</p>
+      {note ? <p className={`mt-1 text-xs ${strong ? "text-white/70" : "text-muted"}`}>{note}</p> : null}
+    </div>
+  );
+  return (
+    <section id="dashboard" className="rounded-3xl bg-card p-5 ring-1 ring-line">
+      <h2 className="font-display text-2xl text-navy">Dashboard</h2>
+      <h3 className="mt-4 text-sm font-semibold uppercase tracking-[0.12em] text-green-dark">RCI CRE points — claimants</h3>
+      <div className="mt-2">
+        <div className="flex items-baseline justify-between text-sm">
+          <span className="font-semibold text-navy">
+            Places taken: {cre.taken} of {cre.seats}
+          </span>
+          <span className={cre.left === 0 ? "font-semibold text-red-700" : "text-muted"}>{cre.left === 0 ? "Full" : `${cre.left} left`}</span>
+        </div>
+        <div className="mt-1 h-3 overflow-hidden rounded-full bg-navy/10" aria-hidden="true">
+          <div className={`h-full rounded-full ${cre.left === 0 ? "bg-red-600" : "bg-green"}`} style={{ width: `${share}%` }} />
+        </div>
+      </div>
+      <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-4 lg:grid-cols-7">
+        {tile("Registered", cre.taken, "holding a place", true)}
+        {tile("Payment confirmed", cre.paymentConfirmed, `${cre.taken - cre.paymentConfirmed} to check`)}
+        {tile("RCI confirmed", cre.rciConfirmed, `${cre.rciUnderReview} under review`)}
+        {tile("RCI awaited", cre.rciAwaited, "mail not uploaded")}
+        {tile("Attended", cre.attended)}
+        {tile("RCI exam passed", cre.examPassed)}
+        {tile("Points credited", cre.pointsCredited)}
+      </div>
+      <h3 className="mt-5 text-sm font-semibold uppercase tracking-[0.12em] text-green-dark">All participants</h3>
+      <div className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-4 lg:grid-cols-7">
+        {tile("Registrations", numbers.total, undefined, true)}
+        {tile("Payment confirmed", numbers.paymentConfirmed)}
+        {tile("Payment pending", numbers.paymentPending, "to check on the desk")}
+        {tile("Payment rejected", numbers.paymentRejected)}
+        {tile("Not claiming CRE", numbers.others.total, `${numbers.others.paymentConfirmed} paid · ${numbers.others.attended} attended`)}
+        {tile("CRE not stated", numbers.notStated, "older registrations")}
+      </div>
+      <p className="mt-3 text-xs leading-5 text-muted">
+        A claimant holds one of the {cre.seats} places from the moment they register; rejecting their payment frees the place for the next
+        person. Use the Show filter below to see the people behind these figures.
+      </p>
+    </section>
   );
 }

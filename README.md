@@ -56,6 +56,13 @@ The desk can:
 - download the participant register (A4 landscape PDF or Word, with logo and signature lines), CSV of everything, the RCI list of CRE claimants, and queries
 - publish the Webex link
 
+## RCI CRE places, master control and the guide
+
+- RCI CRE points: 50 places, first registered, first served (`programme.creSeats`, changeable on the desk under Site switches). A claimant holds a place from registering; a rejected payment frees it. Public pages show places left (`/api/seats`).
+- Master control (`/admin/edit/[reference]`, `/admin/new`): every coordinator can edit any field, upload documents, override every decision, give CRE places beyond the limit, accept a repeated payment ID, add registrations directly, and delete (typing the reference). Every change is logged with the coordinator's name.
+- Site switches: number of CRE places, registration open/closed.
+- Coordinator guide: `public/guides/coordinator-desk-guide.pdf` (screenshots use sample data), linked from the desk.
+
 ## Confirmation emails (free, through Gmail)
 
 Set `GMAIL_USER` (the sending Gmail — hemarajanayaka@gmail.com) and `GMAIL_APP_PASSWORD` (a Google App Password: 2-Step Verification on, then myaccount.google.com → Security → App passwords) in Vercel and redeploy. Participants then get: registration received (acknowledgement PDF attached), payment confirmed, and RCI registration confirmed — each once. Replies go to the conference address (yenepoyaaslpconference@gmail.com), and copies stay in the sending account's Sent folder. The desk shows whether email is on, a "Send pending emails" button for people who registered earlier, and "Resend confirmation" per participant. Gmail allows about 500 emails a day. Without the two variables nothing is sent and nothing fails.

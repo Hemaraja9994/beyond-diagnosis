@@ -20,7 +20,12 @@ export async function POST(request: Request, context: { params: Promise<{ refere
 
   const form = await request.formData().catch(() => null);
   const typed = String(form?.get("confirm") ?? "").trim().toUpperCase();
-  if (typed !== key) return back(`${key} was not deleted: type the reference exactly to confirm.`, `#${key}`);
+  if (typed !== key) {
+    if (form?.get("return") === "edit") {
+      return Response.redirect(new URL(`/admin/edit/${key}?saved=${encodeURIComponent("Not deleted: type the reference exactly to confirm.")}`, request.url), 303);
+    }
+    return back(`${key} was not deleted: type the reference exactly to confirm.`, `#${key}`);
+  }
 
   const removed = await deleteRegistration(key);
   if (!removed) return back("That registration was not found.");
