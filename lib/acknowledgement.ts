@@ -3,7 +3,7 @@ import path from "node:path";
 import { PDFDocument, StandardFonts, rgb, type PDFFont, type PDFPage, type RGB } from "pdf-lib";
 import QRCode from "qrcode";
 import { committee, professionLabel, programme, rciApprovalLine, type Profession } from "@/lib/programme";
-import { overallState, paymentState, paymentText, rciState, rciText } from "@/lib/status";
+import { creStamp, participationStamp, paymentState, paymentText, rciState, rciText, type Stamp } from "@/lib/status";
 import type { Registration } from "@/lib/store";
 
 /**
@@ -97,7 +97,7 @@ export async function acknowledgementPdf(row: Registration, statusUrl: string): 
   const pay = paymentState(row);
   const rci = rciState(row);
   const statusTop = y;
-  const statusRight = right - 150;
+  const statusRight = right - 200;
   const payBy = row.deskReview?.payment ? ` (checked by ${row.deskReview.payment.by})` : "";
   const rciBy = row.deskReview?.rci ? ` (checked by ${row.deskReview.rci.by})` : "";
   const statuses: [string, string, RGB][] = [
@@ -112,20 +112,20 @@ export async function acknowledgementPdf(row: Registration, statusUrl: string): 
   for (const [label, value, colour] of statuses) {
     page.drawCircle({ x: left + 4, y: y + 3.5, size: 3.5, color: colour });
     page.drawText(safe(label), { x: left + 14, y, size: 9.5, font: bold, color: navy });
-    y = text(page, value, left + 150, y, regular, 9.5, colour, statusRight - (left + 150)) - 6;
+    y = text(page, value, left + 128, y, regular, 9.5, colour, statusRight - (left + 128)) - 6;
   }
 
   const attendance = row.deskReview?.attendance?.decision;
   if (attendance) {
     page.drawCircle({ x: left + 4, y: y + 3.5, size: 3.5, color: attendance === "attended" ? green : red });
     page.drawText("Webex attendance", { x: left + 14, y, size: 9.5, font: bold, color: navy });
-    y = text(page, attendance === "attended" ? "Attended" : "Not recorded", left + 150, y, regular, 9.5, attendance === "attended" ? green : red, statusRight - (left + 150)) - 6;
+    y = text(page, attendance === "attended" ? "Attended" : "Not recorded", left + 128, y, regular, 9.5, attendance === "attended" ? green : red, statusRight - (left + 128)) - 6;
   }
   const exam = row.deskReview?.exam?.decision;
   if (row.creClaim === "yes" && exam) {
     page.drawCircle({ x: left + 4, y: y + 3.5, size: 3.5, color: exam === "passed" ? green : red });
     page.drawText("RCI online exam", { x: left + 14, y, size: 9.5, font: bold, color: navy });
-    y = text(page, exam === "passed" ? "Completed" : exam === "not-passed" ? "Not cleared (as reported by RCI)" : "Not taken", left + 150, y, regular, 9.5, exam === "passed" ? green : red, statusRight - (left + 150)) - 6;
+    y = text(page, exam === "passed" ? "Completed" : exam === "not-passed" ? "Not cleared (as reported by RCI)" : "Not taken", left + 128, y, regular, 9.5, exam === "passed" ? green : red, statusRight - (left + 128)) - 6;
   }
   if (row.creClaim === "yes") {
     y = text(
@@ -142,11 +142,14 @@ export async function acknowledgementPdf(row: Registration, statusUrl: string): 
     y = text(page, "Sessions run live on Cisco Webex, with Slido for questions and polls.", left + 14, y - 2, regular, 8, muted, statusRight - left - 14) - 4;
   }
 
-  // Stamp
-  const overall = overallState(row);
-  const stampColour = overall.tone === "ok" ? green : overall.tone === "stop" ? red : orange;
-  stamp(page, right - 62, statusTop - 40, overall.word, stampColour, regular, bold);
-  y = Math.min(y, statusTop - 110) - 10;
+  // Two stamps: participation (everyone) and RCI CRE points (claimants; "not claimed" for others)
+  const toneColour = (stampValue: Stamp) =>
+    stampValue.tone === "ok" ? green : stampValue.tone === "stop" ? red : stampValue.tone === "wait" ? orange : muted;
+  const first = participationStamp(row);
+  const second = creStamp(row);
+  stamp(page, right - 143, statusTop - 38, first.title, first.word, toneColour(first), regular, bold);
+  stamp(page, right - 46, statusTop - 38, second.title, second.word, toneColour(second), regular, bold);
+  y = Math.min(y, statusTop - 96) - 10;
 
   // Organising team
   y = heading(page, "Organising team", left, y, bold);
@@ -188,20 +191,21 @@ export async function acknowledgementPdf(row: Registration, statusUrl: string): 
   return pdf.save();
 }
 
-function stamp(page: PDFPage, cx: number, cy: number, word: string, colour: RGB, regular: PDFFont, bold: PDFFont) {
-  page.drawCircle({ x: cx, y: cy, size: 56, borderColor: colour, borderWidth: 2.2, opacity: 0, borderOpacity: 0.9 });
-  page.drawCircle({ x: cx, y: cy, size: 50, borderColor: colour, borderWidth: 0.8, opacity: 0, borderOpacity: 0.9 });
+function stamp(page: PDFPage, cx: number, cy: number, title: string, word: string, colour: RGB, regular: PDFFont, bold: PDFFont) {
+  page.drawCircle({ x: cx, y: cy, size: 45, borderColor: colour, borderWidth: 2, opacity: 0, borderOpacity: 0.9 });
+  page.drawCircle({ x: cx, y: cy, size: 40, borderColor: colour, borderWidth: 0.7, opacity: 0, borderOpacity: 0.9 });
+  const date = new Date().toLocaleDateString("en-IN", { timeZone: "Asia/Kolkata", day: "2-digit", month: "short", year: "numeric" }).toUpperCase();
   const lines: [string, PDFFont, number][] = [
-    ["YENEPOYA · ASLP", bold, 7],
-    ["CRE 2026", regular, 7],
-    [word, bold, word.length > 10 ? 8.5 : 12],
-    [new Date().toLocaleDateString("en-IN", { timeZone: "Asia/Kolkata", day: "2-digit", month: "short", year: "numeric" }).toUpperCase(), regular, 7],
+    ["YENEPOYA · ASLP", bold, 5.5],
+    [title, regular, 6],
+    [word, bold, word.length > 9 ? 7.5 : 10],
+    [date, regular, 6],
   ];
-  let y = cy + 20;
+  let y = cy + 17;
   for (const [value, font, size] of lines) {
     const w = font.widthOfTextAtSize(value, size);
     page.drawText(value, { x: cx - w / 2, y, size, font, color: colour });
-    y -= size + (size > 9 ? 9 : 7);
+    y -= size + (size > 8 ? 7 : 5.5);
   }
 }
 

@@ -260,30 +260,46 @@ export function RegisterForm({ source }: { source: ArrivalSource }) {
 function Confirmation({ success }: { success: Success }) {
   return (
     <section className="card p-6" aria-live="polite">
-      <p className="text-xs font-semibold uppercase tracking-[0.16em] text-green">Registration received</p>
+      <p className="text-xs font-semibold uppercase tracking-[0.16em] text-green">Registration and payment received</p>
       <h2 className="mt-2 font-display text-4xl leading-none tracking-tight text-navy sm:text-5xl">{success.reference}</h2>
-      <p className="mt-4 max-w-xl leading-7 text-muted">
-        Please note this reference. Your receipt is being checked against your details for {success.email}; the organising team confirms every
-        seat.
-      </p>
-      {success.claiming ? (
-        <p className="mt-3 max-w-xl rounded-2xl bg-navy/5 px-4 py-3 text-sm leading-6 text-navy">
-          Claiming CRE points: once you register for this programme on the RCI website, upload the RCI confirmation mail on{" "}
-          <Link className="font-semibold underline" href="/registration/rci">
-            Add RCI confirmation
-          </Link>{" "}
-          with this reference.
-        </p>
-      ) : null}
+      <p className="mt-3 max-w-xl leading-7 text-muted">Please note this reference. Thank you — your seat is reserved for {success.email}.</p>
+      <ul className="mt-4 grid gap-2 text-sm leading-6">
+        <li>
+          <span className="mr-2 font-bold text-green">✓</span>Registration saved
+        </li>
+        <li>
+          <span className="mr-2 font-bold text-green">✓</span>Payment ID and receipt received — the organising team confirms each payment, and your status
+          page updates when it is confirmed
+        </li>
+        {success.claiming ? (
+          <li>
+            <span className="mr-2 font-bold text-green-dark">…</span>RCI CRE points: once you register for this programme on the RCI website, upload the
+            RCI confirmation mail on{" "}
+            <Link className="font-semibold underline" href="/registration/rci">
+              Add RCI confirmation
+            </Link>
+          </li>
+        ) : null}
+      </ul>
+      <div className="mt-6 rounded-2xl bg-navy/5 p-4">
+        <p className="font-semibold text-navy">Next: join the participants&apos; WhatsApp group</p>
+        <p className="mt-1 text-sm leading-6 text-muted">Webex link, reminders and updates for the day are shared there.</p>
+        <a className="pill pill-solid mt-3" href={programme.whatsappUrl} target="_blank" rel="noopener noreferrer">
+          Join the WhatsApp group
+        </a>
+      </div>
       {success.token ? (
         <div className="mt-6">
+          <p className="mb-2 text-sm font-semibold text-navy">Your acknowledgement</p>
           <AckActions reference={success.reference} token={success.token} />
+          <p className="mt-2 text-sm">
+            <Link className="font-semibold text-green underline" href={`/status/${success.reference}?t=${encodeURIComponent(success.token)}`}>
+              Open my status page
+            </Link>
+          </p>
         </div>
       ) : null}
       <div className="mt-6 flex flex-wrap gap-3">
-        <a className="pill pill-solid" href={programme.whatsappUrl} target="_blank" rel="noopener noreferrer">
-          Join the participants&apos; WhatsApp group
-        </a>
         <Link className="pill pill-navy" href="/programme">
           See the programme
         </Link>

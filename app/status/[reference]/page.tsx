@@ -4,7 +4,7 @@ import { AckActions } from "@/components/ack-actions";
 import { PageBanner } from "@/components/page-banner";
 import { participantTokenOk } from "@/lib/admin";
 import { programme } from "@/lib/programme";
-import { creJourney, overallState, paymentState, paymentText, rciState, rciText } from "@/lib/status";
+import { creJourney, creStamp, participationStamp, paymentState, paymentText, rciState, rciText, type Stamp } from "@/lib/status";
 import { getRegistration } from "@/lib/store";
 
 export const metadata: Metadata = { title: "Registration status", robots: { index: false, follow: false } };
@@ -37,14 +37,22 @@ export default async function StatusPage({
 
   const pay = paymentState(row);
   const rci = rciState(row);
-  const overall = overallState(row);
-  const tone = overall.tone === "ok" ? "text-green" : overall.tone === "stop" ? "text-red-700" : "text-green-dark";
+  const stamps = [participationStamp(row), creStamp(row)];
+  const tone = (value: Stamp) =>
+    value.tone === "ok" ? "border-green text-green" : value.tone === "stop" ? "border-red-700 text-red-700" : value.tone === "wait" ? "border-green-dark text-green-dark" : "border-line text-muted";
   return (
     <div className="pb-24 md:pb-10">
       <PageBanner kicker="Registration status" title={row.reference} lede={`${programme.title} · ${programme.dateLabel}`} />
       <div className="mx-auto grid max-w-3xl gap-6 px-4 py-10">
         <section className="card grid gap-4 p-6">
-          <p className={`font-display text-3xl tracking-tight ${tone}`}>{overall.word}</p>
+          <div className="flex flex-wrap gap-3">
+            {stamps.map((value) => (
+              <div key={value.title} className={`grid min-w-[9rem] place-items-center rounded-full border-2 px-5 py-3 text-center ${tone(value)}`}>
+                <span className="text-[0.65rem] font-semibold tracking-[0.14em]">{value.title}</span>
+                <span className="font-display text-xl tracking-tight">{value.word}</span>
+              </div>
+            ))}
+          </div>
           <p className="text-lg font-semibold text-navy">
             {row.title ? `${row.title} ` : ""}
             {row.fullName}

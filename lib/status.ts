@@ -105,3 +105,33 @@ export function creJourney(row: StatusInput): JourneyStep[] {
   }
   return steps;
 }
+
+/**
+ * Two stamps, so participants who do not claim CRE points get a clean confirmation of their own:
+ * one for participation (everyone), one for RCI CRE points (claimants; "not claimed" for others).
+ */
+export type Stamp = { title: string; word: string; tone: "ok" | "wait" | "stop" | "none" };
+
+export function participationStamp(row: StatusInput): Stamp {
+  const pay = paymentState(row);
+  if (pay === "confirmed") return { title: "PARTICIPATION", word: "CONFIRMED", tone: "ok" };
+  if (pay === "rejected") return { title: "PARTICIPATION", word: "ACTION NEEDED", tone: "stop" };
+  return { title: "PARTICIPATION", word: "REGISTERED", tone: "wait" };
+}
+
+export function creStamp(row: StatusInput): Stamp {
+  switch (rciState(row)) {
+    case "confirmed":
+      return { title: "RCI CRE POINTS", word: "CONFIRMED", tone: "ok" };
+    case "submitted":
+      return { title: "RCI CRE POINTS", word: "UNDER REVIEW", tone: "wait" };
+    case "awaited":
+      return { title: "RCI CRE POINTS", word: "AWAITED", tone: "wait" };
+    case "rejected":
+      return { title: "RCI CRE POINTS", word: "ACTION NEEDED", tone: "stop" };
+    case "not-claiming":
+      return { title: "RCI CRE POINTS", word: "NOT CLAIMED", tone: "none" };
+    default:
+      return { title: "RCI CRE POINTS", word: "NOT STATED", tone: "none" };
+  }
+}
