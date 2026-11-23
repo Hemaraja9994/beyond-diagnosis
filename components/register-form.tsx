@@ -7,10 +7,20 @@ import { DocumentInput } from "@/components/document-input";
 import { RegistrationLinks } from "@/components/registration-links";
 import { professions, programme, states, titles, type ArrivalSource } from "@/lib/programme";
 
-type Success = { reference: string; email: string; claiming: boolean; token: string | null };
+type Success = { reference: string; email: string; claiming: boolean; token: string | null; creMoved: boolean };
 type FileField = "receipt" | "crrCertificate" | "rciConfirmation";
 
-export function RegisterForm({ source }: { source: ArrivalSource }) {
+export function RegisterForm({
+  source,
+  creSeatsLeft,
+  creSeatLimit,
+}: {
+  source: ArrivalSource;
+  creSeatsLeft: number;
+  creSeatLimit: number;
+}) {
+  const [seatsLeft, setSeatsLeft] = useState(creSeatsLeft);
+  const creFull = seatsLeft <= 0;
   const [pending, setPending] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState<Success | null>(null);
@@ -55,7 +65,11 @@ export function RegisterForm({ source }: { source: ArrivalSource }) {
     setPending(true);
     try {
       const response = await fetch("/api/register", { method: "POST", body });
-      const payload = (await response.json().catch(() => ({}))) as { reference?: string; token?: string | null; error?: string };
+      const payload = (await response.json().catch(() => ({}))) as { reference?: string; token?: string | null; error?: string; creFull?: boolean; creMoved?: boolean };
+      if (payload.creFull) {
+        setSeatsLeft(0);
+        setClaim("");
+      }
       if (!response.ok || !payload.reference) {
         setError(
           payload.error ??
@@ -63,7 +77,13 @@ export function RegisterForm({ source }: { source: ArrivalSource }) {
         );
         return;
       }
-      setSuccess({ reference: payload.reference, email: String(form.get("email") ?? ""), claiming: claim === "yes", token: payload.token ?? null });
+      setSuccess({
+        reference: payload.reference,
+        email: String(form.get("email") ?? ""),
+        claiming: claim === "yes" && !payload.creMoved,
+        token: payload.token ?? null,
+        creMoved: Boolean(payload.creMoved),
+      });
       window.scrollTo({ top: 0, behavior: "smooth" });
     } catch {
       setError("The network dropped. Check your connection and submit again.");
@@ -147,11 +167,17 @@ export function RegisterForm({ source }: { source: ArrivalSource }) {
         <fieldset className="card grid gap-4 p-5">
           <legend className="float-left mb-1 w-full font-display text-lg text-navy">RCI CRE points</legend>
           <p className="text-sm leading-6 text-muted">
-            Everyone may attend. Only participants registered on the Central Rehabilitation Register (CRR) of RCI can claim CRE points.
+            Everyone may attend. Only participants registered on the Central Rehabilitation Register (CRR) of RCI can claim CRE points, and
+            places for CRE points are limited to {creSeatLimit}, first registered, first served.
+          </p>
+          <p className={`rounded-2xl px-4 py-2 text-sm font-semibold ${creFull ? "bg-red-50 text-red-800" : "bg-navy/5 text-navy"}`} role="status">
+            {creFull
+              ? `All ${creSeatLimit} RCI CRE places are taken. You can still register below to attend without CRE points.`
+              : `RCI CRE places left: ${seatsLeft} of ${creSeatLimit}`}
           </p>
           <div className="grid gap-2 sm:grid-cols-2" role="radiogroup" aria-label="Claiming RCI CRE points">
-            <Choice name="creClaim" value="yes" checked={claim === "yes"} onChange={() => setClaim("yes")}>
-              Yes — I am RCI-registered and will claim CRE points
+            <Choice name="creClaim" value="yes" checked={claim === "yes"} onChange={() => setClaim("yes")} disabled={creFull}>
+              {creFull ? "Yes — CRE places are full" : "Yes — I am RCI-registered and will claim CRE points"}
             </Choice>
             <Choice name="creClaim" value="no" checked={claim === "no"} onChange={() => setClaim("no")}>
               No — student, or not on the CRR
@@ -257,6 +283,12 @@ function Confirmation({ success }: { success: Success }) {
       <p className="text-xs font-semibold uppercase tracking-[0.16em] text-green">Registration and payment received</p>
       <h2 className="mt-2 font-display text-4xl leading-none tracking-tight text-navy sm:text-5xl">{success.reference}</h2>
       <p className="mt-3 max-w-xl leading-7 text-muted">Please note this reference. Thank you — your seat is reserved for {success.email}.</p>
+      {success.creMoved ? (
+        <p className="mt-3 max-w-xl rounded-2xl bg-red-50 px-4 py-3 text-sm leading-6 text-red-800">
+          The last RCI CRE places were taken just before your registration, so you are registered to attend without CRE points. If a place
+          frees up, the organisers will contact you.
+        </p>
+      ) : null}
       <ul className="mt-4 grid gap-2 text-sm leading-6">
         <li>
           <span className="mr-2 font-bold text-green">✓</span>Registration saved
@@ -307,19 +339,32 @@ function Choice({
   value,
   checked,
   onChange,
+  disabled,
   children,
 }: {
   name: string;
   value: string;
   checked: boolean;
   onChange: () => void;
+  disabled?: boolean;
   children: React.ReactNode;
 }) {
   return (
     <label
-      className={`flex cursor-pointer items-start gap-3 rounded-2xl border p-3 text-sm leading-6 ${checked ? "border-green bg-green/5" : "border-line"}`}
+      className={`flex items-start gap-3 rounded-2xl border p-3 text-sm leading-6 ${
+        disabled ? "cursor-not-allowed border-line opacity-55" : `cursor-pointer ${checked ? "border-green bg-green/5" : "border-line"}`
+      }`}
     >
-      <input className="mt-1 h-5 w-5 shrink-0" type="radio" name={name} value={value} checked={checked} onChange={onChange} required />
+      <input
+        className="mt-1 h-5 w-5 shrink-0"
+        type="radio"
+        name={name}
+        value={value}
+        checked={checked}
+        onChange={onChange}
+        disabled={disabled}
+        required
+      />
       <span>{children}</span>
     </label>
   );

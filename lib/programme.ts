@@ -33,6 +33,8 @@ export const programme = {
   /** One fee for everyone, as shown on the Razorpay page (Yenepoya Deemed to be University). */
   feeRupees: 354,
   feeLabel: "₹354",
+  /** RCI CRE points: places for this many claimants, first registered, first served. */
+  creSeats: 50,
   whatsappUrl: "https://chat.whatsapp.com/HUwQZlIs0zB90pSS3EC2r1",
   // Drop the official emblem at public/brand/yenepoya-emblem.svg.
   // Use a file supplied by the university. Do not download a logo from an image site.
@@ -103,7 +105,7 @@ export type Profession =
   | "other"
   | "student";
 
-export type ArrivalSource = "rci" | "site" | "join" | "direct";
+export type ArrivalSource = "rci" | "site" | "join" | "direct" | "desk";
 
 export const titles = ["Dr.", "Prof.", "Mr.", "Ms.", "Mrs."] as const;
 export type Title = (typeof titles)[number];
@@ -156,6 +158,8 @@ export function sourceLabel(source: ArrivalSource): string {
       return "Webex join page";
     case "direct":
       return "Direct";
+    case "desk":
+      return "Added by a coordinator";
     default: {
       const unknown: never = source;
       return unknown;

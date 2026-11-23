@@ -3,7 +3,7 @@ import { json } from "@/lib/http";
 import { after } from "next/server";
 import { notifyParticipant } from "@/lib/notify";
 import { getRegistration, saveDeskReview } from "@/lib/store";
-import type { DeskReview } from "@/lib/verify-types";
+import { withHistory, type DeskReview } from "@/lib/verify-types";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -71,8 +71,9 @@ export async function POST(request: Request, context: { params: Promise<{ refere
     default:
       return json({ error: "Unknown action." }, 400);
   }
-  await saveDeskReview(key, review);
+  await saveDeskReview(key, withHistory(review, user.name, `Marked ${action.replace("pay-", "payment ").replace("rci-", "RCI ").replace("att-", "attendance ").replace("exam-", "exam ").replace("pts-", "points ")}`));
   const origin = new URL(request.url).origin;
   after(() => notifyParticipant(key, origin).catch((error) => console.error("review: email failed", error)));
-  return Response.redirect(new URL(`/admin#${key}`, request.url), 303);
+  const target = String(form?.get("return") ?? "") === "edit" ? `/admin/edit/${key}?saved=${encodeURIComponent("Decision saved.")}` : `/admin#${key}`;
+  return Response.redirect(new URL(target, request.url), 303);
 }

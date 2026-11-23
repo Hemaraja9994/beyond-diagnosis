@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { SeatsBadge } from "@/components/seats-badge";
 import { CopyLink } from "@/components/copy-link";
 import { CreSteps } from "@/components/cre-steps";
 import { PageBanner } from "@/components/page-banner";
@@ -26,6 +27,7 @@ export default async function AttendPage() {
           <p className="mt-3 leading-7 text-muted">
             Pay {programme.feeLabel} on Razorpay first, then fill in your details, CRR number and payment receipt to confirm your seat.
           </p>
+          <SeatsBadge className="mt-4" />
           <Link
             href="/registration?from=rci"
             className="pill pill-solid mt-5"

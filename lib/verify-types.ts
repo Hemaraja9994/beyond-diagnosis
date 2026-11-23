@@ -48,6 +48,13 @@ export type DeskReview = {
   points?: DeskDecision & { decision: "credited" };
   /** When each confirmation email went out (ISO time), so none is sent twice. */
   mailed?: { registration?: string; payment?: string; rci?: string };
+  /** Change log: who changed what on this registration, newest last (kept to the last 60 entries). */
+  history?: { by: string; at: string; what: string }[];
 };
 
-export type DeskField = Exclude<keyof DeskReview, "mailed">;
+export function withHistory(review: DeskReview, by: string, what: string): DeskReview {
+  const history = [...(review.history ?? []), { by, at: new Date().toISOString(), what }].slice(-60);
+  return { ...review, history };
+}
+
+export type DeskField = Exclude<keyof DeskReview, "mailed" | "history">;

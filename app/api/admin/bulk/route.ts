@@ -3,7 +3,7 @@ import { json } from "@/lib/http";
 import { after } from "next/server";
 import { notifyParticipant } from "@/lib/notify";
 import { listRegistrations, saveDeskReview } from "@/lib/store";
-import type { DeskReview } from "@/lib/verify-types";
+import { withHistory, type DeskReview } from "@/lib/verify-types";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -44,7 +44,7 @@ export async function POST(request: Request) {
     if (!hit) continue;
     const review: DeskReview = { ...(row.deskReview ?? {}) };
     apply(review, stamp);
-    await saveDeskReview(row.reference, review);
+    await saveDeskReview(row.reference, withHistory(review, user.name, `Bulk: ${action}`));
     matched.add(row.email.toLowerCase());
     matched.add(row.crrNumber.toUpperCase());
     matched.add(row.reference);

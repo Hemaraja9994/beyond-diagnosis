@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { LoginForm } from "@/components/login-form";
 import { MeetingForm } from "@/components/meeting-form";
 import { PageBanner } from "@/components/page-banner";
@@ -8,6 +9,8 @@ import { docLabels, type DocKind } from "@/lib/proof";
 import { participantToken } from "@/lib/admin";
 import { mailReady, mailSender } from "@/lib/mail";
 import { mailsDue } from "@/lib/notify";
+import { deskNumbers, type DeskNumbers } from "@/lib/seats";
+import { creSeatLimit, registrationOpen } from "@/lib/settings";
 import { paymentState, paymentText, rciState, rciText } from "@/lib/status";
 import { getDeskPasswordHash, getMeetingUrl, listQueries, listRegistrations, storageMode, type Registration } from "@/lib/store";
 import { statusLabel, type VerificationStatus } from "@/lib/verify-types";
@@ -40,6 +43,7 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
     );
   }
 
+  const [seatLimit, isOpen] = await Promise.all([creSeatLimit(), registrationOpen()]);
   const [registrations, queries, meeting, passwordsSet] = await Promise.all([
     listRegistrations(),
     listQueries(),
@@ -110,6 +114,18 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
             </button>
           </form>
         </div>
+        <section className="flex flex-wrap items-center gap-3">
+          <Link className="inline-flex min-h-11 items-center rounded-full bg-green px-4 font-semibold text-white" href="/admin/new">
+            + Add a registration
+          </Link>
+          <a className="inline-flex min-h-11 items-center rounded-full border border-line px-4 font-semibold" href="/guides/coordinator-desk-guide.pdf" target="_blank" rel="noopener noreferrer">
+            Coordinator guide (PDF)
+          </a>
+          <span className={`rounded-full px-3 py-1 text-sm font-semibold ${isOpen ? "bg-green/15 text-green-dark" : "bg-red-100 text-red-800"}`}>
+            Registration {isOpen ? "open" : "closed"}
+          </span>
+        </section>
+        <Dashboard numbers={deskNumbers(registrations, seatLimit)} />
         <section id="registrations">
           <h2 className="font-display text-2xl text-navy">Registrations ({registrations.length})</h2>
           <p className="mt-2 text-sm leading-6 text-muted">
@@ -264,16 +280,36 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
             </div>
           </form>
         </section>
+        <section id="settings" className="rounded-3xl bg-card p-5 ring-1 ring-line">
+          <h2 className="font-display text-2xl text-navy">Site switches</h2>
+          <p className="mt-2 text-sm leading-6 text-muted">Changes apply on the site at once. Places given by a coordinator beyond the limit are allowed and counted.</p>
+          <form className="mt-3 flex flex-wrap items-end gap-3" action="/api/admin/settings" method="post">
+            <label className="grid gap-1 text-sm font-semibold text-navy">
+              RCI CRE places
+              <input className="field w-28" name="creSeats" type="number" min={0} max={2000} defaultValue={seatLimit} />
+            </label>
+            <label className="grid gap-1 text-sm font-semibold text-navy">
+              Registration
+              <select className="field" name="registrationOpen" defaultValue={isOpen ? "yes" : "no"}>
+                <option value="yes">Open</option>
+                <option value="no">Closed</option>
+              </select>
+            </label>
+            <button className="min-h-11 rounded-full bg-navy px-4 font-semibold text-white" type="submit">
+              Save switches
+            </button>
+          </form>
+        </section>
         <section id="accounts" className="rounded-3xl bg-card p-5 ring-1 ring-line">
           <h2 className="font-display text-2xl text-navy">Coordinator accounts</h2>
           <p className="mt-2 text-sm leading-6 text-muted">
             Each coordinator signs in with her username and her own password. Passwords are stored only as a scrambled hash.
-            {user.owner ? " As the owner you can set or reset any password." : " You can change your own password here."}
+            {" Any coordinator can set or reset any of these passwords."}
           </p>
           {password ? <p className="mt-2 text-sm font-semibold text-navy" role="status">{password}</p> : null}
           <ul className="mt-3 grid gap-3">
             {deskAccounts.map((account, index) =>
-              user.owner || user.id === `user:${account.username}` ? (
+              (
                 <li key={account.username}>
                   <form className="flex flex-wrap items-end gap-3" action="/api/admin/password" method="post">
                     <input type="hidden" name="username" value={account.username} />
@@ -292,7 +328,7 @@ export default async function AdminPage({ searchParams }: { searchParams: Promis
                     </button>
                   </form>
                 </li>
-              ) : null,
+              ),
             )}
           </ul>
         </section>
@@ -351,6 +387,9 @@ function RegistrationRow({ row, token }: { row: Registration; token: string | nu
         <p className="text-muted">{row.email}</p>
         <p className="text-muted">{row.mobile}</p>
         <p className="mt-1 flex flex-wrap gap-2 text-xs font-semibold">
+          <Link className="rounded-full bg-navy px-2 py-0.5 text-white" href={`/admin/edit/${row.reference}`}>
+            Edit / control
+          </Link>
           <a className="text-green underline" href={whatsapp} target="_blank" rel="noopener noreferrer">
             WhatsApp
           </a>
@@ -510,5 +549,56 @@ function Journey({ row }: { row: Registration }) {
         ) : null}
       </form>
     </div>
+  );
+}
+
+function Dashboard({ numbers }: { numbers: DeskNumbers }) {
+  const cre = numbers.cre;
+  const share = cre.seats > 0 ? Math.min(100, Math.round((cre.taken / cre.seats) * 100)) : 0;
+  const tile = (label: string, value: number | string, note?: string, strong = false) => (
+    <div key={label} className={`rounded-2xl p-3 ring-1 ring-line ${strong ? "bg-navy text-white" : "bg-white"}`}>
+      <p className={`text-xs font-semibold uppercase tracking-[0.1em] ${strong ? "text-white/70" : "text-muted"}`}>{label}</p>
+      <p className="mt-1 font-display text-3xl leading-none">{value}</p>
+      {note ? <p className={`mt-1 text-xs ${strong ? "text-white/70" : "text-muted"}`}>{note}</p> : null}
+    </div>
+  );
+  return (
+    <section id="dashboard" className="rounded-3xl bg-card p-5 ring-1 ring-line">
+      <h2 className="font-display text-2xl text-navy">Dashboard</h2>
+      <h3 className="mt-4 text-sm font-semibold uppercase tracking-[0.12em] text-green-dark">RCI CRE points — claimants</h3>
+      <div className="mt-2">
+        <div className="flex items-baseline justify-between text-sm">
+          <span className="font-semibold text-navy">
+            Places taken: {cre.taken} of {cre.seats}
+          </span>
+          <span className={cre.left === 0 ? "font-semibold text-red-700" : "text-muted"}>{cre.left === 0 ? "Full" : `${cre.left} left`}</span>
+        </div>
+        <div className="mt-1 h-3 overflow-hidden rounded-full bg-navy/10" aria-hidden="true">
+          <div className={`h-full rounded-full ${cre.left === 0 ? "bg-red-600" : "bg-green"}`} style={{ width: `${share}%` }} />
+        </div>
+      </div>
+      <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-4 lg:grid-cols-7">
+        {tile("Registered", cre.taken, "holding a place", true)}
+        {tile("Payment confirmed", cre.paymentConfirmed, `${cre.taken - cre.paymentConfirmed} to check`)}
+        {tile("RCI confirmed", cre.rciConfirmed, `${cre.rciUnderReview} under review`)}
+        {tile("RCI awaited", cre.rciAwaited, "mail not uploaded")}
+        {tile("Attended", cre.attended)}
+        {tile("RCI exam passed", cre.examPassed)}
+        {tile("Points credited", cre.pointsCredited)}
+      </div>
+      <h3 className="mt-5 text-sm font-semibold uppercase tracking-[0.12em] text-green-dark">All participants</h3>
+      <div className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-4 lg:grid-cols-7">
+        {tile("Registrations", numbers.total, undefined, true)}
+        {tile("Payment confirmed", numbers.paymentConfirmed)}
+        {tile("Payment pending", numbers.paymentPending, "to check on the desk")}
+        {tile("Payment rejected", numbers.paymentRejected)}
+        {tile("Not claiming CRE", numbers.others.total, `${numbers.others.paymentConfirmed} paid · ${numbers.others.attended} attended`)}
+        {tile("CRE not stated", numbers.notStated, "older registrations")}
+      </div>
+      <p className="mt-3 text-xs leading-5 text-muted">
+        A claimant holds one of the {cre.seats} places from the moment they register; rejecting their payment frees the place for the next
+        person. Use the Show filter below to see the people behind these figures.
+      </p>
+    </section>
   );
 }

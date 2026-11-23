@@ -27,7 +27,7 @@ export type QueryDraft = {
 
 const professionValues = new Set<string>(professions.map((item) => item.value));
 const stateValues = new Set<string>(states);
-const sources = new Set<string>(["rci", "site", "join", "direct"]);
+const sources = new Set<string>(["rci", "site", "join", "direct", "desk"]);
 const titleValues = new Set<string>(titles);
 
 /** Turn the text fields of a multipart form into a plain record (files are read separately). */
@@ -215,4 +215,49 @@ export function isWebexUrl(value: string): boolean {
   } catch {
     return false;
   }
+}
+
+/** Checks for a coordinator's edit: the same rules as the public form, but nothing is mandatory that a desk may not know. */
+export function parseDeskEdit(record: Record<string, unknown>):
+  | { value: import("@/lib/store").DeskEdit }
+  | { error: string } {
+  const title = readString(record, "title");
+  const creClaim = readString(record, "creClaim");
+  const fullName = readString(record, "fullName");
+  const email = readString(record, "email").toLowerCase();
+  const mobileRaw = readString(record, "mobile");
+  const mobile = normaliseMobile(mobileRaw) ?? (/^\+?[\d\s-]{8,18}$/.test(mobileRaw) ? mobileRaw.replace(/[\s-]/g, "") : null);
+  const profession = readString(record, "profession");
+  const professionDetail = readString(record, "professionDetail");
+  const crrRaw = readString(record, "crrNumber");
+  const crrNumber = crrRaw === "" || /^not applicable$/i.test(crrRaw) ? (creClaim === "yes" ? null : "Not applicable") : normaliseCrr(crrRaw);
+  const paymentRaw = readString(record, "paymentReference");
+  const paymentReference = paymentRaw === "" ? "" : normalisePaymentReference(paymentRaw);
+  if (title !== "" && !titleValues.has(title)) return { error: "Choose a title from the list." };
+  if (creClaim !== "yes" && creClaim !== "no" && creClaim !== "") return { error: "Choose whether CRE points are claimed." };
+  if (!validName(fullName)) return { error: "Enter the name using letters only." };
+  if (!validEmail(email)) return { error: "Enter a valid email address." };
+  if (!mobile) return { error: "Enter a mobile number." };
+  if (!professionValues.has(profession)) return { error: "Choose a professional category." };
+  if (!crrNumber) return { error: "A CRE claimant needs a CRR number (A followed by digits)." };
+  if (paymentReference === null) return { error: "The payment ID can use letters, numbers, and simple punctuation only." };
+  const stateName = readString(record, "stateName");
+  if (!stateValues.has(stateName)) return { error: "Choose a state or Union Territory." };
+  return {
+    value: {
+      title: title as Title | "",
+      creClaim: creClaim as CreClaim | "",
+      fullName,
+      email,
+      mobile,
+      crrNumber,
+      profession: profession as Profession,
+      professionDetail: profession === "other" ? professionDetail.slice(0, 80) : "",
+      designation: readString(record, "designation").slice(0, 120),
+      institution: readString(record, "institution").slice(0, 160),
+      stateName,
+      paymentReference,
+      accessNeeds: readString(record, "accessNeeds").slice(0, 500),
+    },
+  };
 }
