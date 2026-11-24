@@ -13,7 +13,7 @@ const marks = [
   { id: "register", label: "Register", hint: "Reserve your seat", href: "/registration" },
   { id: "webex", label: "Webex", hint: "Join on Cisco Webex", href: "/join" },
   { id: "brochure", label: "Brochure", hint: "Download or WhatsApp the brochure", href: "/brochure" },
-  { id: "rci", label: "RCI", hint: "RCI CRE approval is awaited", href: "/attend" },
+  { id: "rci", label: "RCI", hint: "Approved by RCI · on the RCI CRE calendar", href: "/attend" },
 ] as const;
 
 export function ScrollTicks() {

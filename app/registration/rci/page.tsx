@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { PageBanner } from "@/components/page-banner";
 import { RciForm } from "@/components/rci-form";
-import { rciApprovalLine } from "@/lib/programme";
+import { programme, rciApprovalLine } from "@/lib/programme";
 
 export const metadata: Metadata = { title: "Add RCI confirmation" };
 
@@ -17,7 +17,7 @@ export default function RciConfirmationPage() {
       <div className="mx-auto max-w-3xl px-4 py-10">
         <ol className="mb-6 grid gap-3 sm:grid-cols-3">
           {[
-            ["Register on the RCI website", "Once RCI lists this programme, register for it there with your CRR login."],
+            ["Register on the RCI website", "This programme is on the RCI CRE calendar for 19 December 2026. Register for it there with your CRR login."],
             ["Screenshot the mail", "RCI sends a confirmation mail. Take a screenshot where your name or CRR number shows."],
             ["Upload it here", "Use your YDU- reference and email. It is matched to your registration automatically."],
           ].map(([title, text], index) => (
@@ -28,7 +28,13 @@ export default function RciConfirmationPage() {
             </li>
           ))}
         </ol>
-        <p className="mb-5 text-sm text-muted">Current status of the programme with RCI: {rciApprovalLine}.</p>
+        <p className="mb-5 text-sm text-muted">
+          Current status of the programme with RCI: {rciApprovalLine}.{" "}
+          <a className="font-semibold text-green underline" href={programme.rciCalendarUrl} target="_blank" rel="noopener noreferrer">
+            Open the RCI CRE calendar
+          </a>
+          .
+        </p>
         <RciForm />
       </div>
     </div>

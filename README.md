@@ -6,6 +6,7 @@ A mobile-first site for the zonal Continuing Rehabilitation Education programme 
 - **Date:** Saturday, 19 December 2026, from 10:00 IST
 - **Mode:** Online (Cisco Webex), English, zonal
 - **Acknowledgement:** CRE-26111620026773
+- **RCI approval:** F. No. CRE-26111620026773/2026-RCI (24 Nov 2026) · zonal · 4 hours · maximum intake 50 · listed on the [RCI CRE calendar](https://rciregistration.nic.in/rehabcouncil/CreCalendarnew.jsp). Conditions: ISL interpreters must be deputed; the RCI assessment questionnaire must be completed at least one day before (no True/False questions); confirm payments on the RCI portal before the start; assessment report within 48 hours after.
 - **Institute code:** KK048
 - **Organising chairperson:** Dr. Shwetha Prabhu
 - **Organising secretaries:** Ms. Swathi Chinnasamy and Ms. Rachana R Uchil, yenepoyaaslpconference@gmail.com
@@ -81,7 +82,7 @@ If the university's Razorpay account can provide API keys, set `RAZORPAY_KEY_ID`
 
 ## Programme wording to update later
 
-`lib/programme.ts`: `rciApprovalLine` (printed on acknowledgements), `feeRupees`, `whatsappUrl`, `creSteps` and `dayFormat` (Webex + Slido, RCI online exam, points on the RCI profile).
+`lib/programme.ts`: `rciApprovalLine` and the `rci…` fields (printed on acknowledgements, certificates and the register), `feeRupees`, `whatsappUrl`, `creSteps` and `dayFormat` (Webex + Slido, RCI online exam, points on the RCI profile).
 
 ## Photographs and the emblem
 

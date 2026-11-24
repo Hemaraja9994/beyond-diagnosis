@@ -223,8 +223,13 @@ export default function HomePage() {
             <h2>Certification</h2>
             <div>
               <p className="text-sm leading-6 text-muted">
-                RCI CRE approval has been applied for (reference {programme.acknowledgement}, institute code {programme.instituteCode}). Credit hours
-                will be as approved by the Rehabilitation Council of India.
+                Approved by the Rehabilitation Council of India as a {programme.level.toLowerCase()}-level CRE programme of {programme.rciHours} hours
+                (F. No. {programme.rciFileNo}, institute code {programme.instituteCode}), with a maximum intake of {programme.rciIntake}. It is
+                listed on the{" "}
+                <a className="font-semibold text-green underline" href={programme.rciCalendarUrl} target="_blank" rel="noopener noreferrer">
+                  RCI CRE calendar
+                </a>{" "}
+                for 19 December 2026.
               </p>
             </div>
           </article>

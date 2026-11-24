@@ -20,7 +20,7 @@ export function PassCard() {
           <img src="/brand/rci.png" alt="Rehabilitation Council of India" className="h-auto w-full" />
         </span>
         <span>
-          <b className="block font-semibold text-white">RCI CRE approval awaited</b>
+          <b className="block font-semibold text-white">Approved by RCI · {programme.rciHours} hours</b>
           {programme.acknowledgement} · Institute {programme.instituteCode}
         </span>
       </div>

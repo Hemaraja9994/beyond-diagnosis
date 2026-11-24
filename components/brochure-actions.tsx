@@ -19,6 +19,7 @@ export function BrochureActions({ kind = "programme" }: { kind?: FlyerKind }) {
               programme.subtitle,
               programme.dateLabel,
               "Zonal CRE · Online on Cisco Webex · from 10:00 AM IST",
+              `Approved by RCI (${programme.acknowledgement}) · ${programme.rciHours} hours.`,
               `Flyer: ${fileUrl(programme.brochurePdf)}`,
               `Register: ${originUrl("/registration")}`,
             ].join("\n")
@@ -37,7 +38,7 @@ export function BrochureActions({ kind = "programme" }: { kind?: FlyerKind }) {
               programme.title,
               programme.dateLabel,
               "Zonal CRE · Online on Cisco Webex · from 10:00 AM IST",
-              "RCI CRE approval awaited.",
+              `Approved by RCI (${programme.acknowledgement}) · ${programme.rciHours} hours.`,
               `Poster: ${fileUrl(programme.saveTheDateImage)}`,
               `Register: ${originUrl("/registration")}`,
             ].join("\n")

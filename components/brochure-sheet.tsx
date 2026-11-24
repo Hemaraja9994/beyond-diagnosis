@@ -20,7 +20,7 @@ export function BrochureSheet() {
         </p>
         <img src="/brand/swavlamban.png" alt="Swavlamban" />
       </div>
-      <p className="brochure-kicker">Zonal CRE · Online · English · RCI CRE approval awaited</p>
+      <p className="brochure-kicker">Zonal CRE · Online · English · Approved by RCI · {programme.rciHours} hours</p>
       <h1>{programme.title}</h1>
       <p className="brochure-sub">{programme.subtitle}</p>
       <dl className="brochure-facts">
@@ -33,8 +33,10 @@ export function BrochureSheet() {
           <dd>10:00 IST · Cisco Webex</dd>
         </div>
         <div>
-          <dt>Institute</dt>
-          <dd>{programme.instituteCode}</dd>
+          <dt>RCI approval</dt>
+          <dd>
+            {programme.acknowledgement} · Institute {programme.instituteCode}
+          </dd>
         </div>
       </dl>
       <ol className="brochure-sessions">

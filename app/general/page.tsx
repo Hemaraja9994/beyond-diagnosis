@@ -59,7 +59,7 @@ export default function GeneralPage() {
         <article className="card p-5">
           <h2 className="font-display text-2xl text-navy">Certificate</h2>
           <p className="mt-3 leading-7 text-muted">
-            RCI CRE approval has been applied for (reference {programme.acknowledgement}). Once approved, the {programme.organiser} will issue certificates after the programme. Please register with the same name and CRR number you want on the certificate. Instructions will be emailed from {programme.email}.
+            The Rehabilitation Council of India has approved this programme (F. No. {programme.rciFileNo}, {programme.rciHours} hours). The {programme.organiser} will issue certificates after the programme. Please register with the same name and CRR number you want on the certificate. Instructions will be emailed from {programme.email}.
           </p>
         </article>
       </section>

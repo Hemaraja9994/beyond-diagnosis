@@ -279,7 +279,7 @@ async function render(spec: Spec): Promise<Uint8Array> {
   const footer = [
     `Certificate No. ${spec.number}`,
     `Issued ${istDate(spec.issuedAt)}`,
-    `RCI CRE acknowledgement ${programme.acknowledgement}`,
+    `RCI CRE approval F. No. ${programme.rciFileNo}`,
     `Institute code ${programme.instituteCode}`,
     spec.kind === "participation" ? (spec.edition === "print" ? "Verify with the QR code" : "Electronically issued; verify with the QR code") : "",
   ].filter(Boolean);

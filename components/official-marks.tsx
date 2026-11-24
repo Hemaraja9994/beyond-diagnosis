@@ -31,9 +31,10 @@ export function OfficialMarks() {
           unoptimized
         />
         <figcaption className="mt-3 text-sm leading-6 text-muted">
-          Rehabilitation Council of India. CRE approval applied for: {programme.acknowledgement}, institute {programme.instituteCode}.{" "}
-          <a className="font-semibold text-green" href="https://rehabcouncil.nic.in/">
-            Open the council site
+          Rehabilitation Council of India. CRE programme approved: F. No. {programme.rciFileNo}, {programme.level.toLowerCase()} level,{" "}
+          {programme.rciHours} hours, institute {programme.instituteCode}.{" "}
+          <a className="font-semibold text-green" href={programme.rciCalendarUrl} target="_blank" rel="noopener noreferrer">
+            See it on the RCI CRE calendar
           </a>
           .
         </figcaption>

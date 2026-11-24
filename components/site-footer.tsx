@@ -127,8 +127,8 @@ export function SiteFooter() {
 
         <div className="border-t border-white/10">
           <p className="mx-auto max-w-6xl px-4 py-4 text-xs text-white/60">
-            © {new Date().getFullYear()} {programme.university}. Continuing Rehabilitation Education · {programme.acknowledgement} ·
-            Institute {programme.instituteCode} · RCI CRE approval awaited.
+            © {new Date().getFullYear()} {programme.university}. Continuing Rehabilitation Education · Approved by RCI, F. No.{" "}
+            {programme.rciFileNo} · Institute {programme.instituteCode}.
           </p>
         </div>
       </div>

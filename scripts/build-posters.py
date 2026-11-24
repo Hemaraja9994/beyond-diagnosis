@@ -162,7 +162,7 @@ def logo_strip() -> str:
 
 
 def date_tab(rci: bool = False) -> str:
-    last = "RCI CRE approval awaited" if rci else "Zonal CRE · English"
+    last = "Approved by RCI · 4 hours" if rci else "Zonal CRE · English"
     return f"""
     <div class="datetab">
       <div class="block"><b>19</b><span>DEC</span></div>
@@ -262,7 +262,7 @@ def flyer_cover(build: Path) -> str:
               <span class="big">Diagnosis</span>
             </h1>
             <p class="sub">{SUBTITLE}</p>
-            <div class="facts"><span class="hot">RCI CRE approval awaited</span><span>Four sessions</span><span>Online · English</span></div>
+            <div class="facts"><span class="hot">Approved by RCI · 4 hours</span><span>Four sessions</span><span>Online · English</span></div>
           </div>
           <div class="mini-date">{date_tab()}</div>
         </div>
@@ -296,8 +296,8 @@ def flyer_team(build: Path) -> str:
         <div class="info-grid">
           <div class="info c2"><h4>Who should attend</h4><div class="in"><div class="tags">{tags}</div></div></div>
           <div class="info c1"><h4>Registration</h4><div class="in">
-            <p class="big">Opens soon</p>
-            <p>Registration details will be shared by the organising team. Keep your name and CRR number ready as they should appear on the certificate.</p>
+            <p class="big">Open now</p>
+            <p>Pay ₹354 on Razorpay, then register at <b style="white-space:nowrap">yenepoya-cre.vercel.app</b> with your CRR number and receipt. CRE points: 50 places, first registered, first served.</p>
           </div></div>
           <div class="info c4"><h4>Contact</h4><div class="in"><div class="lines">
             <div><small>Email</small>yenepoyaaslpconference@gmail.com</div>
@@ -311,8 +311,8 @@ def flyer_team(build: Path) -> str:
         </div>
         <div class="refs">
           <img src="{(BRAND / 'rci.png').as_uri()}" alt="">
-          <p><b>Rehabilitation Council of India</b> · CRE approval awaited<br>
-            <span>Acknowledgement CRE-26111620026773 · Institute code KK048</span></p>
+          <p><b>Rehabilitation Council of India</b> · CRE programme approved · zonal · 4 hours<br>
+            <span>F. No. CRE-26111620026773/2026-RCI · Institute code KK048 · on the RCI CRE calendar</span></p>
           <img src="{(BRAND / 'swavlamban.png').as_uri()}" alt="">
         </div>
       </div>

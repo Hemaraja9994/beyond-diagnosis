@@ -2,7 +2,7 @@ import Link from "next/link";
 import { programme, sessionTickId, sessions } from "@/lib/programme";
 
 const announcements = [
-  { href: "/attend", label: "RCI CRE approval awaited", alert: true },
+  { href: "/attend", label: "Approved by RCI · on the RCI CRE calendar", alert: true },
   { href: "/#brochure", label: "Block the date · 19 December", alert: false },
   { href: "/#date", label: programme.dateLabel, alert: false },
   { href: "/programme", label: `From ${programme.start} · Cisco Webex · ${programme.language}`, alert: false },
