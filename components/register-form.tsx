@@ -49,7 +49,8 @@ export function RegisterForm({
       setError(problem);
       return;
     }
-    if (!files.receipt) {
+    // Only CRE claimants must attach the receipt; others give the payment ID, which the organisers check.
+    if (claim === "yes" && !files.receipt) {
       setError("Attach the payment receipt or screenshot.");
       return;
     }
@@ -57,7 +58,7 @@ export function RegisterForm({
     const body = new FormData();
     for (const [key, value] of form.entries()) if (typeof value === "string") body.set(key, value);
     body.set("source", source);
-    body.set("receipt", files.receipt);
+    if (files.receipt) body.set("receipt", files.receipt);
     if (claim === "yes" && files.crrCertificate) body.set("crrCertificate", files.crrCertificate);
     if (claim === "yes" && files.rciConfirmation) body.set("rciConfirmation", files.rciConfirmation);
     if (claim !== "yes") body.delete("crrNumber");
@@ -233,8 +234,12 @@ export function RegisterForm({
             </label>
             <DocumentInput
               label="Payment receipt or screenshot"
-              hint="Checked automatically against your name and payment ID."
-              required
+              hint={
+                claim === "yes"
+                  ? "Checked automatically against your name and payment ID."
+                  : "Not needed if you are not claiming CRE points: the organisers confirm your payment from the payment ID."
+              }
+              required={claim === "yes"}
               onReady={fileReady("receipt")}
             />
           </div>
@@ -294,7 +299,7 @@ function Confirmation({ success }: { success: Success }) {
           <span className="mr-2 font-bold text-green">✓</span>Registration saved
         </li>
         <li>
-          <span className="mr-2 font-bold text-green">✓</span>Payment ID and receipt received — the organising team confirms each payment, and your status
+          <span className="mr-2 font-bold text-green">✓</span>Payment ID received — the organising team confirms each payment, and your status
           page updates when it is confirmed
         </li>
         {success.claiming ? (

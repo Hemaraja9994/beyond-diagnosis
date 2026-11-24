@@ -5,13 +5,13 @@ import { CopyLink } from "@/components/copy-link";
 import { CreSteps } from "@/components/cre-steps";
 import { PageBanner } from "@/components/page-banner";
 import { programme } from "@/lib/programme";
-import { getMeetingUrl } from "@/lib/store";
+import { publicMeetingUrl } from "@/lib/public-figures";
 
 export const metadata: Metadata = { title: "Attend" };
 export const dynamic = "force-dynamic";
 
 export default async function AttendPage() {
-  const meeting = await getMeetingUrl();
+  const meeting = await publicMeetingUrl();
 
   return (
     <div className="pb-24 md:pb-10">

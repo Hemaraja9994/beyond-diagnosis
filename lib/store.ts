@@ -1,6 +1,7 @@
 import { createHash, randomBytes, randomUUID } from "node:crypto";
 import { del, get, list, put } from "@vercel/blob";
 import { sql, storageMode } from "@/lib/db";
+import { publicChanged } from "@/lib/public-tag";
 import type { ArrivalSource, CreClaim, Profession, Title } from "@/lib/programme";
 import { isDocKind, isProofKind, type DocKind, type ProofFile } from "@/lib/proof";
 import type { QueryDraft, RegistrationDraft, UpdateDraft } from "@/lib/validate";
@@ -68,6 +69,7 @@ export async function createRegistration(
   if (!options.allowDuplicatePayment && (await paymentOwner(draft.paymentReference))) return { error: paymentUsed, status: 400 };
   const created = storageMode() === "blob" ? await createRegistrationBlob(draft) : await createRegistrationSql(draft);
   if ("error" in created) return created;
+  publicChanged();
   for (const upload of uploads) await saveDocument(created.reference, upload);
   return created;
 }
@@ -139,6 +141,7 @@ export async function updateRegistration(
     );
   }
   for (const upload of uploads) await saveDocument(current.reference, upload);
+  publicChanged();
   const fresh = await getRegistration(current.reference);
   return { ok: true, registration: fresh ?? next };
 }
@@ -214,6 +217,7 @@ export async function editRegistration(
     const next: Registration = { ...current, ...edit };
     await writeRegistrationBlob(next);
     if (changed.includes("paymentReference")) await indexPayment(edit.paymentReference, reference);
+    publicChanged();
     return { ok: true, changed };
   }
   await ensureColumns();
@@ -227,6 +231,7 @@ export async function editRegistration(
     if (isUniqueViolation(error)) return { error: "Another registration already uses that email.", status: 400 };
     throw error;
   }
+  publicChanged();
   return { ok: true, changed };
 }
 
@@ -240,9 +245,10 @@ export async function getSetting(key: string): Promise<string | null> {
 export async function setSetting(key: string, value: string): Promise<void> {
   if (storageMode() === "blob") {
     await put(`settings/${key}.txt`, value, { access: "private", contentType: "text/plain", allowOverwrite: true });
-    return;
+  } else {
+    await sql("insert into settings (key, value) values ($1, $2) on conflict (key) do update set value = excluded.value", [key, value]);
   }
-  await sql("insert into settings (key, value) values ($1, $2) on conflict (key) do update set value = excluded.value", [key, value]);
+  publicChanged();
 }
 
 export async function saveDeskReview(reference: string, review: DeskReview): Promise<void> {
@@ -252,10 +258,12 @@ export async function saveDeskReview(reference: string, review: DeskReview): Pro
     if (!record) return;
     record.deskReview = empty ? null : review;
     await writeRegistrationBlob(record);
-    return;
+  } else {
+    await ensureColumns();
+    await sql("update registrations set desk_review = $1 where reference = $2", [empty ? "" : JSON.stringify(review), reference]);
   }
-  await ensureColumns();
-  await sql("update registrations set desk_review = $1 where reference = $2", [empty ? "" : JSON.stringify(review), reference]);
+  // A rejected payment frees an RCI CRE place, so the public count changes.
+  publicChanged();
 }
 
 /** Coordinator sets whether the participant claims RCI CRE points (for rows saved before the question existed). */
@@ -272,6 +280,7 @@ export async function setCreClaim(reference: string, creClaim: CreClaim): Promis
     await ensureColumns();
     await sql("update registrations set cre_claim = $1, crr_number = $2 where reference = $3", [creClaim, crrNumber, reference]);
   }
+  publicChanged();
   return { ok: true };
 }
 
@@ -288,11 +297,13 @@ export async function deleteRegistration(reference: string): Promise<boolean> {
     }
     for (const kind of current.documents) paths.push(`files/${reference}/${kind}`);
     await del(paths).catch((error: unknown) => console.error("delete: some files could not be removed", error));
+    publicChanged();
     return true;
   }
   await ensureColumns();
   await sql("delete from registration_files where reference = $1", [reference]);
   await sql("delete from registrations where reference = $1", [reference]);
+  publicChanged();
   return true;
 }
 
@@ -575,12 +586,13 @@ export async function setMeetingUrl(url: string): Promise<void> {
       contentType: "text/plain",
       allowOverwrite: true,
     });
-    return;
+  } else {
+    await sql(
+      "insert into settings (key, value) values ('meeting_url', $1) on conflict (key) do update set value = excluded.value",
+      [url],
+    );
   }
-  await sql(
-    "insert into settings (key, value) values ('meeting_url', $1) on conflict (key) do update set value = excluded.value",
-    [url],
-  );
+  publicChanged();
 }
 
 function makeReference(): string {
