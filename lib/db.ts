@@ -14,7 +14,7 @@ export function storageMode(): "postgres" | "blob" | "local" {
 
 export async function sql<T = Record<string, unknown>>(text: string, params: unknown[] = []): Promise<T[]> {
   if (databaseUrl !== "") {
-    pool ??= new pg.Pool({ connectionString: databaseUrl, max: 5 });
+    pool ??= new pg.Pool({ connectionString: databaseUrl, max: 5, ssl: hostedSsl(databaseUrl) });
     return (await pool.query(text, params)).rows as T[];
   }
   local ??= startLocal().catch((error: unknown) => {
@@ -22,6 +22,16 @@ export async function sql<T = Record<string, unknown>>(text: string, params: unk
     throw error;
   });
   return (await (await local).query<T>(text, params)).rows;
+}
+
+/**
+ * Supabase (and similar hosts) need an encrypted connection, but their certificate chain is not in Node's
+ * built-in list, so the connection is encrypted without checking the chain. A URL that sets its own
+ * sslmode keeps that choice.
+ */
+function hostedSsl(url: string): pg.PoolConfig["ssl"] {
+  if (/[?&]sslmode=/i.test(url)) return undefined;
+  return /supabase\.(com|co)\b/i.test(url) ? { rejectUnauthorized: false } : undefined;
 }
 
 async function startLocal(): Promise<PGlite> {

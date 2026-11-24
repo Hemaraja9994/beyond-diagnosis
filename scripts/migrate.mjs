@@ -9,9 +9,10 @@ if (url === "" || files.length === 0) {
   process.exit(0);
 }
 
-const client = new pg.Client({
-  connectionString: process.env.DATABASE_URL_UNPOOLED?.trim() || url,
-});
+const target = process.env.DATABASE_URL_UNPOOLED?.trim() || url;
+// Supabase needs an encrypted connection; its certificate chain is not in Node's list (see lib/db.ts).
+const ssl = !/[?&]sslmode=/i.test(target) && /supabase\.(com|co)\b/i.test(target) ? { rejectUnauthorized: false } : undefined;
+const client = new pg.Client({ connectionString: target, ssl });
 await client.connect();
 
 try {
