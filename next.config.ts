@@ -10,6 +10,10 @@ const nextConfig: NextConfig = {
       "./node_modules/tesseract.js/**",
       "./node_modules/tesseract.js-core/**",
       "./public/brand/yenepoya-medical-college.png",
+      "./public/brand/yenepoya-medical-college-clear.png",
+      "./public/brand/yenepoya-shield-watermark.png",
+      "./public/brand/signatures/**",
+      "./assets/certificate-fonts/**",
     ],
   },
   async headers() {

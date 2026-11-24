@@ -152,7 +152,7 @@ async function simpleMail(row: Registration, links: Links, heading: string, mess
   return result.sent;
 }
 
-function shell(body: string): string {
+export function shell(body: string): string {
   return `<div style="font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.55;color:#0f214a;max-width:560px">
     <p style="margin:0 0 4px;font-weight:700">${esc(programme.organiser)}</p>
     <p style="margin:0 0 16px;color:#5c6678;font-size:13px">${esc(programme.hospital)}, ${esc(programme.university)}</p>
@@ -161,13 +161,13 @@ function shell(body: string): string {
   </div>`;
 }
 
-function button(href: string, label: string, quiet = false): string {
+export function button(href: string, label: string, quiet = false): string {
   const style = quiet
     ? "display:inline-block;padding:9px 16px;border:2px solid #0f214a;border-radius:999px;color:#0f214a;text-decoration:none;font-weight:700"
     : "display:inline-block;padding:10px 18px;background:#e4570b;border-radius:999px;color:#ffffff;text-decoration:none;font-weight:700";
   return `<a href="${esc(href)}" style="${style}">${esc(label)}</a>`;
 }
 
-function esc(value: string): string {
+export function esc(value: string): string {
   return value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 }

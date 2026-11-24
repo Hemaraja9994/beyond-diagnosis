@@ -71,6 +71,14 @@ Set `GMAIL_USER` (the sending Gmail — hemarajanayaka@gmail.com) and `GMAIL_APP
 
 If the university's Razorpay account can provide API keys, set `RAZORPAY_KEY_ID` and `RAZORPAY_KEY_SECRET` and each `pay_…` id is also confirmed with Razorpay (captured, ₹354). Without them the receipt is read by OCR only.
 
+## E-certificates
+
+- **Participants** — Certificate of Participation for every registration whose payment is confirmed. Coordinators press **Release certificates** on the desk (Exports tab) from 19 December; until then participants see "will appear here after the programme" and a coordinator's preview is a SPECIMEN. Releasing numbers everyone in order of registration (`YMC/ASLP/CRE/2026/0001` …); a number never changes. Participants download from their status page (digital or print edition), share it, add it to LinkedIn, and get it by email (**Email certificates**, a dozen per press). The QR code opens `/verify/<reference>`, which confirms the certificate without showing contact or payment details.
+- **Resource persons** — Certificate of Appreciation for each speaker, from `sessions` in `lib/programme.ts` (RP-01 … RP-04). Desk → Exports → Resource persons.
+- **Editions** — *digital*: ivory sheet in a navy frame, scanned signatures where present. *print*: white paper area, frame inside the printer's safe margin, CMYK, empty signature lines for ink. Print at actual size on A4 certificate card (200–300 gsm).
+- **Signatures** — order and names in `certificateSignatories` (`lib/programme.ts`). Scanned signatures go in `public/brand/signatures/<key>.png` (transparent PNG, about 600 × 200 px): `swathi`, `rachana`, `shwetha`, `dean`.
+- **Design** — `lib/certificate-pdf.ts`; fonts in `assets/certificate-fonts/` are static instances of the site's Fraunces and Outfit (SIL Open Font Licence).
+
 ## Programme wording to update later
 
 `lib/programme.ts`: `rciApprovalLine` (printed on acknowledgements), `feeRupees`, `whatsappUrl`, `creSteps` and `dayFormat` (Webex + Slido, RCI online exam, points on the RCI profile).

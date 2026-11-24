@@ -47,6 +47,18 @@ export const committee = [
   { role: "Organising secretary", names: ["Ms. Swathi Chinnasamy", "Ms. Rachana R Uchil"] },
 ] as const;
 
+/**
+ * Sign the e-certificate of participation, left to right. To show a scanned signature, add a PNG with a
+ * transparent background at public/brand/signatures/<key>.png (about 600 × 200 px); without it, the
+ * signature line is printed empty above the name.
+ */
+export const certificateSignatories = [
+  { key: "swathi", name: "Ms. Swathi Chinnasamy", role: "Organising Secretary", place: "Department of ASLP" },
+  { key: "rachana", name: "Ms. Rachana R Uchil", role: "Organising Secretary", place: "Department of ASLP" },
+  { key: "shwetha", name: "Dr. Shwetha Prabhu", role: "Organising Chairperson", place: "Department of ASLP" },
+  { key: "dean", name: "Dr. Prakash R Saldanha", role: "Principal & Dean", place: "Yenepoya Medical College" },
+] as const;
+
 /** People who open the coordinator desk. They share programme.email and one access code. */
 export const deskCoordinators = [
   "Ms. Swathi Chinnasamy",

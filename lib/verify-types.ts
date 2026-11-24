@@ -47,7 +47,9 @@ export type DeskReview = {
   /** CRE points shown on the participant's own profile on the RCI website. */
   points?: DeskDecision & { decision: "credited" };
   /** When each confirmation email went out (ISO time), so none is sent twice. */
-  mailed?: { registration?: string; payment?: string; rci?: string };
+  mailed?: { registration?: string; payment?: string; rci?: string; certificate?: string };
+  /** E-certificate of participation: its number, fixed the first time it is issued. */
+  certificate?: { number: number; issuedAt: string };
   /** Change log: who changed what on this registration, newest last (kept to the last 60 entries). */
   history?: { by: string; at: string; what: string }[];
 };
@@ -57,4 +59,4 @@ export function withHistory(review: DeskReview, by: string, what: string): DeskR
   return { ...review, history };
 }
 
-export type DeskField = Exclude<keyof DeskReview, "mailed" | "history">;
+export type DeskField = Exclude<keyof DeskReview, "mailed" | "history" | "certificate">;

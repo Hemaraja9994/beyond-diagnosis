@@ -153,6 +153,19 @@ export function participantToken(reference: string): string | null {
   return createHmac("sha256", secret).update(`ack:${reference}`).digest("base64url").slice(0, 22);
 }
 
+/** Public code printed in the certificate's QR: proves the certificate was issued here, opens nothing else. */
+export function certificateCode(reference: string): string | null {
+  const secret = sessionSecret();
+  if (!secret) return null;
+  return createHmac("sha256", secret).update(`cert:${reference}`).digest("base64url").slice(0, 16);
+}
+
+export function certificateCodeOk(reference: string, code: string): boolean {
+  const expected = certificateCode(reference);
+  if (!expected || code.length !== expected.length) return false;
+  return timingSafeEqual(Buffer.from(code), Buffer.from(expected));
+}
+
 export function participantTokenOk(reference: string, token: string): boolean {
   const expected = participantToken(reference);
   if (!expected || token.length !== expected.length) return false;

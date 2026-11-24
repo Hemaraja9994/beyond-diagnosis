@@ -11,6 +11,7 @@ import { docLabels, type DocKind } from "@/lib/proof";
 import { paymentState, paymentText, rciState, rciText } from "@/lib/status";
 import { deskNumbers, type DeskNumbers } from "@/lib/seats";
 import { creSeatLimit, registrationOpen } from "@/lib/settings";
+import { certificateEligible, certificateNumberText, certificatesSwitchOn } from "@/lib/certificates";
 import { getDeskPasswordHash, getMeetingUrl, listQueries, listRegistrations, storageMode, type Registration } from "@/lib/store";
 import { statusLabel, type VerificationStatus } from "@/lib/verify-types";
 
@@ -105,13 +106,14 @@ export default async function AdminPage({
   const view: View = views.some((item) => item.id === params.view) ? (params.view as View) : "all";
   const q = params.q ?? "";
 
-  const [registrations, queries, meeting, passwordsSet, seatLimit, isOpen] = await Promise.all([
+  const [registrations, queries, meeting, passwordsSet, seatLimit, isOpen, certificatesOn] = await Promise.all([
     listRegistrations(),
     listQueries(),
     getMeetingUrl(),
     Promise.all(deskAccounts.map(async (account) => (await getDeskPasswordHash(account.username)) !== null)),
     creSeatLimit(),
     registrationOpen(),
+    certificatesSwitchOn(),
   ]);
   const mail = mailSetup();
   const ownIndex = deskAccounts.findIndex((account) => user.id === `user:${account.username}`);
@@ -195,7 +197,7 @@ export default async function AdminPage({
             <RegistrationsTab registrations={registrations} view={view} q={q} mail={mail} />
           </>
         ) : null}
-        {tab === "exports" ? <ExportsTab /> : null}
+        {tab === "exports" ? <ExportsTab registrations={registrations} certificatesOn={certificatesOn} mailOn={mail.state === "on"} /> : null}
         {tab === "bulk" ? <BulkTab message={params.bulk} /> : null}
         {tab === "queries" ? <QueriesTab queries={queries} /> : null}
         {tab === "settings" ? (
@@ -324,7 +326,7 @@ function RegistrationsTab({
   );
 }
 
-function ExportsTab() {
+function ExportsTab({ registrations, certificatesOn, mailOn }: { registrations: Registration[]; certificatesOn: boolean; mailOn: boolean }) {
   const downloads = [
     { href: "/api/admin/export/registrations", label: "Registrations (CSV)", note: "Every field, for Excel." },
     { href: "/api/admin/export/rci", label: "RCI list — verified, claiming CRE", note: "Payment confirmed and claiming points." },
@@ -333,6 +335,7 @@ function ExportsTab() {
   ];
   return (
     <div className="grid gap-4">
+      <CertificatesPanel registrations={registrations} switchOn={certificatesOn} mailOn={mailOn} />
       <section className="rounded-3xl bg-card p-5 ring-1 ring-line">
         <h2 className="font-display text-2xl text-navy">Participant register</h2>
         <p className="mt-1 text-sm leading-6 text-muted">A4 landscape with the college logo, programme details and the participants you choose.</p>
@@ -372,6 +375,88 @@ function ExportsTab() {
         </ul>
       </section>
     </div>
+  );
+}
+
+function CertificatesPanel({ registrations, switchOn, mailOn }: { registrations: Registration[]; switchOn: boolean; mailOn: boolean }) {
+  const dayOpen = afterSessionsOpen();
+  const live = switchOn && dayOpen;
+  const eligible = registrations.filter(certificateEligible);
+  const numbered = eligible.filter((row) => row.deskReview?.certificate).length;
+  const emailed = eligible.filter((row) => row.deskReview?.mailed?.certificate).length;
+  const sample = eligible[0];
+  const button = "min-h-11 rounded-full px-5 font-semibold";
+  return (
+    <section id="certificates" className="scroll-mt-24 rounded-3xl bg-card p-5 ring-1 ring-line">
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <h2 className="font-display text-2xl text-navy">E-certificates</h2>
+          <p className="mt-1 max-w-3xl text-sm leading-6 text-muted">
+            A Certificate of Participation for everyone whose payment is confirmed, signed by the organising secretaries, the organising chairperson and the
+            Principal &amp; Dean. Each has its own number and a QR code that confirms it online.
+          </p>
+        </div>
+        <span className={`${chip} ${live ? tone.ok : tone.wait}`}>{live ? "Released to participants" : switchOn ? `Releases on ${programme.dateLabel}` : "Not released"}</span>
+      </div>
+      <dl className="mt-4 grid grid-cols-3 gap-3 text-center sm:max-w-lg">
+        {[
+          ["Eligible", eligible.length],
+          ["Numbered", numbered],
+          ["Emailed", emailed],
+        ].map(([label, value]) => (
+          <div key={label} className="rounded-2xl bg-navy/5 px-3 py-2">
+            <dt className="text-xs font-semibold text-muted">{label}</dt>
+            <dd className="font-display text-2xl text-navy">{value}</dd>
+          </div>
+        ))}
+      </dl>
+      <div className="mt-4 flex flex-wrap items-center gap-3">
+        {sample ? (
+          <a className={`${button} inline-flex items-center border border-line`} href={`/api/certificate/${sample.reference}`} target="_blank" rel="noopener noreferrer">
+            Preview a certificate
+          </a>
+        ) : null}
+        <form action="/api/admin/certificates" method="post">
+          <input type="hidden" name="action" value={switchOn ? "withhold" : "release"} />
+          <button className={`${button} ${switchOn ? "border border-line" : "bg-green text-white"} disabled:opacity-50`} type="submit" disabled={!switchOn && !dayOpen}>
+            {switchOn ? "Hide downloads" : dayOpen ? "Release certificates" : `Release from ${programme.day} ${programme.month}`}
+          </button>
+        </form>
+        <form action="/api/admin/certificates" method="post">
+          <input type="hidden" name="action" value="email" />
+          <button className={`${button} bg-navy text-white disabled:opacity-50`} type="submit" disabled={!live || !mailOn || emailed >= eligible.length}>
+            Email certificates{live && eligible.length > emailed ? ` (${eligible.length - emailed} to send)` : ""}
+          </button>
+        </form>
+      </div>
+      {live ? (
+        <p className="mt-3 flex flex-wrap gap-4 text-sm font-semibold">
+          <a className="text-green underline" href="/api/admin/export/certificates">
+            Download all — digital (ZIP)
+          </a>
+          <a className="text-green underline" href="/api/admin/export/certificates?edition=print">
+            Download all — print edition (ZIP)
+          </a>
+        </p>
+      ) : (
+        <p className="mt-3 text-xs leading-5 text-muted">
+          Before release, “Preview” shows a SPECIMEN and uses no number. Releasing numbers everyone eligible in order of registration
+          ({certificateNumberText(1)} onwards); people confirmed later get the next number. Emails go out about a dozen at a time — press again until done.
+        </p>
+      )}
+      <div className="mt-5 border-t border-line pt-4">
+        <h3 className="font-semibold text-navy">Resource persons — Certificates of Appreciation</h3>
+        <p className="mt-1 text-sm leading-6 text-muted">One page for each speaker, in session order. Print the print edition on A4 certificate card at actual size and sign in ink.</p>
+        <p className="mt-2 flex flex-wrap gap-4 text-sm font-semibold">
+          <a className="text-green underline" href="/api/admin/export/resource-certificates?edition=print">
+            Print edition (PDF)
+          </a>
+          <a className="text-green underline" href="/api/admin/export/resource-certificates?edition=digital">
+            Digital edition (PDF)
+          </a>
+        </p>
+      </div>
+    </section>
   );
 }
 
@@ -571,7 +656,7 @@ function RegistrationCard({ row, token }: { row: Registration; token: string | n
   const files: DocKind[] = [...row.documents];
   if (row.paymentProof !== "" && !files.includes("payment")) files.unshift("payment");
   const payDecision = row.deskReview?.payment;
-  const mailed = [row.deskReview?.mailed?.registration ? "registration" : "", row.deskReview?.mailed?.payment ? "payment" : "", row.deskReview?.mailed?.rci ? "RCI" : ""]
+  const mailed = [row.deskReview?.mailed?.registration ? "registration" : "", row.deskReview?.mailed?.payment ? "payment" : "", row.deskReview?.mailed?.rci ? "RCI" : "", row.deskReview?.mailed?.certificate ? "certificate" : ""]
     .filter(Boolean)
     .join(", ");
 
@@ -629,6 +714,11 @@ function RegistrationCard({ row, token }: { row: Registration; token: string | n
           {statusLink ? (
             <a className="text-green underline" href={statusLink} target="_blank" rel="noopener noreferrer">
               Status / PDF
+            </a>
+          ) : null}
+          {certificateEligible(row) ? (
+            <a className="text-green underline" href={`/api/certificate/${row.reference}`} target="_blank" rel="noopener noreferrer">
+              Certificate{row.deskReview?.certificate ? ` ${String(row.deskReview.certificate.number).padStart(4, "0")}` : ""}
             </a>
           ) : null}
           {files.map((kind) => (
@@ -720,6 +810,15 @@ function RegistrationCard({ row, token }: { row: Registration; token: string | n
               Resend confirmation
             </button>
           </form>
+          {row.deskReview?.certificate ? (
+            <form action="/api/admin/certificates" method="post">
+              <input type="hidden" name="action" value="resend" />
+              <input type="hidden" name="reference" value={row.reference} />
+              <button className={smallButton} type="submit">
+                {row.deskReview.mailed?.certificate ? "Resend certificate" : "Email certificate"}
+              </button>
+            </form>
+          ) : null}
         </div>
         <details className="text-right">
           <summary className="cursor-pointer font-semibold text-red-800">Delete registration</summary>
