@@ -18,6 +18,8 @@ export const programme = {
   rciHours: 4,
   rciIntake: 50,
   rciCalendarUrl: "https://rciregistration.nic.in/rehabcouncil/CreCalendarnew.jsp",
+  /** Short form printed on flyers and in messages. */
+  rciPortal: "rciregistration.nic.in",
   aim: "A one-day programme on how the Rights of Persons with Disabilities Act, 2016 shapes assessment, certification, and the entitlements that follow a diagnosis.",
   organiser: "Department of Audiology and Speech Language Pathology",
   university: "Yenepoya (Deemed to be University)",
@@ -32,11 +34,11 @@ export const programme = {
     "https://www.google.com/maps/search/?api=1&query=Yenepoya+Medical+College+Hospital+Deralakatte+Mangaluru",
   mapsEmbed:
     "https://maps.google.com/maps?q=Yenepoya+Medical+College+Hospital,+Deralakatte,+Mangaluru&z=16&output=embed",
-  brochurePdf: "/brochure/beyond-the-diagnosis.pdf?v=13",
-  brochureImage: "/brochure/beyond-the-diagnosis-1.png?v=13",
-  brochureImageBack: "/brochure/beyond-the-diagnosis-2.png?v=13",
-  saveTheDatePdf: "/brochure/block-the-date.pdf?v=13",
-  saveTheDateImage: "/brochure/block-the-date.png?v=13",
+  brochurePdf: "/brochure/beyond-the-diagnosis.pdf?v=14",
+  brochureImage: "/brochure/beyond-the-diagnosis-1.png?v=14",
+  brochureImageBack: "/brochure/beyond-the-diagnosis-2.png?v=14",
+  saveTheDatePdf: "/brochure/block-the-date.pdf?v=14",
+  saveTheDateImage: "/brochure/block-the-date.png?v=14",
   paymentUrl: "https://rzp.io/rzp/FCDoSjbc",
   /** One fee for everyone, as shown on the Razorpay page (Yenepoya Deemed to be University). */
   feeRupees: 354,
@@ -101,6 +103,9 @@ export const creSteps = [
 
 /** RCI approval line printed on the acknowledgement, the register and the RCI page. */
 export const rciApprovalLine = `Approved by RCI · F. No. ${programme.rciFileNo} · ${programme.rciHours} hours`;
+
+/** What a CRE claimant must also do on the RCI website. Used on the site, in emails and on the flyers. */
+export const rciRegisterLine = `Claiming CRE points? Also register for this programme on the RCI website (${programme.rciPortal} → CRE Calendar → 19 December 2026 → Beyond the Diagnosis, institute ${programme.instituteCode}) with your CRR login, then upload RCI's confirmation mail on this site.`;
 
 export function deskCoordinatorLine(): string {
   const names = [...deskCoordinators];

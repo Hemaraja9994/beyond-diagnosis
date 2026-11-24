@@ -102,7 +102,7 @@ async function registrationMail(row: Registration, links: Links): Promise<boolea
       `Join the participants' WhatsApp group: ${programme.whatsappUrl}`,
       links.status ? `Your status page: ${links.status}` : "",
       row.creClaim === "yes"
-        ? "Claiming CRE points: once you register for this programme on the RCI website, upload RCI's confirmation mail on the site (Add RCI confirmation)."
+        ? `Claiming CRE points: register for this programme on the RCI website too (${programme.rciCalendarUrl}), then upload RCI's confirmation mail on the site (Add RCI confirmation).`
         : "",
       "",
       "Your acknowledgement is attached.",
@@ -127,7 +127,7 @@ async function registrationMail(row: Registration, links: Links): Promise<boolea
        ${links.status ? `<p>${button(links.status, "Open my status page", true)}</p>` : ""}
        ${
          row.creClaim === "yes"
-           ? `<p style="color:#5c6678">Claiming CRE points: once you register for this programme on the RCI website, upload RCI's confirmation mail on the site under <em>Add RCI confirmation</em>. Status of RCI CRE: ${esc(second.word.toLowerCase())}.</p>`
+           ? `<p style="color:#5c6678">Claiming CRE points: register for this programme on the <a href="${esc(programme.rciCalendarUrl)}" style="color:#0f214a">RCI website</a> too, then upload RCI's confirmation mail on the site under <em>Add RCI confirmation</em>. Status of RCI CRE: ${esc(second.word.toLowerCase())}.</p>`
            : ""
        }
        <p>Your acknowledgement is attached as a PDF.</p>`,
@@ -157,7 +157,7 @@ export function shell(body: string): string {
     <p style="margin:0 0 4px;font-weight:700">${esc(programme.organiser)}</p>
     <p style="margin:0 0 16px;color:#5c6678;font-size:13px">${esc(programme.hospital)}, ${esc(programme.university)}</p>
     <div style="border-top:3px solid #e4570b;padding-top:12px">${body}</div>
-    <p style="margin-top:24px;color:#5c6678;font-size:13px">${esc(programme.title)} · ${esc(programme.acknowledgement)}<br>Questions: reply to this mail or write to ${esc(programme.email)}</p>
+    <p style="margin-top:24px;color:#5c6678;font-size:13px">${esc(programme.title)} · Approved by RCI, F. No. ${esc(programme.rciFileNo)}<br>Questions: reply to this mail or write to ${esc(programme.email)}</p>
   </div>`;
 }
 

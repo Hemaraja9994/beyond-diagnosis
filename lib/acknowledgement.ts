@@ -23,7 +23,7 @@ export async function acknowledgementPdf(row: Registration, statusUrl: string): 
   const pdf = await PDFDocument.create();
   pdf.setTitle(`Registration acknowledgement ${row.reference}`);
   pdf.setAuthor(`${programme.organiser}, ${programme.university}`);
-  pdf.setSubject(`${programme.title} — ${programme.acknowledgement}`);
+  pdf.setSubject(`${programme.title} — RCI F. No. ${programme.rciFileNo}`);
   pdf.setCreator("Beyond the Diagnosis registration desk");
   const page = pdf.addPage(A4);
   const regular = await pdf.embedFont(StandardFonts.Helvetica);
@@ -64,7 +64,7 @@ export async function acknowledgementPdf(row: Registration, statusUrl: string): 
   );
   y = text(
     page,
-    `RCI acknowledgement ${programme.acknowledgement} · Institute code ${programme.instituteCode} · ${rciApprovalLine}`,
+    `${rciApprovalLine} · Institute code ${programme.instituteCode}`,
     left,
     y - 1,
     regular,

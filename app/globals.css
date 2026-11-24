@@ -325,6 +325,18 @@ h2.font-display {
   color: #c2410c;
 }
 
+/* RCI approval: always ticked, in green */
+.scroll-ticks a.tick-approved[aria-current="true"] .tick-box {
+  border-color: #15803d;
+  background: #15803d;
+}
+
+@media (max-width: 1439px) {
+  .scroll-ticks a.tick-approved[aria-current="true"] .tick-label {
+    color: #15803d;
+  }
+}
+
 @media (max-width: 767px) {
   .scroll-ticks {
     display: none;

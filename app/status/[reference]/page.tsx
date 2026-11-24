@@ -81,8 +81,12 @@ export default async function StatusPage({
             <li>{rci === "confirmed" ? "✓" : rci === "rejected" ? "✗" : rci === "awaited" || rci === "submitted" ? "…" : "·"} {rciText[rci]}</li>
           </ul>
           {rci === "awaited" ? (
-            <p className="rounded-2xl bg-navy/5 px-4 py-3 text-sm leading-6 text-navy">
-              Once you register for this programme on the RCI website, upload the confirmation mail on{" "}
+            <p className="rounded-2xl bg-gold/20 px-4 py-3 text-sm leading-6 text-navy">
+              <b>Action needed for CRE points:</b> RCI has approved this programme (F. No. {programme.rciFileNo}). Register for it on the{" "}
+              <a className="font-semibold underline" href={programme.rciCalendarUrl} target="_blank" rel="noopener noreferrer">
+                RCI website ({programme.rciPortal})
+              </a>{" "}
+              with your CRR login, then upload the confirmation mail on{" "}
               <Link className="font-semibold underline" href="/registration/rci">
                 Add RCI confirmation
               </Link>

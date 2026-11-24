@@ -6,6 +6,7 @@ import { PageBanner } from "@/components/page-banner";
 import { adminReady, currentAdmin, deskUser, participantToken, type DeskUser } from "@/lib/admin";
 import { mailSetup } from "@/lib/mail";
 import { mailsDue } from "@/lib/notify";
+import { rciReminderDue } from "@/lib/rci-reminder";
 import { afterSessionsOpen, deskAccounts, deskCoordinatorLine, professionLabel, programme, sourceLabel, type ArrivalSource, type Profession } from "@/lib/programme";
 import { docLabels, type DocKind } from "@/lib/proof";
 import { paymentState, paymentText, rciState, rciText } from "@/lib/status";
@@ -233,6 +234,8 @@ function RegistrationsTab({
   const checks = { verified: 0, review: 0, mismatch: 0, none: 0 };
   for (const row of registrations) checks[row.verification?.status ?? "none"] += 1;
   const emailsDue = registrations.filter((row) => mailsDue(row).length > 0).length;
+  const rciReminders = registrations.filter(rciReminderDue).length;
+  const rciReminded = registrations.filter((row) => row.deskReview?.mailed?.rciReminder).length;
 
   return (
     <section id="registrations" className="grid gap-4" aria-label="Registrations">
@@ -284,6 +287,15 @@ function RegistrationsTab({
             </form>
           ) : (
             <span className="text-muted">No emails pending.</span>
+          )}
+          {rciReminders > 0 ? (
+            <form action="/api/admin/rci-reminder" method="post">
+              <button className="inline-flex min-h-9 items-center rounded-full bg-[#c2410c] px-3 text-xs font-semibold text-white" type="submit">
+                Email RCI registration reminder ({rciReminders} CRE claimant{rciReminders === 1 ? "" : "s"}, 12 at a time)
+              </button>
+            </form>
+          ) : (
+            <span className="text-muted">RCI reminder: {rciReminded > 0 ? `sent to ${rciReminded}, none left` : "no CRE claimant is waiting"}.</span>
           )}
         </div>
       ) : null}

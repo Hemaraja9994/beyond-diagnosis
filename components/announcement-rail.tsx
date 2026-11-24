@@ -2,7 +2,8 @@ import Link from "next/link";
 import { programme, sessionTickId, sessions } from "@/lib/programme";
 
 const announcements = [
-  { href: "/attend", label: "Approved by RCI · on the RCI CRE calendar", alert: true },
+  { href: "/attend", label: `Approved by RCI · F. No. ${programme.rciFileNo} · ${programme.rciHours} hours`, alert: true },
+  { href: programme.rciCalendarUrl, label: `CRE points? Register on ${programme.rciPortal} too`, alert: true },
   { href: "/#brochure", label: "Block the date · 19 December", alert: false },
   { href: "/#date", label: programme.dateLabel, alert: false },
   { href: "/programme", label: `From ${programme.start} · Cisco Webex · ${programme.language}`, alert: false },
@@ -14,7 +15,7 @@ const announcements = [
   { href: "/registration", label: "Register now", alert: false },
   { href: "/join", label: "Join on Webex", alert: false },
   { href: "/brochure", label: "Download the brochure", alert: false },
-  { href: "/attend", label: `Institute ${programme.instituteCode} · ${programme.acknowledgement}`, alert: false },
+  { href: "/attend", label: `RCI approval F. No. ${programme.rciFileNo} · Institute ${programme.instituteCode}`, alert: false },
 ] as const;
 
 function AnnouncementSet({ hidden = false }: { hidden?: boolean }) {

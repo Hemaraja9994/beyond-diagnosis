@@ -35,8 +35,12 @@ export function BrochureSheet() {
         <div>
           <dt>RCI approval</dt>
           <dd>
-            {programme.acknowledgement} · Institute {programme.instituteCode}
+            F. No. {programme.rciFileNo} · Institute {programme.instituteCode}
           </dd>
+        </div>
+        <div>
+          <dt>CRE points</dt>
+          <dd>Also register on {programme.rciPortal} (CRE Calendar, 19 Dec 2026)</dd>
         </div>
       </dl>
       <ol className="brochure-sessions">

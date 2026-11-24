@@ -1059,6 +1059,35 @@ body {
   color: var(--muted);
 }
 
+.rci-strip {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 18px;
+  margin: 18px 0 0;
+  border-radius: 18px;
+  background: #fff4e6;
+  border: 2px solid #f59e0b;
+  padding: 12px 22px;
+}
+
+.rci-strip img {
+  height: 48px;
+}
+
+.rci-strip p {
+  font-size: 15px;
+  line-height: 1.45;
+  color: var(--navy);
+}
+
+.rci-strip p span {
+  display: block;
+  margin-top: 2px;
+  color: #9a3412;
+  font-weight: 600;
+}
+
 /* Poster fit adjustments */
 .poster .logo-strip {
   margin: 22px 44px 0;
@@ -1195,4 +1224,41 @@ body {
 .poster .speaker-row .face {
   width: 120px;
   height: 120px;
+}
+
+/* RCI approval strip on the one-page poster */
+.poster .rci-strip {
+  margin: 12px 48px 0;
+  padding: 9px 20px;
+}
+
+.poster .rci-strip img {
+  height: 40px;
+}
+
+.poster .rci-strip p {
+  font-size: 14px;
+}
+
+/* Room for the RCI strip: tighter spacing on the one-page poster */
+.poster .schedule {
+  padding-top: 10px;
+}
+
+.poster .ribbons {
+  margin-top: 8px;
+  gap: 6px;
+}
+
+.poster .rci-strip {
+  margin: 8px 48px 0;
+}
+
+.poster .organisers {
+  margin: 8px 48px 8px;
+  padding: 8px 22px;
+}
+
+.poster .foot {
+  padding-top: 26px;
 }

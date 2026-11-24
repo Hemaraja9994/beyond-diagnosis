@@ -21,7 +21,7 @@ export function PassCard() {
         </span>
         <span>
           <b className="block font-semibold text-white">Approved by RCI · {programme.rciHours} hours</b>
-          {programme.acknowledgement} · Institute {programme.instituteCode}
+          F. No. {programme.rciFileNo} · Institute {programme.instituteCode}
         </span>
       </div>
     </div>

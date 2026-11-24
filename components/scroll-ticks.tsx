@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState, type CSSProperties } from "react";
+import { programme } from "@/lib/programme";
 
 const marks = [
   { id: "date", label: "19 Dec", hint: "Saturday, 19 December 2026", href: "/#date" },
@@ -13,7 +14,13 @@ const marks = [
   { id: "register", label: "Register", hint: "Reserve your seat", href: "/registration" },
   { id: "webex", label: "Webex", hint: "Join on Cisco Webex", href: "/join" },
   { id: "brochure", label: "Brochure", hint: "Download or WhatsApp the brochure", href: "/brochure" },
-  { id: "rci", label: "RCI", hint: "Approved by RCI · on the RCI CRE calendar", href: "/attend" },
+  {
+    id: "rci",
+    label: `RCI approved · F. No. ${programme.rciFileNo}`,
+    hint: `Approved by RCI · F. No. ${programme.rciFileNo} · ${programme.rciHours} hours · on the RCI CRE calendar`,
+    href: "/attend",
+    done: true,
+  },
 ] as const;
 
 export function ScrollTicks() {
@@ -49,10 +56,11 @@ export function ScrollTicks() {
       </div>
       <ol>
         {marks.map((mark) => {
-          const current = seen.includes(mark.id) || (!mark.href.includes("#") && pathname === mark.href);
+          const done = "done" in mark && mark.done;
+          const current = done || seen.includes(mark.id) || (!mark.href.includes("#") && pathname === mark.href);
           return (
             <li key={mark.id}>
-              <Link href={mark.href} aria-current={current ? "true" : undefined} title={mark.hint}>
+              <Link href={mark.href} aria-current={current ? "true" : undefined} title={mark.hint} className={done ? "tick-approved" : undefined}>
                 <span className="tick-box" aria-hidden="true">
                   {current ? "✓" : ""}
                 </span>

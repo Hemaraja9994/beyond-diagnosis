@@ -130,7 +130,7 @@ export async function registerPdf(rows: Registration[], filter: RegisterFilter, 
   page.drawText("PARTICIPANT REGISTER", { x: hx, y: y - 44, size: 13, font: bold, color: orange });
   page.drawText(safe(`${programme.title}: ${programme.subtitle}`), { x: hx, y: y - 58, size: 8.5, font: bold, color: navy });
   page.drawText(
-    safe(`${programme.level} CRE · ${programme.dateLabel}, ${programme.start} · ${programme.mode} · ${programme.acknowledgement} · Institute ${programme.instituteCode} · ${rciApprovalLine}`),
+    safe(`${programme.level} CRE · ${programme.dateLabel}, ${programme.start} · ${programme.mode} · Institute ${programme.instituteCode} · ${rciApprovalLine}`),
     { x: hx, y: y - 70, size: 8, font: regular, color: muted },
   );
   y = Math.min(y - logoH, y - 76) - 12;
@@ -198,7 +198,7 @@ export async function registerPdf(rows: Registration[], filter: RegisterFilter, 
 }
 
 function footer(page: PDFPage, label: string, font: PDFFont) {
-  const text = safe(`${programme.title} · ${programme.acknowledgement} · ${label}`);
+  const text = safe(`${programme.title} · RCI F. No. ${programme.rciFileNo} · ${label}`);
   page.drawText(text, { x: (page.getWidth() - font.widthOfTextAtSize(text, 7.5)) / 2, y: 22, size: 7.5, font, color: muted });
 }
 
@@ -298,7 +298,7 @@ export async function registerDocx(rows: Registration[], filter: RegisterFilter,
               new Paragraph({
                 alignment: AlignmentType.CENTER,
                 children: [
-                  run(`${programme.title} · ${programme.acknowledgement} · Page `, { size: 14, color: "5C6678" }),
+                  run(`${programme.title} · RCI F. No. ${programme.rciFileNo} · Page `, { size: 14, color: "5C6678" }),
                   new TextRun({ children: [PageNumber.CURRENT], size: 14, color: "5C6678", font: "Calibri" }),
                   run(" of ", { size: 14, color: "5C6678" }),
                   new TextRun({ children: [PageNumber.TOTAL_PAGES], size: 14, color: "5C6678", font: "Calibri" }),
@@ -318,7 +318,7 @@ export async function registerDocx(rows: Registration[], filter: RegisterFilter,
           new Paragraph({
             children: [
               run(
-                `${programme.level} CRE · ${programme.dateLabel}, ${programme.start} · ${programme.mode} · ${programme.acknowledgement} · Institute ${programme.instituteCode} · ${rciApprovalLine}`,
+                `${programme.level} CRE · ${programme.dateLabel}, ${programme.start} · ${programme.mode} · Institute ${programme.instituteCode} · ${rciApprovalLine}`,
                 { size: 17, color: "5C6678" },
               ),
             ],

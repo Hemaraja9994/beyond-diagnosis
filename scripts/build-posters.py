@@ -175,6 +175,19 @@ def date_tab(rci: bool = False) -> str:
     </div>"""
 
 
+RCI_FILE = "CRE-26111620026773/2026-RCI"
+RCI_PORTAL = "rciregistration.nic.in"
+
+
+def rci_strip() -> str:
+    return f"""
+    <div class="rci-strip">
+      <img src="{(BRAND / 'rci.png').as_uri()}" alt="">
+      <p><b>Approved by RCI</b> · Letter F. No. {RCI_FILE} · Zonal · 4 hours · Institute KK048
+        <span>Claiming CRE points? Also register on <b>{RCI_PORTAL}</b> → CRE Calendar → 19 Dec 2026, with your CRR login.</span></p>
+    </div>"""
+
+
 def footer(page: str = "") -> str:
     page_line = f'<span class="pg">{page}</span>' if page else ""
     return f"""
@@ -230,6 +243,7 @@ def poster(build: Path) -> str:
         <p class="section-title">Programme <em>schedule</em></p>
         <div class="ribbons">{rows}</div>
       </div>
+      {rci_strip()}
       <div class="organisers">
         <span class="pill pill-dark">Organising chairperson</span><b>Dr. Shwetha Prabhu</b>
         <span class="pill pill-dark">Organising secretaries</span><b>Ms. Swathi Chinnasamy<br>Ms. Rachana R Uchil</b>
@@ -270,6 +284,7 @@ def flyer_cover(build: Path) -> str:
       <div class="body">
         <p class="section-title">The <em>programme</em></p>
         <div class="sessions">{sessions}</div>
+        {rci_strip()}
       </div>
       {footer("Page 1 of 2")}
     </section>"""
@@ -297,7 +312,7 @@ def flyer_team(build: Path) -> str:
           <div class="info c2"><h4>Who should attend</h4><div class="in"><div class="tags">{tags}</div></div></div>
           <div class="info c1"><h4>Registration</h4><div class="in">
             <p class="big">Open now</p>
-            <p>Pay ₹354 on Razorpay, then register at <b style="white-space:nowrap">yenepoya-cre.vercel.app</b> with your CRR number and receipt. CRE points: 50 places, first registered, first served.</p>
+            <p>Pay ₹354 on Razorpay, then register at <b style="white-space:nowrap">yenepoya-cre.vercel.app</b> with your CRR number and receipt. CRE points: 50 places, first registered, first served — and also register on <b style="white-space:nowrap">rciregistration.nic.in</b>.</p>
           </div></div>
           <div class="info c4"><h4>Contact</h4><div class="in"><div class="lines">
             <div><small>Email</small>yenepoyaaslpconference@gmail.com</div>
@@ -311,8 +326,8 @@ def flyer_team(build: Path) -> str:
         </div>
         <div class="refs">
           <img src="{(BRAND / 'rci.png').as_uri()}" alt="">
-          <p><b>Rehabilitation Council of India</b> · CRE programme approved · zonal · 4 hours<br>
-            <span>F. No. CRE-26111620026773/2026-RCI · Institute code KK048 · on the RCI CRE calendar</span></p>
+          <p><b>Approved by the Rehabilitation Council of India</b> · Letter F. No. CRE-26111620026773/2026-RCI · zonal · 4 hours<br>
+            <span>Institute code KK048 · Listed on the RCI CRE calendar (rciregistration.nic.in) for 19 December 2026</span></p>
           <img src="{(BRAND / 'swavlamban.png').as_uri()}" alt="">
         </div>
       </div>

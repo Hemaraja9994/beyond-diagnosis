@@ -299,8 +299,11 @@ function Confirmation({ success }: { success: Success }) {
         </li>
         {success.claiming ? (
           <li>
-            <span className="mr-2 font-bold text-green-dark">…</span>RCI CRE points: once you register for this programme on the RCI website, upload the
-            RCI confirmation mail on{" "}
+            <span className="mr-2 font-bold text-green-dark">…</span>RCI CRE points: register for this programme on the{" "}
+            <a className="font-semibold underline" href={programme.rciCalendarUrl} target="_blank" rel="noopener noreferrer">
+              RCI website ({programme.rciPortal})
+            </a>{" "}
+            too, then upload the RCI confirmation mail on{" "}
             <Link className="font-semibold underline" href="/registration/rci">
               Add RCI confirmation
             </Link>

@@ -1,4 +1,4 @@
-import { creSteps, dayFormat } from "@/lib/programme";
+import { creSteps, dayFormat, programme, rciRegisterLine } from "@/lib/programme";
 
 /** How the day runs online (Webex + Slido) and how RCI CRE points are earned. */
 export function CreSteps({ className = "" }: { className?: string }) {
@@ -21,6 +21,12 @@ export function CreSteps({ className = "" }: { className?: string }) {
           </li>
         ))}
       </ol>
+      <p className="mt-4 rounded-2xl bg-gold/20 px-4 py-3 text-sm leading-6 text-navy">
+        {rciRegisterLine}{" "}
+        <a className="font-semibold underline" href={programme.rciCalendarUrl} target="_blank" rel="noopener noreferrer">
+          Open the RCI CRE calendar
+        </a>
+      </p>
       <p className="mt-4 text-xs leading-5 text-muted">
         Steps 2, 4 and 5 are handled by the Rehabilitation Council of India. Participants who are not on the CRR, and students, attend and take part on
         Slido in the same way, without the RCI steps.
