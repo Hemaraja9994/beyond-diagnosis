@@ -90,7 +90,7 @@ const fontFiles = {
 } as const;
 
 /** File bytes are read once per server instance and reused for every certificate. */
-let assets: Promise<{ fonts: Record<keyof Fonts, Uint8Array>; logo: Uint8Array; shield: Uint8Array; signatures: (Uint8Array | null)[] }> | null = null;
+let assets: Promise<{ fonts: Record<keyof Fonts, Uint8Array>; logo: Uint8Array; rci: Uint8Array; shield: Uint8Array; signatures: (Uint8Array | null)[] }> | null = null;
 
 function loadAssets() {
   assets ??= (async () => {
@@ -98,12 +98,13 @@ function loadAssets() {
     const entries = await Promise.all(
       Object.entries(fontFiles).map(async ([key, file]) => [key, await readFile(path.join(root, "assets", "certificate-fonts", file))] as const),
     );
-    const [logo, shield, ...signatures] = await Promise.all([
+    const [logo, rci, shield, ...signatures] = await Promise.all([
       readFile(path.join(root, "public", "brand", "yenepoya-medical-college-clear.png")),
+      readFile(path.join(root, "public", "brand", "rci-clear.png")),
       readFile(path.join(root, "public", "brand", "yenepoya-shield-watermark.png")),
       ...certificateSignatories.map((person) => readFile(path.join(root, "public", "brand", "signatures", `${person.key}.png`)).catch(() => null)),
     ]);
-    return { fonts: Object.fromEntries(entries) as unknown as Record<keyof Fonts, Uint8Array>, logo, shield, signatures };
+    return { fonts: Object.fromEntries(entries) as unknown as Record<keyof Fonts, Uint8Array>, logo, rci, shield, signatures };
   })();
   return assets;
 }
@@ -177,6 +178,7 @@ async function render(spec: Spec): Promise<Uint8Array> {
     await Promise.all(Object.entries(files.fonts).map(async ([key, bytes]) => [key, await pdf.embedFont(bytes, { subset: true })] as const)),
   ) as Fonts;
   const logo = await pdf.embedPng(files.logo);
+  const rciLogo = await pdf.embedPng(files.rci);
   const shield = await pdf.embedPng(files.shield);
   const signatures =
     spec.edition === "print" ? certificateSignatories.map(() => null) : await Promise.all(files.signatures.map((bytes) => (bytes ? pdf.embedPng(bytes).catch(() => null) : null)));
@@ -190,10 +192,17 @@ async function render(spec: Spec): Promise<Uint8Array> {
   drawFrame(page);
   page.drawImage(shield, { x: W / 2 - 118, y: H / 2 - 168, width: 236, height: (shield.height / shield.width) * 236, opacity: spec.edition === "print" ? 0.06 : 0.075 });
 
-  // Header: college logo, department, university
+  // Header: college logo and the RCI logo side by side, then department and university
   const logoW = 118;
   const logoH = (logo.height / logo.width) * logoW;
-  page.drawImage(logo, { x: W / 2 - logoW / 2, y: H - 64 - logoH, width: logoW, height: logoH });
+  const rciH = logoH * 0.92;
+  const rciW = (rciLogo.width / rciLogo.height) * rciH;
+  const gap = 26;
+  const pairW = logoW + gap + rciW;
+  const left = W / 2 - pairW / 2;
+  page.drawImage(logo, { x: left, y: H - 64 - logoH, width: logoW, height: logoH });
+  page.drawLine({ start: { x: left + logoW + gap / 2, y: H - 64 - logoH + 6 }, end: { x: left + logoW + gap / 2, y: H - 64 - 6 }, thickness: 0.6, color: gold });
+  page.drawImage(rciLogo, { x: left + logoW + gap, y: H - 64 - logoH + (logoH - rciH) / 2, width: rciW, height: rciH });
   let y = H - 64 - logoH - 15;
   spaced(page, programme.organiser.toUpperCase(), W / 2, y, fonts.sansSemibold, 8.4, 1.5, navy);
   y -= 12.5;
@@ -246,6 +255,7 @@ async function render(spec: Spec): Promise<Uint8Array> {
       660,
       ink,
     );
+    y -= 6;
   } else {
     y -= 22;
     y = richCentred(page, [[{ text: "has participated in the Zonal Continuing Rehabilitation Education (CRE) programme", font: body }]], y, 11.3, 16, 640, ink);
@@ -266,6 +276,17 @@ async function render(spec: Spec): Promise<Uint8Array> {
     );
   }
 
+  // RCI approval of the programme
+  y -= 16;
+  centre(
+    page,
+    `Approved by the Rehabilitation Council of India  ·  Letter F. No. ${programme.rciFileNo}  ·  ${programme.level} CRE, ${programme.rciHours} hours  ·  Institute code ${programme.instituteCode}`,
+    y,
+    fonts.sansSemibold,
+    8.4,
+    navy,
+  );
+
   // Seal and QR flank the header; the signatures run along the bottom
   seal(page, 152, 466, fonts);
   verification(page, W - 152, 436, qr, spec.number, spec.qrCaption, fonts);
@@ -279,8 +300,6 @@ async function render(spec: Spec): Promise<Uint8Array> {
   const footer = [
     `Certificate No. ${spec.number}`,
     `Issued ${istDate(spec.issuedAt)}`,
-    `RCI CRE approval F. No. ${programme.rciFileNo}`,
-    `Institute code ${programme.instituteCode}`,
     spec.kind === "participation" ? (spec.edition === "print" ? "Verify with the QR code" : "Electronically issued; verify with the QR code") : "",
   ].filter(Boolean);
   centre(page, footer.join("  ·  "), 57, fonts.sans, 6.6, muted);

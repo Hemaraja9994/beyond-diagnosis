@@ -22,6 +22,16 @@ export function SiteHeader() {
             priority
             unoptimized
           />
+          <Image
+            src="/brand/rci.png"
+            alt={`Rehabilitation Council of India — programme approved, F. No. ${programme.rciFileNo}`}
+            title={`Approved by RCI · F. No. ${programme.rciFileNo} · ${programme.rciHours} hours`}
+            width={740}
+            height={668}
+            className="h-10 w-auto sm:h-12"
+            priority
+            unoptimized
+          />
           <span className="min-w-0 border-l border-line pl-3 text-[0.7rem] leading-4 text-navy sm:text-xs sm:leading-5">
             <span className="block font-display text-[0.8rem] font-semibold uppercase tracking-[0.08em] sm:text-sm">{programme.organiser}</span>
             <span className="block text-muted">

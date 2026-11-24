@@ -136,6 +136,9 @@ export default async function AdminPage({
             <a className={`${chip} ${isOpen ? tone.ok : tone.stop}`} href={deskHref("settings")}>
               Registration {isOpen ? "open" : "closed"}
             </a>
+            <a className={`${chip} ${tone.ok}`} href={programme.rciCalendarUrl} target="_blank" rel="noopener noreferrer" title="Open the RCI CRE calendar">
+              Approved by RCI · F. No. {programme.rciFileNo} · {programme.rciHours} hours
+            </a>
           </div>
           <form action="/api/admin/logout" method="post">
             <button className="min-h-11 rounded-full border border-line bg-card px-4 text-sm font-semibold" type="submit">
@@ -350,7 +353,7 @@ function ExportsTab({ registrations, certificatesOn, mailOn }: { registrations: 
       <CertificatesPanel registrations={registrations} switchOn={certificatesOn} mailOn={mailOn} />
       <section className="rounded-3xl bg-card p-5 ring-1 ring-line">
         <h2 className="font-display text-2xl text-navy">Participant register</h2>
-        <p className="mt-1 text-sm leading-6 text-muted">A4 landscape with the college logo, programme details and the participants you choose.</p>
+        <p className="mt-1 text-sm leading-6 text-muted">A4 landscape with the college logo, programme details, the RCI approval (F. No. {programme.rciFileNo}) and the participants you choose.</p>
         <form className="mt-3 grid gap-3 sm:flex sm:flex-wrap sm:items-end" action="/api/admin/export/register" method="get">
           <label className="grid gap-1 text-sm font-semibold text-navy">
             Include
@@ -407,6 +410,10 @@ function CertificatesPanel({ registrations, switchOn, mailOn }: { registrations:
             A Certificate of Participation for everyone whose payment is confirmed, signed by the organising secretaries, the organising chairperson and the
             Principal &amp; Dean. Each has its own number and a QR code that confirms it online.
           </p>
+          <p className="mt-1 max-w-3xl text-sm font-semibold leading-6 text-navy">
+            Carries the RCI logo and the approval: Approved by the Rehabilitation Council of India, letter F. No. {programme.rciFileNo}, {programme.level.toLowerCase()} CRE,{" "}
+            {programme.rciHours} hours, institute code {programme.instituteCode}.
+          </p>
         </div>
         <span className={`${chip} ${live ? tone.ok : tone.wait}`}>{live ? "Released to participants" : switchOn ? `Releases on ${programme.dateLabel}` : "Not released"}</span>
       </div>
@@ -458,7 +465,7 @@ function CertificatesPanel({ registrations, switchOn, mailOn }: { registrations:
       )}
       <div className="mt-5 border-t border-line pt-4">
         <h3 className="font-semibold text-navy">Resource persons — Certificates of Appreciation</h3>
-        <p className="mt-1 text-sm leading-6 text-muted">One page for each speaker, in session order. Print the print edition on A4 certificate card at actual size and sign in ink.</p>
+        <p className="mt-1 text-sm leading-6 text-muted">One page for each speaker, in session order, with the RCI logo and approval letter number. Print the print edition on A4 certificate card at actual size and sign in ink.</p>
         <p className="mt-2 flex flex-wrap gap-4 text-sm font-semibold">
           <a className="text-green underline" href="/api/admin/export/resource-certificates?edition=print">
             Print edition (PDF)
