@@ -1,7 +1,8 @@
 import { readdir, readFile } from "node:fs/promises";
 import pg from "pg";
 
-const url = process.env.DATABASE_URL?.trim() ?? "";
+// DATABASE_URL, or POSTGRES_URL as the Supabase integration on Vercel names it (see lib/db.ts).
+const url = (process.env.DATABASE_URL?.trim() || process.env.POSTGRES_URL?.trim()) ?? "";
 const files = (await readdir("migrations").catch(() => [])).filter((file) => file.endsWith(".sql")).sort();
 
 if (url === "" || files.length === 0) {
@@ -9,10 +10,17 @@ if (url === "" || files.length === 0) {
   process.exit(0);
 }
 
-const target = process.env.DATABASE_URL_UNPOOLED?.trim() || url;
-// Supabase needs an encrypted connection; its certificate chain is not in Node's list (see lib/db.ts).
-const ssl = !/[?&]sslmode=/i.test(target) && /supabase\.(com|co)\b/i.test(target) ? { rejectUnauthorized: false } : undefined;
-const client = new pg.Client({ connectionString: target, ssl });
+const target = process.env.DATABASE_URL_UNPOOLED?.trim() || process.env.POSTGRES_URL_NON_POOLING?.trim() || url;
+
+// Same as connectionFor in lib/db.ts: Supabase is encrypted, without checking its certificate chain.
+function connectionFor(value) {
+  if (!/supabase\.(com|co)\b/i.test(value)) return { connectionString: value };
+  const parsed = new URL(value);
+  for (const key of ["sslmode", "sslrootcert", "supa", "pgbouncer"]) parsed.searchParams.delete(key);
+  return { connectionString: parsed.toString(), ssl: { rejectUnauthorized: false } };
+}
+
+const client = new pg.Client(connectionFor(target));
 await client.connect();
 
 try {

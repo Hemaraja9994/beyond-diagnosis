@@ -102,8 +102,8 @@ The site does not invent degrees, posts, credit hours, or a fee. The fee is what
 
 The Hobby Blob store allows 10,000 reads a month, and the desk reads every registration file on each visit, so it ran out on 24 Nov 2026. Supabase's free Postgres has no such read limit, and the site already keeps registrations and uploaded files in Postgres when `DATABASE_URL` is set (it then ignores Blob).
 
-1. Create a free Supabase project (region: Mumbai). In **Connect**, copy the **Transaction pooler** URI (port 6543) and the **Session pooler** URI (port 5432), with the database password filled in.
-2. In Vercel → Settings → Environment Variables (Production), add `DATABASE_URL` = the transaction pooler URI and `DATABASE_URL_UNPOOLED` = the session pooler URI. Paste them as they are; the site turns on an encrypted connection for Supabase by itself.
+1. Easiest: Vercel → this project → **Storage** → **Create Database** → **Supabase** (region Mumbai) → connect it to this project. Vercel then adds `POSTGRES_URL` and `POSTGRES_URL_NON_POOLING` itself, and the site reads them.
+2. Or by hand: in Supabase → **Connect**, copy the **Transaction pooler** URI (port 6543) as `DATABASE_URL` and the **Session pooler** URI (port 5432) as `DATABASE_URL_UNPOOLED` (Production). Paste them as they are; the site sets up the encrypted connection to Supabase by itself.
 3. Redeploy. The build applies `migrations/`.
 
 Participant status links and acknowledgement QR codes are signed with `ADMIN_SESSION_SECRET` and the reference, not stored, so they keep working after a move as long as the references are kept. Keep any file of participants' details out of this public repository.
