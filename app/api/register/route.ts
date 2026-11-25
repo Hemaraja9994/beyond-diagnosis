@@ -29,11 +29,11 @@ export async function POST(request: Request) {
   if ("error" in parsed) return json({ error: parsed.error }, 400);
   const uploads = await readUploads(form);
   if ("error" in uploads) return json({ error: uploads.error }, 400);
-  if (!uploads.value.some((upload) => upload.kind === "payment")) {
+  const claiming = parsed.value.creClaim === "yes";
+  // The receipt is required only from CRE claimants; others are confirmed from their payment ID.
+  if (claiming && !uploads.value.some((upload) => upload.kind === "payment")) {
     return json({ error: "Attach the payment receipt or screenshot." }, 400);
   }
-
-  const claiming = parsed.value.creClaim === "yes";
   const seatLimit = await creSeatLimit();
   if (claiming && (await creSeatsLeft()) <= 0) {
     return json(

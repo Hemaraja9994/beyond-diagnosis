@@ -2,13 +2,13 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { PageBanner } from "@/components/page-banner";
-import { getMeetingUrl } from "@/lib/store";
+import { publicMeetingUrl } from "@/lib/public-figures";
 
 export const metadata: Metadata = { title: "Join" };
 export const dynamic = "force-dynamic";
 
 export default async function JoinPage() {
-  const meeting = await getMeetingUrl();
+  const meeting = await publicMeetingUrl();
   if (meeting) redirect(meeting);
 
   return (

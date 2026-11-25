@@ -42,7 +42,12 @@ export async function verifyRegistration(reference: string): Promise<Verificatio
   let readable = false;
   const receipt = await getDocument(registration.reference, "payment");
   if (!receipt) {
-    checks.push({ label: "Receipt", result: razorpay?.result === "pass" ? "warn" : "fail", note: "No receipt uploaded." });
+    const claiming = registration.creClaim === "yes";
+    checks.push({
+      label: "Receipt",
+      result: razorpay?.result === "pass" || !claiming ? "warn" : "fail",
+      note: claiming ? "No receipt uploaded." : "Not asked for (not claiming CRE points): check the payment ID on Razorpay.",
+    });
   } else {
     const text = await safeRead(receipt);
     readable = text.replace(/\s/g, "").length >= 20;

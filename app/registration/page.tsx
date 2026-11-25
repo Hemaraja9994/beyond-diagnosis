@@ -3,8 +3,7 @@ import { PageBanner } from "@/components/page-banner";
 import { RegisterForm } from "@/components/register-form";
 import { RegistrationLinks } from "@/components/registration-links";
 import { programme, type ArrivalSource } from "@/lib/programme";
-import { creSeatsLeft } from "@/lib/seats";
-import { creSeatLimit, registrationOpen } from "@/lib/settings";
+import { publicFigures } from "@/lib/public-figures";
 
 export const metadata: Metadata = { title: "Registration" };
 export const dynamic = "force-dynamic";
@@ -18,11 +17,7 @@ export default async function RegistrationPage({
 }) {
   const query = await searchParams;
   const source = sources.find((item) => item === query.from) ?? "direct";
-  const [seatsLeft, seatLimit, open] = await Promise.all([
-    creSeatsLeft().catch(() => programme.creSeats),
-    creSeatLimit().catch(() => programme.creSeats),
-    registrationOpen().catch(() => true),
-  ]);
+  const { left: seatsLeft, seats: seatLimit, open } = await publicFigures();
 
   return (
     <div id="register" className="pb-24 md:pb-10">
@@ -30,7 +25,7 @@ export default async function RegistrationPage({
         kicker="Registration"
         title="Reserve"
         accent="your seat"
-        lede={`Pay ${programme.feeLabel} on Razorpay first, then register here with your payment ID and receipt. Enter your name and CRR number exactly as they should appear on the certificate.`}
+        lede={`Pay ${programme.feeLabel} on Razorpay first, then register here with your payment ID (and the receipt, if you claim RCI CRE points). Enter your name and CRR number exactly as they should appear on the certificate.`}
       />
       <div className="mx-auto grid max-w-6xl gap-8 px-4 py-10 lg:grid-cols-[1fr_18rem] lg:items-start">
         {open ? (
@@ -51,7 +46,7 @@ export default async function RegistrationPage({
             {[
               ["1", `Pay ${programme.feeLabel} on Razorpay — same fee for everyone.`],
               ["2", "Save the receipt and note the Payment ID (pay_…)."],
-              ["3", "Fill the form, attach the receipt, and keep your YDU- reference."],
+              ["3", "Fill the form (attach the receipt if you claim CRE points) and keep your YDU- reference."],
               ["4", "Download or WhatsApp your acknowledgement PDF."],
               programme.creClosed
                 ? ["5", `All ${programme.creSeats} RCI CRE places are filled, so new registrations attend without CRE points.`]
