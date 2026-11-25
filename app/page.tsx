@@ -39,8 +39,8 @@ export default function HomePage() {
             </p>
             <p className="mt-3 max-w-xl leading-7 text-white/70">{programme.aim}</p>
             <div className="mt-7 flex flex-wrap gap-3">
-              <Link id="register" href="/registration" className="pill pill-solid">
-                Register today
+              <Link id="register" href={programme.registrationClosed ? "/registration/status" : "/registration"} className="pill pill-solid">
+                {programme.registrationClosed ? "Registration closed · my status" : "Register today"}
               </Link>
               <Link id="webex" href="/join" className="pill pill-ghost">
                 Join on Webex
@@ -143,8 +143,8 @@ export default function HomePage() {
             ))}
           </ol>
           <div className="mt-8 flex flex-wrap items-center gap-4">
-            <Link href="/registration" className="pill pill-solid">
-              Start registration
+            <Link href={programme.registrationClosed ? "/registration/status" : "/registration"} className="pill pill-solid">
+              {programme.registrationClosed ? "Registration closed · my status" : "Start registration"}
             </Link>
             <SeatsBadge tone="dark" />
           </div>

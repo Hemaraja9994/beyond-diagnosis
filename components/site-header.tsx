@@ -45,8 +45,8 @@ export function SiteHeader() {
               {item.label}
             </Link>
           ))}
-          <Link href="/registration" className="pill pill-solid min-h-10 px-5 text-sm">
-            Register
+          <Link href={programme.registrationClosed ? "/registration/status" : "/registration"} className="pill pill-solid min-h-10 px-5 text-sm">
+            {programme.registrationClosed ? "My registration" : "Register"}
           </Link>
         </nav>
         <button
@@ -78,15 +78,27 @@ export function SiteHeader() {
             ))}
             <li>
               <Link
-                href="/registration"
+                href={programme.registrationClosed ? "/registration/status" : "/registration"}
                 className="pill pill-solid mt-2 flex w-full"
                 onClick={() => setOpen(false)}
               >
-                Register
+                {programme.registrationClosed ? "My registration" : "Register"}
               </Link>
             </li>
           </ul>
         </nav>
+      ) : null}
+      {programme.registrationClosed ? (
+        <Link
+          href="/registration/status"
+          className="block bg-red-700 px-4 py-2 text-center text-sm font-bold uppercase tracking-[0.08em] text-white hover:bg-red-800 sm:text-base"
+          role="status"
+        >
+          Registrations closed
+          <span className="ml-2 font-semibold normal-case tracking-normal text-white/85">
+            · the webinar link will reach registered participants · check your status ›
+          </span>
+        </Link>
       ) : null}
       <AnnouncementRail />
     </header>
