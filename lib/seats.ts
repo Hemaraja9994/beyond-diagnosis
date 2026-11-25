@@ -1,3 +1,4 @@
+import { programme } from "@/lib/programme";
 import { creSeatLimit } from "@/lib/settings";
 import { paymentState, rciState } from "@/lib/status";
 import { listRegistrations, type Registration } from "@/lib/store";
@@ -11,6 +12,8 @@ export function holdsCrePlace(row: Registration): boolean {
 }
 
 export async function creSeatsLeft(rows?: Registration[]): Promise<number> {
+  // Closed by the organisers once RCI's places are filled: no new claims, without reading the database.
+  if (programme.creClosed) return 0;
   const all = rows ?? (await listRegistrations());
   return Math.max(0, (await creSeatLimit()) - all.filter(holdsCrePlace).length);
 }
@@ -58,7 +61,7 @@ export function deskNumbers(rows: Registration[], seats: number): DeskNumbers {
     cre: {
       seats,
       taken: claimants.length,
-      left: Math.max(0, seats - claimants.length),
+      left: programme.creClosed ? 0 : Math.max(0, seats - claimants.length),
       paymentConfirmed: claimants.filter(confirmed).length,
       rciConfirmed: claimants.filter((row) => rciState(row) === "confirmed").length,
       rciUnderReview: claimants.filter((row) => rciState(row) === "submitted").length,

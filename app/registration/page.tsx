@@ -53,7 +53,9 @@ export default async function RegistrationPage({
               ["2", "Save the receipt and note the Payment ID (pay_…)."],
               ["3", "Fill the form, attach the receipt, and keep your YDU- reference."],
               ["4", "Download or WhatsApp your acknowledgement PDF."],
-              ["5", "Claiming CRE points? Register on the RCI website, then upload RCI's confirmation mail here."],
+              programme.creClosed
+                ? ["5", `All ${programme.creSeats} RCI CRE places are filled, so new registrations attend without CRE points.`]
+                : ["5", "Claiming CRE points? Register on the RCI website, then upload RCI's confirmation mail here."],
             ].map(([step, text]) => (
               <li key={step} className="grid grid-cols-[2rem_1fr] gap-3 text-sm leading-6">
                 <span className="grid h-8 w-8 place-items-center rounded-full bg-accent font-display font-bold text-white">{step}</span>
