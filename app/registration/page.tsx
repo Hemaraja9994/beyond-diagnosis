@@ -28,9 +28,13 @@ export default async function RegistrationPage({
     <div id="register" className="pb-24 md:pb-10">
       <PageBanner
         kicker="Registration"
-        title="Reserve"
-        accent="your seat"
-        lede={`Pay ${programme.feeLabel} on Razorpay first, then register here with your payment ID and receipt. Enter your name and CRR number exactly as they should appear on the certificate.`}
+        title={open ? "Reserve" : "Registration"}
+        accent={open ? "your seat" : "is closed"}
+        lede={
+          open
+            ? `Pay ${programme.feeLabel} on Razorpay first, then register here with your payment ID and receipt. Enter your name and CRR number exactly as they should appear on the certificate.`
+            : "Registration for this programme has closed. Registered participants will receive the webinar link."
+        }
       />
       <div className="mx-auto grid max-w-6xl gap-8 px-4 py-10 lg:grid-cols-[1fr_18rem] lg:items-start">
         {open ? (
@@ -39,7 +43,8 @@ export default async function RegistrationPage({
           <section className="card p-6">
             <h2 className="font-display text-2xl text-navy">Registration is closed</h2>
             <p className="mt-2 leading-7 text-muted">
-              Registration for this programme has closed. Already registered? Use the links here to add your RCI confirmation or download your
+              Registration for this programme has closed, and no new registrations are being taken. Registered participants will receive the
+              webinar link. Already registered? Use the links here to check your status, add your RCI confirmation or download your
               acknowledgement. For anything else, write to {programme.email}.
             </p>
           </section>

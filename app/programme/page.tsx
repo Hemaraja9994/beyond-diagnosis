@@ -52,8 +52,8 @@ export default function ProgrammePage() {
         <CreSteps />
       </div>
       <div className="mx-auto flex max-w-5xl flex-wrap gap-3 px-4">
-        <Link href="/registration" className="pill pill-solid">
-          Register today
+        <Link href={programme.registrationClosed ? "/registration/status" : "/registration"} className="pill pill-solid">
+          {programme.registrationClosed ? "Registration closed · my status" : "Register today"}
         </Link>
         <Link href="/faculty" className="pill pill-outline">
           Meet the speakers

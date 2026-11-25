@@ -11,6 +11,7 @@ export async function creSeatLimit(): Promise<number> {
 }
 
 export async function registrationOpen(): Promise<boolean> {
+  if (programme.registrationClosed) return false;
   return (await getSetting("registration_open").catch(() => null)) !== "no";
 }
 

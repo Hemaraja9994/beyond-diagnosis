@@ -50,6 +50,12 @@ export const programme = {
    * count says. People who already claim keep their places. Set back to false to reopen.
    */
   creClosed: true,
+  /**
+   * True once registration has closed (25 Nov 2026: RCI is sharing the webinar links). The site takes no new
+   * registrations and its Register buttons lead to the status page; people already registered keep full use of
+   * their status, update and RCI pages. Set back to false to reopen (the desk's open/closed switch then applies).
+   */
+  registrationClosed: true,
   whatsappUrl: "https://chat.whatsapp.com/HUwQZlIs0zB90pSS3EC2r1",
   // Drop the official emblem at public/brand/yenepoya-emblem.svg.
   // Use a file supplied by the university. Do not download a logo from an image site.

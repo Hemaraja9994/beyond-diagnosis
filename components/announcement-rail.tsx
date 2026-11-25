@@ -3,7 +3,9 @@ import { programme, sessionTickId, sessions } from "@/lib/programme";
 
 const announcements = [
   { href: "/attend", label: `Approved by RCI · F. No. ${programme.rciFileNo} · ${programme.rciHours} hours`, alert: true },
-  programme.creClosed
+  programme.registrationClosed
+    ? { href: "/registration", label: "Registration is closed · the webinar link will reach registered participants", alert: true }
+    : programme.creClosed
     ? { href: "/registration", label: `All ${programme.creSeats} RCI CRE places are filled · you can still register to attend`, alert: true }
     : { href: programme.rciCalendarUrl, label: `CRE points? Register on ${programme.rciPortal} too`, alert: true },
   { href: "/#brochure", label: "Block the date · 19 December", alert: false },
@@ -14,7 +16,7 @@ const announcements = [
     label: `${session.time} ${session.meridiem} · ${session.person}`,
     alert: false,
   })),
-  { href: "/registration", label: "Register now", alert: false },
+  ...(programme.registrationClosed ? [] : [{ href: "/registration", label: "Register now", alert: false }]),
   { href: "/join", label: "Join on Webex", alert: false },
   { href: "/brochure", label: "Download the brochure", alert: false },
   { href: "/attend", label: `RCI approval F. No. ${programme.rciFileNo} · Institute ${programme.instituteCode}`, alert: false },

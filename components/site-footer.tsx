@@ -32,8 +32,8 @@ export function SiteFooter() {
             <p className="mt-3 max-w-xl text-white/80">Disability Assessment, Certification and Entitlements under the RPwD Act, 2016.</p>
           </div>
           <div className="flex flex-wrap gap-3">
-            <Link href="/registration" className="pill pill-solid">
-              Register today
+            <Link href={programme.registrationClosed ? "/registration/status" : "/registration"} className="pill pill-solid">
+              {programme.registrationClosed ? "Registration closed · my status" : "Register today"}
             </Link>
             <Link href="/join" className="pill pill-ghost">
               Join on Webex

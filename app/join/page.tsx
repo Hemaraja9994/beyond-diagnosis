@@ -17,7 +17,7 @@ export default async function JoinPage() {
         kicker="Cisco Webex"
         title="Session link"
         accent="coming soon"
-        lede="This page will open the Cisco Webex session once the link is published. Questions and polls run on Slido inside Webex. Register now to reserve your seat, and the link will also reach you by email."
+        lede="This page will open the Cisco Webex session once the link is published. Questions and polls run on Slido inside Webex. Registered participants will also receive the link."
       />
       <div className="mx-auto flex max-w-3xl flex-wrap gap-3 px-4 py-10">
         <Link href="/registration?from=join" className="pill pill-solid">

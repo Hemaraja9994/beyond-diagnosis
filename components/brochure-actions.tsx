@@ -22,7 +22,7 @@ export function BrochureActions({ kind = "programme" }: { kind?: FlyerKind }) {
               `Approved by RCI · F. No. ${programme.rciFileNo} · ${programme.rciHours} hours.`,
               `Claiming CRE points? Also register on the RCI website: ${programme.rciCalendarUrl}`,
               `Flyer: ${fileUrl(programme.brochurePdf)}`,
-              `Register: ${originUrl("/registration")}`,
+              ...(programme.registrationClosed ? [] : [`Register: ${originUrl("/registration")}`]),
             ].join("\n")
           }
         />
@@ -42,7 +42,7 @@ export function BrochureActions({ kind = "programme" }: { kind?: FlyerKind }) {
               `Approved by RCI · F. No. ${programme.rciFileNo} · ${programme.rciHours} hours.`,
               `Claiming CRE points? Also register on the RCI website: ${programme.rciCalendarUrl}`,
               `Poster: ${fileUrl(programme.saveTheDateImage)}`,
-              `Register: ${originUrl("/registration")}`,
+              ...(programme.registrationClosed ? [] : [`Register: ${originUrl("/registration")}`]),
             ].join("\n")
           }
         />
