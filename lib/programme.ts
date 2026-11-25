@@ -45,6 +45,11 @@ export const programme = {
   feeLabel: "₹354",
   /** RCI CRE points: places for this many claimants, first registered, first served. */
   creSeats: 50,
+  /**
+   * True once RCI's 50 places are filled (25 Nov 2026): no new CRE claims on the site, whatever the site's own
+   * count says. People who already claim keep their places. Set back to false to reopen.
+   */
+  creClosed: true,
   whatsappUrl: "https://chat.whatsapp.com/HUwQZlIs0zB90pSS3EC2r1",
   // Drop the official emblem at public/brand/yenepoya-emblem.svg.
   // Use a file supplied by the university. Do not download a logo from an image site.
