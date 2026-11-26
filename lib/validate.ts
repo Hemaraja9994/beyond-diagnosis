@@ -238,7 +238,8 @@ export function parseDeskEdit(record: Record<string, unknown>):
   if (!validName(fullName)) return { error: "Enter the name using letters only." };
   if (!validEmail(email)) return { error: "Enter a valid email address." };
   if (!mobile) return { error: "Enter a mobile number." };
-  if (!professionValues.has(profession)) return { error: "Choose a professional category." };
+  // The desk may leave the category and state blank when they are not known (e.g. added after closing).
+  if (profession !== "" && !professionValues.has(profession)) return { error: "Choose a professional category." };
   if (!crrNumber)
     return {
       error:
@@ -248,7 +249,7 @@ export function parseDeskEdit(record: Record<string, unknown>):
     };
   if (paymentReference === null) return { error: "The payment ID can use letters, numbers, and simple punctuation only." };
   const stateName = readString(record, "stateName");
-  if (!stateValues.has(stateName)) return { error: "Choose a state or Union Territory." };
+  if (stateName !== "" && !stateValues.has(stateName)) return { error: "Choose a state or Union Territory." };
   return {
     value: {
       title: title as Title | "",
