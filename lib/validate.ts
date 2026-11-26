@@ -78,7 +78,7 @@ export function normaliseMobile(input: string): string | null {
 
 export function normaliseCrr(input: string): string | null {
   const value = input.toUpperCase().replace(/\s/g, "");
-  return /^A\d{3,8}$/.test(value) ? value : null;
+  return /^[AB]\d{3,8}$/.test(value) ? value : null;
 }
 
 export function parseRegistration(body: unknown): { value: RegistrationDraft } | { error: string } {
@@ -116,8 +116,8 @@ export function parseRegistration(body: unknown): { value: RegistrationDraft } |
   if (!crrNumber) {
     return {
       error: claiming
-        ? "To claim RCI CRE points, enter your CRR number in the form A followed by digits."
-        : "Enter the CRR number in the form A followed by digits, or leave it blank.",
+        ? "To claim RCI CRE points, enter your CRR number in the form A or B followed by digits."
+        : "Enter the CRR number in the form A or B followed by digits, or leave it blank.",
     };
   }
   if (designation.length > 120) return { error: "The designation is too long." };
@@ -190,7 +190,7 @@ export function parseUpdate(record: Record<string, unknown>): { value: UpdateDra
   if (title !== "" && !titleValues.has(title)) return { error: "Choose a title from the list." };
   if (creClaim !== "" && creClaim !== "yes" && creClaim !== "no") return { error: "Say whether you will claim RCI CRE points." };
   const crrNumber = crrRaw === "" ? "" : normaliseCrr(crrRaw);
-  if (crrNumber === null) return { error: "Enter the CRR number in the form A followed by digits." };
+  if (crrNumber === null) return { error: "Enter the CRR number in the form A or B followed by digits." };
   const paymentReference = paymentRaw === "" ? "" : normalisePaymentReference(paymentRaw);
   if (paymentReference === null) {
     return { error: "The payment id can use letters, numbers, and simple punctuation only." };
@@ -239,7 +239,13 @@ export function parseDeskEdit(record: Record<string, unknown>):
   if (!validEmail(email)) return { error: "Enter a valid email address." };
   if (!mobile) return { error: "Enter a mobile number." };
   if (!professionValues.has(profession)) return { error: "Choose a professional category." };
-  if (!crrNumber) return { error: "A CRE claimant needs a CRR number (A followed by digits)." };
+  if (!crrNumber)
+    return {
+      error:
+        creClaim === "yes"
+          ? "A CRE claimant needs a CRR number (A or B followed by digits)."
+          : "Enter the CRR number as A or B followed by digits, or leave it blank.",
+    };
   if (paymentReference === null) return { error: "The payment ID can use letters, numbers, and simple punctuation only." };
   const stateName = readString(record, "stateName");
   if (!stateValues.has(stateName)) return { error: "Choose a state or Union Territory." };

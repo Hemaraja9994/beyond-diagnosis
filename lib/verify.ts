@@ -80,7 +80,7 @@ export async function verifyRegistration(reference: string): Promise<Verificatio
     if (text.replace(/\s/g, "").length < 20) {
       checks.push({ label: "CRR certificate", result: "warn", note: "Could not read the certificate." });
     } else {
-      const crr = /^A\d+$/.test(registration.crrNumber) ? registration.crrNumber : "";
+      const crr = /^[AB]\d+$/.test(registration.crrNumber) ? registration.crrNumber : "";
       checks.push(
         crr !== "" && containsLoose(text, crr)
           ? { label: "CRR number on certificate", result: "pass", note: `${crr} found on the certificate.` }
@@ -95,7 +95,7 @@ export async function verifyRegistration(reference: string): Promise<Verificatio
   if (rciMail) {
     const text = await safeRead(rciMail);
     const fromRci = /rehabilitation\s*council|\bRCI\b|rehabcouncil/i.test(text);
-    const crr = /^A\d+$/.test(registration.crrNumber) ? registration.crrNumber : "";
+    const crr = /^[AB]\d+$/.test(registration.crrNumber) ? registration.crrNumber : "";
     const crrSeen = crr !== "" && containsLoose(text, crr);
     const tokens = nameTokens(registration.fullName);
     const nameSeen = tokens.length > 0 && tokens.every((token) => text.toLowerCase().includes(token));

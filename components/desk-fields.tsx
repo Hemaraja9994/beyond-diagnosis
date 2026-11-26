@@ -48,7 +48,7 @@ export function DeskFields({ row }: { row?: Registration }) {
           <option value="no">No — attending only</option>
         </select>
       </label>
-      {field("CRR number", "crrNumber", row?.crrNumber, "A followed by digits; blank or “Not applicable” if not claiming")}
+      {field("CRR number", "crrNumber", row?.crrNumber, "A or B followed by digits; blank or “Not applicable” if not claiming")}
       {field("Designation", "designation", row?.designation)}
       {field("Workplace", "institution", row?.institution)}
       <label className="grid gap-1 text-sm font-semibold text-navy">

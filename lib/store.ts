@@ -122,8 +122,8 @@ export async function updateRegistration(
   }
   const creClaim = draft.creClaim || current.creClaim;
   let crrNumber = draft.crrNumber || current.crrNumber;
-  if (creClaim === "yes" && !/^A\d{3,8}$/.test(crrNumber)) {
-    return { error: "To claim RCI CRE points, add your CRR number (A followed by digits).", status: 400 };
+  if (creClaim === "yes" && !/^[AB]\d{3,8}$/.test(crrNumber)) {
+    return { error: "To claim RCI CRE points, add your CRR number (A or B followed by digits).", status: 400 };
   }
   if (creClaim === "no" && draft.crrNumber === "" && crrNumber === "") crrNumber = "Not applicable";
   const title = draft.title || current.title;
@@ -262,7 +262,7 @@ export async function saveDeskReview(reference: string, review: DeskReview): Pro
 export async function setCreClaim(reference: string, creClaim: CreClaim): Promise<{ ok: true } | { error: string }> {
   const current = await getRegistration(reference);
   if (!current) return { error: "That registration was not found." };
-  if (creClaim === "yes" && !/^A\d{3,8}$/.test(current.crrNumber)) {
+  if (creClaim === "yes" && !/^[AB]\d{3,8}$/.test(current.crrNumber)) {
     return { error: "This participant has no CRR number on file, so they cannot be marked as claiming CRE points." };
   }
   const crrNumber = creClaim === "no" && current.crrNumber === "" ? "Not applicable" : current.crrNumber;

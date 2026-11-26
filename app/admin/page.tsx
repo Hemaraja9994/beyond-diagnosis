@@ -803,7 +803,7 @@ function RegistrationCard({ row, token }: { row: Registration; token: string | n
             <form action={`/api/admin/review/${row.reference}`} method="post" className="mt-2 grid gap-1">
               <p className="text-xs text-muted">Ask the participant, then record the answer:</p>
               <div className="flex flex-wrap gap-1">
-                {/^A\d{3,8}$/.test(row.crrNumber) ? (
+                {/^[AB]\d{3,8}$/.test(row.crrNumber) ? (
                   <button className={smallButton} name="action" value="cre-yes" type="submit">
                     Claiming
                   </button>
