@@ -408,6 +408,7 @@ export const nav = [
   { href: "/programme", label: "Programme" },
   { href: "/faculty", label: "Faculty" },
   { href: "/attend", label: "Attend" },
+  { href: "/participants", label: "Participants" },
   { href: "/general", label: "Information" },
   { href: "/brochure", label: "Brochure" },
   { href: "/contact", label: "Contact" },

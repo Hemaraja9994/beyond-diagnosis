@@ -12,6 +12,7 @@ const links = [
   { href: "/registration/rci", label: "Add RCI confirmation" },
   { href: "/registration/status", label: "Status and acknowledgement" },
   { href: "/attend", label: "Register or join" },
+  { href: "/participants", label: "Registered participants" },
   { href: "/general", label: "Guidelines and downloads" },
   { href: "/brochure", label: "Flyer and poster" },
   { href: "/department", label: "Host department" },
