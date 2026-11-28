@@ -144,15 +144,11 @@ export function parseRegistration(body: unknown): { value: RegistrationDraft } |
 
   const profession = professionRaw as Profession;
   const source = sourceRaw as ArrivalSource;
-  // Offline hands-on or online: asked only on the Non-RCI CRE form. The RCI track is online.
-  const attendanceRaw = readString(record, "attendance");
+  // Participant registration (source "online") is offline only, in the hall, for Yenepoya colleges. The RCI track is online.
   let attendance: AttendanceMode | "" = "";
   if (source === "online") {
-    if (attendanceRaw !== "offline" && attendanceRaw !== "online") return { error: "Choose how you will attend: offline hands-on or online." };
-    attendance = attendanceRaw;
-    if (attendance === "offline" && !isYenepoyaInstitution(institution)) {
-      return { error: `${onlineProgramme.offlineRule} Write your Yenepoya college name, or choose online.` };
-    }
+    attendance = "offline";
+    if (!isYenepoyaInstitution(institution)) return { error: `${onlineProgramme.offlineRule} Write your Yenepoya college or department.` };
   }
   return {
     value: {

@@ -7,7 +7,7 @@ Outputs, in public/brochure/:
   block-the-date.png / .pdf          one-page poster
   beyond-the-diagnosis-1.png / -2.png two flyer pages
   beyond-the-diagnosis.pdf           both flyer pages
-  online-programme-1.png / -2.png    participant registration brochure (offline hands-on + online), two pages
+  online-programme-1.png / -2.png    participant registration brochure (offline hands-on at YMC), two pages
   online-programme.pdf               both pages, with the registration link and QR code
 
 Run:  python3 scripts/build-posters.py            (everything)
@@ -168,7 +168,7 @@ def logo_strip() -> str:
 
 def date_tab(rci: bool = False, hybrid: bool = False) -> str:
     last = "Approved by RCI · 4 hours" if rci else "Zonal CRE · English"
-    where = "Offline + Online (Webex)" if hybrid else "Online · Cisco Webex"
+    where = "Offline · 4th floor, YMC" if hybrid else "Online · Cisco Webex"
     return f"""
     <div class="datetab">
       <div class="block"><b>19</b><span>DEC</span></div>
@@ -377,8 +377,8 @@ def register_strip(build: Path) -> str:
       <div>
         <p class="kicker">Participant registration · {ONLINE_SEATS} seats · last date {ONLINE_CLOSES}</p>
         <p class="link"><a href="{ONLINE_URL}" style="color:inherit;text-decoration:none">{SITE}<b>{ONLINE_PATH}</b></a></p>
-        <p class="note">Scan the code or type the link · Pay ₹354 on Razorpay, choose offline or online, then register with the payment ID
-          and receipt · <b>Offline hands-on: Yenepoya colleges only.</b> <b>No RCI CRE points.</b></p>
+        <p class="note">Scan the code or type the link · Pay ₹354 on Razorpay, then register with the payment ID and receipt
+          · <b>Yenepoya colleges only · offline hands-on at YMC.</b> <b>No RCI CRE points.</b></p>
       </div>
     </div>"""
 
@@ -402,13 +402,13 @@ def online_cover(build: Path) -> str:
         {logo_strip()}
         <div class="hero-row">
           <div>
-            <p class="eyebrow">Offline hands-on &amp; Online</p>
+            <p class="eyebrow">Offline hands-on · Yenepoya Medical College</p>
             <h1 class="headline display">
               <span class="lead">Beyond <span class="script">the</span></span>
               <span class="big">Diagnosis</span>
             </h1>
             <p class="sub">{SUBTITLE}</p>
-            <div class="facts"><span class="hot">Offline hands-on · Yenepoya colleges</span><span>Online · open to all</span><span>{ONLINE_SEATS} seats</span></div>
+            <div class="facts"><span class="hot">Yenepoya colleges only</span><span>Offline hands-on</span><span>{ONLINE_SEATS} seats</span></div>
           </div>
           <div class="mini-date">{date_tab(hybrid=True)}</div>
         </div>
@@ -443,12 +443,12 @@ def online_details(build: Path) -> str:
       <div class="body">
         <div class="info-grid">
           <div class="info c2"><h4>Who can join</h4><div class="in">
-            <p class="small-note" style="margin:0 0 10px">RCI CRE places are full — certifying professionals can still take part. <b>Offline hands-on:</b> Yenepoya colleges only. <b>Online:</b> open to all.</p>
+            <p class="small-note" style="margin:0 0 10px">RCI CRE places are full. <b>Staff and students of Yenepoya colleges</b> can still take part:</p>
             <div class="tags">{tags}</div>
-            <p class="small-note"><b>{ONLINE_SEATS} seats</b> in all (offline + online), first come, first served.</p></div></div>
+            <p class="small-note"><b>{ONLINE_SEATS} seats</b> in the hall, first come, first served.</p></div></div>
           <div class="info c1"><h4>How to register</h4><div class="in"><ol>
             <li><b>1</b><span>Pay <strong>₹354</strong> on Razorpay (link on the registration page).</span></li>
-            <li><b>2</b><span>Open <a href="{ONLINE_URL}" style="color:inherit"><strong style="white-space:nowrap">{SITE}{ONLINE_PATH}</strong></a>, choose <strong>offline</strong> or <strong>online</strong>, and fill the form with your payment ID and receipt.</span></li>
+            <li><b>2</b><span>Open <a href="{ONLINE_URL}" style="color:inherit"><strong style="white-space:nowrap">{SITE}{ONLINE_PATH}</strong></a> and fill the form with your Yenepoya college, payment ID and receipt.</span></li>
             <li><b>3</b><span>Register by <strong>{ONLINE_CLOSES}</strong> and keep your YDU- reference.</span></li>
           </ol></div></div>
           <div class="info c4"><h4>Contact</h4><div class="in"><div class="lines">
@@ -457,8 +457,8 @@ def online_details(build: Path) -> str:
             <div><small>Department</small>aslp@yenepoya.edu.in</div>
           </div></div></div>
           <div class="info c3"><h4>Certificate &amp; venue</h4><div class="in">
-            <p class="big">Offline at Yenepoya<br>+ Online on Webex</p>
-            <p>Offline: 4th floor, Academic Block, Yenepoya Medical College (YMC). E-certificate of participation. <b>No RCI CRE points.</b></p>
+            <p class="big">Offline hands-on<br>4th floor, Academic Block, YMC</p>
+            <p>The live sessions are projected in the hall. E-certificate of participation. <b>No RCI CRE points.</b></p>
           </div></div>
         </div>
         {register_strip(build)}

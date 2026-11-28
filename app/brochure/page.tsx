@@ -43,7 +43,7 @@ export default function BrochurePage() {
           <div className="grid max-w-xl grid-cols-2 gap-4">
             <img
               src={onlineProgramme.brochureImage}
-              alt="Participant registration brochure page 1: offline hands-on and online attendance, the four sessions, and the registration link with a QR code."
+              alt="Participant registration brochure page 1: offline hands-on at YMC, the four sessions, and the registration link with a QR code."
               className="w-full rounded-2xl shadow-lg ring-1 ring-line"
             />
             <img
@@ -54,10 +54,10 @@ export default function BrochurePage() {
           </div>
           <div>
             <p className="text-sm font-semibold uppercase tracking-[0.16em] text-[#0e6157]">Participant registration · attend without CRE points</p>
-            <h2 className="mt-2 font-display text-2xl text-navy sm:text-3xl">Offline hands-on and online</h2>
+            <h2 className="mt-2 font-display text-2xl text-navy sm:text-3xl">Offline hands-on at YMC</h2>
             <p className="mt-3 max-w-md leading-7 text-muted">
-              A separate two-page brochure with the registration link and QR code, for everyone not claiming RCI CRE points: offline hands-on at
-              Yenepoya (Yenepoya colleges only) or online (open to all). {onlineProgramme.seats} seats in all; registration is open until{" "}
+              A separate two-page brochure with the registration link and QR code, for staff and students of Yenepoya colleges: offline hands-on in
+              the hall at YMC, with the live sessions projected. {onlineProgramme.seats} seats; registration is open until{" "}
               {onlineProgramme.closesLabel}. {onlineProgramme.noCreLine}
             </p>
             <div className="mt-5 flex flex-wrap gap-3">

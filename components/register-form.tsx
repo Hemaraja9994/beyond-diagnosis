@@ -6,7 +6,6 @@ import { AckActions } from "@/components/ack-actions";
 import { DocumentInput } from "@/components/document-input";
 import { RegistrationLinks } from "@/components/registration-links";
 import {
-  attendanceModes,
   isYenepoyaInstitution,
   onlineProfessions,
   onlineProgramme,
@@ -23,7 +22,7 @@ type FileField = "receipt" | "crrCertificate" | "rciConfirmation";
 
 /**
  * The registration form. track="online" is the Non-RCI CRE programme: no CRE question, no CRR number, a choice of
- * offline hands-on (Yenepoya colleges only) or online, categories for certifying doctors, psychologists, allied professionals and students,
+ * offline hands-on only (Yenepoya colleges), categories for certifying doctors, psychologists, allied professionals and students,
  * and it posts to its own endpoint.
  */
 export function RegisterForm({
@@ -46,9 +45,9 @@ export function RegisterForm({
   const [success, setSuccess] = useState<Success | null>(null);
   const [profession, setProfession] = useState("");
   const [claim, setClaim] = useState<"" | "yes" | "no">(online ? "no" : "");
-  const [attendance, setAttendance] = useState<AttendanceMode | "">("");
+  const attendance: AttendanceMode | "" = online ? "offline" : "";
   const [institution, setInstitution] = useState("");
-  const offlineNotYenepoya = online && attendance === "offline" && institution.trim().length > 2 && !isYenepoyaInstitution(institution);
+  const offlineNotYenepoya = online && institution.trim().length > 2 && !isYenepoyaInstitution(institution);
   const [files, setFiles] = useState<Partial<Record<FileField, File>>>({});
   const [fileErrors, setFileErrors] = useState<Partial<Record<FileField, string>>>({});
 
@@ -72,12 +71,8 @@ export function RegisterForm({
       setError(problem);
       return;
     }
-    if (online && attendance === "") {
-      setError("Choose how you will attend: offline hands-on or online.");
-      return;
-    }
-    if (online && attendance === "offline" && !isYenepoyaInstitution(institution)) {
-      setError(`${onlineProgramme.offlineRule} Write your Yenepoya college name, or choose online.`);
+    if (online && !isYenepoyaInstitution(institution)) {
+      setError(`${onlineProgramme.offlineRule} Write your Yenepoya college or department.`);
       return;
     }
     if (!files.receipt) {
@@ -201,26 +196,17 @@ export function RegisterForm({
         </fieldset>
 
         {online ? (
-          <fieldset className="card grid gap-4 p-5">
-            <legend className="float-left mb-1 w-full font-display text-lg text-navy">How you will attend</legend>
-            <p className="text-sm leading-6 text-muted">
-              {programme.dateLabel}, from {programme.start}. {onlineProgramme.noCreLine} Seats are limited to {onlineProgramme.seats} in all, first
-              registered, first served. Everyone receives an e-certificate of participation.
+          <div className="rounded-2xl bg-navy/5 px-4 py-3 text-sm leading-6 text-navy">
+            <p>
+              <strong>Offline hands-on at YMC.</strong> {programme.dateLabel}, from {programme.start}, at the {onlineProgramme.venue}.{" "}
+              {onlineProgramme.hallLine}
             </p>
-            <div className="grid gap-2 sm:grid-cols-2" role="radiogroup" aria-label="How you will attend">
-              {attendanceModes.map((mode) => (
-                <Choice key={mode.value} name="attendance" value={mode.value} checked={attendance === mode.value} onChange={() => setAttendance(mode.value)}>
-                  <strong className="block text-navy">{mode.label}</strong>
-                  <span className="text-muted">{mode.detail}</span>
-                </Choice>
-              ))}
-            </div>
-            {attendance === "offline" ? (
-              <p className="rounded-2xl bg-navy/5 px-4 py-2 text-sm leading-6 text-navy">
-                {onlineProgramme.offlineRule} Write your Yenepoya college below (for example, Yenepoya Medical College — BASLP).
-              </p>
-            ) : null}
-          </fieldset>
+            <p className="mt-1">
+              {onlineProgramme.offlineRule} {onlineProgramme.seats} seats, first registered, first served. {onlineProgramme.noCreLine} Everyone receives an
+              e-certificate of participation.
+            </p>
+            <input type="hidden" name="attendance" value="offline" />
+          </div>
         ) : (
         <fieldset className="card grid gap-4 p-5">
           <legend className="float-left mb-1 w-full font-display text-lg text-navy">RCI CRE points</legend>
@@ -265,15 +251,13 @@ export function RegisterForm({
           <legend className="float-left mb-1 w-full font-display text-lg text-navy">{online ? "Where you study, work or live" : "Where you work"}</legend>
           <Field label={online ? "Designation or course" : "Designation"} name="designation" hint={online ? "For example consultant neurologist, clinical psychologist, or BASLP 3rd year." : undefined} />
           <label className="grid gap-1 text-sm font-semibold text-navy">
-            {online ? (attendance === "offline" ? "Your Yenepoya college" : "College, workplace or town") : "Workplace"}
+            {online ? "Your Yenepoya college or department" : "Workplace"}
             <input className="field" name="institution" required value={institution} onChange={(event) => setInstitution(event.target.value)} />
             <span className={`font-normal ${offlineNotYenepoya ? "text-red-800" : "text-muted"}`}>
               {offlineNotYenepoya
-                ? "Offline hands-on is only for Yenepoya colleges. Write the Yenepoya college name, or choose online above."
+                ? "Participant registration is only for Yenepoya colleges. Write the Yenepoya college or department."
                 : online
-                  ? attendance === "offline"
-                    ? "The Yenepoya college where you study or work."
-                    : "Professionals: your hospital, clinic or workplace. Students: your college."
+                  ? "For example: Yenepoya Medical College — Dept. of Psychiatry, or Yenepoya Medical College — BASLP 3rd year."
                   : "A college, hospital, clinic, or private practice."}
             </span>
           </label>
@@ -315,7 +299,7 @@ export function RegisterForm({
         <fieldset className="card grid gap-4 p-5">
           <legend className="float-left mb-1 w-full font-display text-lg text-navy">Access and consent</legend>
           <label className="grid gap-1 text-sm font-semibold text-navy">
-            {online && attendance === "offline" ? "Access needs on the day" : "Access needs for the online session"}
+            {online ? "Access needs on the day" : "Access needs for the online session"}
             <textarea className="field min-h-24" name="accessNeeds" maxLength={500} />
           </label>
           <label className="flex items-start gap-3 text-sm leading-6">
@@ -357,7 +341,8 @@ function Confirmation({ success }: { success: Success }) {
       {success.online ? (
         <p className="mt-3 max-w-xl rounded-2xl bg-navy/5 px-4 py-3 text-sm leading-6 text-navy">
           {onlineProgramme.name} · {programme.dateLabel} · {programme.start} ·{" "}
-          {success.attendance === "offline" ? `offline hands-on at the ${onlineProgramme.venue}` : "online on Cisco Webex"}. {onlineProgramme.noCreLine}
+          {success.attendance === "offline" ? `offline hands-on at the ${onlineProgramme.venue}` : "online on Cisco Webex"}. {onlineProgramme.hallLine}{" "}
+          {onlineProgramme.noCreLine}
         </p>
       ) : null}
       {success.creMoved ? (

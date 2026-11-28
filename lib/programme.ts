@@ -66,8 +66,8 @@ export const programme = {
 /**
  * The Non-RCI CRE programme for people who are not claiming RCI CRE points — ASLP students, professionals not
  * on the CRR, and above all doctors and allied health professionals who certify disability. Same day and same fee as the RCI track, attended
- * either offline (hands-on, in person at Yenepoya — Yenepoya colleges only) or online on Cisco Webex (open to
- * all). Its own brochure, registration page and certificate (participation, no CRE points). Registration stays
+ * offline only: hands-on, in person in the hall at YMC, with the live Webex sessions projected from the
+ * coordinator's single login. Yenepoya colleges only. Its own brochure, registration page and certificate (participation, no CRE points). Registration stays
  * open on its own switch (desk → Settings) until closesAt or until `seats` registrations, whichever comes first.
  * (Internally the track is still called "online": source = "online".)
  */
@@ -77,21 +77,23 @@ export const onlineProgramme = {
   path: "/online",
   closesAt: "2026-12-10T23:59:59+05:30",
   closesLabel: "10 December 2026",
-  /** Registrations taken in all, offline and online together. A rejected payment gives the seat back. */
+  /** Seats in the hall. A rejected payment gives the seat back. */
   seats: 100,
-  brochurePdf: "/brochure/online-programme.pdf?v=5",
-  brochureImage: "/brochure/online-programme-1.png?v=5",
-  brochureImageBack: "/brochure/online-programme-2.png?v=5",
+  brochurePdf: "/brochure/online-programme.pdf?v=6",
+  brochureImage: "/brochure/online-programme-1.png?v=6",
+  brochureImageBack: "/brochure/online-programme-2.png?v=6",
   /** Separate number series, so no online certificate can be mistaken for a CRE one. */
   certificatePrefix: "YMC/ASLP/ONL/2026/",
-  certificateLine: "has participated in the Zonal Continuing Rehabilitation Education (CRE) programme (offline hands-on and online)",
+  certificateLine: "has participated in the Zonal Continuing Rehabilitation Education (CRE) programme (offline hands-on)",
   /** One line for banners and the page: why this registration exists. */
-  reasonLine: "RCI CRE places are full. Doctors and allied health professionals who certify disability — psychologists, neurologists, psychiatrists, paediatricians and others — and students can still take part.",
-  modeLine: "Offline hands-on and online",
+  reasonLine: "RCI CRE places are full. Staff and students of Yenepoya colleges — above all psychologists, neurologists, psychiatrists, paediatricians and other doctors and allied health professionals who certify disability — can still take part.",
+  /** How the day runs for participants. */
+  hallLine: "Offline hands-on in the hall — the live sessions are projected from Cisco Webex.",
+  modeLine: "Offline hands-on at YMC",
   noCreLine: "This programme does not carry RCI CRE points.",
   /** Where the offline hands-on runs, on the programme day. */
   venue: "4th floor, Academic Block, Yenepoya Medical College, Deralakatte, Mangaluru",
-  offlineRule: "Offline hands-on is only for students and staff of Yenepoya (Deemed to be University) colleges.",
+  offlineRule: "Participant registration is only for staff and students of Yenepoya (Deemed to be University) colleges.",
 } as const;
 
 /** How a Non-RCI CRE participant attends. "" for RCI-track rows (always online). */
@@ -114,7 +116,7 @@ export function attendanceLabel(mode: string): string {
 
 /** Where and how a participant attends, for emails and the acknowledgement. */
 export function attendanceWhere(row: { source: string; attendance?: string }): string {
-  if (row.source === "online" && row.attendance === "offline") return `offline hands-on, in person at the ${onlineProgramme.venue}`;
+  if (row.source === "online" && row.attendance === "offline") return `offline hands-on, in person at the ${onlineProgramme.venue} (the live sessions are projected in the hall)`;
   return "online on Cisco Webex";
 }
 
@@ -124,13 +126,11 @@ export function isYenepoyaInstitution(text: string): boolean {
 }
 
 export const onlineAudience = [
-  "Offline hands-on: students and staff of Yenepoya colleges",
-  "Online: open to all",
+  "Staff and students of Yenepoya colleges only",
   "Psychologists and other professionals who certify disability",
   "Doctors: neurologists, psychiatrists, paediatricians, ENT, PMR and others",
   "Allied health professionals, therapists and special educators",
-  "ASLP professionals not claiming CRE",
-  "ASLP students (BASLP, MASLP, interns)",
+  "ASLP staff and students (BASLP, MASLP, interns)",
 ] as const;
 
 export const committee = [

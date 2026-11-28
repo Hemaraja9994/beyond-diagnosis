@@ -36,7 +36,7 @@ const views: { id: View; label: string }[] = [
   { id: "confirmed", label: "Payment confirmed" },
   { id: "cre", label: "Claiming CRE" },
   { id: "rci-awaited", label: "RCI awaited" },
-  { id: "online", label: "Participants, no CRE (offline + online)" },
+  { id: "online", label: "Participants, no CRE (offline at YMC)" },
 ];
 
 /** Automatic-check badge colours. */
@@ -623,7 +623,7 @@ function SettingsTab({
             </select>
           </label>
           <label className="grid gap-1 text-sm font-semibold text-navy">
-            Participant registration (offline + online)
+            Participant registration (offline at YMC)
             <select className="field" name="onlineRegistrationOpen" defaultValue={onlineOpen ? "yes" : "no"}>
               <option value="yes">Open (until {onlineProgramme.closesLabel})</option>
               <option value="no">Closed</option>

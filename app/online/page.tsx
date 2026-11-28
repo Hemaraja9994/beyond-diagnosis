@@ -8,7 +8,7 @@ import { onlineRegistrationOpen } from "@/lib/settings";
 
 export const metadata: Metadata = {
   title: "Participant registration",
-  description: `Participant registration for ${programme.title} on ${programme.dateLabel}: offline hands-on at Yenepoya (Yenepoya colleges only) or online (open to all). ${onlineProgramme.seats} seats, until ${onlineProgramme.closesLabel}. ${onlineProgramme.noCreLine}`,
+  description: `Participant registration for ${programme.title} on ${programme.dateLabel}: offline hands-on at YMC for Yenepoya colleges. ${onlineProgramme.seats} seats, until ${onlineProgramme.closesLabel}. ${onlineProgramme.noCreLine}`,
 };
 export const dynamic = "force-dynamic";
 
@@ -24,10 +24,10 @@ export default async function OnlineProgrammePage() {
       <PageBanner
         kicker="Participant registration · attend without CRE points"
         title={open ? "Offline hands-on" : "Participant registration"}
-        accent={open ? "and online" : full ? "seats full" : "registration closed"}
+        accent={open ? "at YMC" : full ? "seats full" : "registration closed"}
         lede={
           open
-            ? `${onlineProgramme.reasonLine} The same four sessions on ${programme.dateLabel}, from ${programme.start} — attend offline, with hands-on practice, at Yenepoya Medical College (Yenepoya colleges only), or online on Cisco Webex (open to all). Pay ${programme.feeLabel} on Razorpay, then register below. ${seatsLeft} of ${onlineProgramme.seats} seats left · open until ${onlineProgramme.closesLabel}.`
+            ? `${onlineProgramme.reasonLine} The same four sessions on ${programme.dateLabel}, from ${programme.start}, at the ${onlineProgramme.venue}. ${onlineProgramme.hallLine} Pay ${programme.feeLabel} on Razorpay, then register below. ${seatsLeft} of ${onlineProgramme.seats} seats left · open until ${onlineProgramme.closesLabel}.`
             : full
               ? `All ${onlineProgramme.seats} participant seats are taken. Registered participants will receive the details for the day.`
               : `Participant registration has closed. Registered participants will receive the details for the day.`
@@ -68,9 +68,9 @@ export default async function OnlineProgrammePage() {
               </ul>
               <p className="mt-4 rounded-2xl bg-navy/5 px-3 py-2 text-sm font-semibold leading-6 text-navy">{onlineProgramme.noCreLine}</p>
               <p className="mt-2 text-sm leading-6 text-navy">
-                <strong>{onlineProgramme.seats} seats</strong> in all, offline and online together · last date {onlineProgramme.closesLabel}.
+                <strong>{onlineProgramme.seats} seats</strong> in the hall · last date {onlineProgramme.closesLabel}.
               </p>
-              <p className="mt-2 text-xs leading-5 text-muted">Offline venue: {onlineProgramme.venue}.</p>
+              <p className="mt-2 text-xs leading-5 text-muted">Venue: {onlineProgramme.venue}. {onlineProgramme.hallLine}</p>
               <p className="mt-2 text-xs leading-5 text-muted">Participants receive an e-certificate of participation after the programme.</p>
             </div>
           </div>

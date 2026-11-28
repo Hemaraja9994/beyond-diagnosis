@@ -334,7 +334,7 @@ async function render(spec: Spec, mode: "full" | "template" = "full"): Promise<{
       page,
       [
         [
-          { text: `organised by the ${programme.organiser}, ${programme.hospital}, ${programme.city}, held ${online ? "in person and online" : "online"} on`, font: body },
+          { text: `organised by the ${programme.organiser}, ${programme.hospital}, ${programme.city}, held ${online ? "in person" : "online"} on`, font: body },
           { text: `${programme.dateLabel}.`, font: strong },
         ],
       ],

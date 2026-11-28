@@ -107,7 +107,7 @@ export function SiteHeader() {
         >
           Participant registration open
           <span className="ml-2 font-semibold normal-case tracking-normal text-white/90">
-            · RCI CRE places are full — others can still take part · offline hands-on (Yenepoya colleges) and online · until {onlineProgramme.closesLabel} ›
+            · RCI CRE places are full — offline hands-on at YMC for Yenepoya colleges · {onlineProgramme.seats} seats · until {onlineProgramme.closesLabel} ›
           </span>
         </Link>
       ) : null}
