@@ -57,9 +57,38 @@ export const programme = {
    */
   registrationClosed: true,
   whatsappUrl: "https://chat.whatsapp.com/HUwQZlIs0zB90pSS3EC2r1",
+  /** Public address printed on brochures and in links shared outside the site. */
+  siteUrl: "https://yenepoya-cre.vercel.app",
   // Drop the official emblem at public/brand/yenepoya-emblem.svg.
   // Use a file supplied by the university. Do not download a logo from an image site.
 } as const;
+
+/**
+ * The regular online programme for people who are not claiming RCI CRE points — ASLP students, professionals
+ * not on the CRR, allied professionals, parents and caregivers. Same day, same Webex session and same fee as
+ * the RCI track, with its own brochure, registration page and certificate (participation, no CRE points).
+ * Registration stays open on its own switch (desk → Settings) until closesAt, whatever the RCI track shows.
+ */
+export const onlineProgramme = {
+  name: "Regular Online Programme",
+  shortName: "Online programme",
+  path: "/online",
+  closesAt: "2026-12-17T23:59:59+05:30",
+  closesLabel: "17 December 2026",
+  brochurePdf: "/brochure/online-programme.pdf?v=1",
+  brochureImage: "/brochure/online-programme-1.png?v=1",
+  brochureImageBack: "/brochure/online-programme-2.png?v=1",
+  /** Separate number series, so no online certificate can be mistaken for a CRE one. */
+  certificatePrefix: "YMC/ASLP/ONL/2026/",
+  noCreLine: "This programme does not carry RCI CRE points.",
+} as const;
+
+export const onlineAudience = [
+  "ASLP students (BASLP, MASLP, interns)",
+  "Professionals not registered with RCI",
+  "Doctors, therapists, special educators and psychologists",
+  "Parents and caregivers of persons with disabilities",
+] as const;
 
 export const committee = [
   { role: "Organising chairperson", names: ["Dr. Shwetha Prabhu"] },
@@ -139,9 +168,12 @@ export type Profession =
   | "occupational_therapist"
   | "rehabilitation_professional"
   | "other"
-  | "student";
+  | "student"
+  | "allied_health"
+  | "parent_caregiver";
 
-export type ArrivalSource = "rci" | "site" | "join" | "direct" | "desk";
+/** "online" marks the regular online programme (non-RCI track); every other value is the RCI CRE track. */
+export type ArrivalSource = "rci" | "site" | "join" | "direct" | "desk" | "online";
 
 export const titles = ["Dr.", "Prof.", "Mr.", "Ms.", "Mrs."] as const;
 export type Title = (typeof titles)[number];
@@ -158,6 +190,30 @@ export const professions: { value: Profession; label: string }[] = [
   { value: "other", label: "Other" },
   { value: "student", label: "Student" },
 ];
+
+/** Categories offered on the regular online programme form. */
+export const onlineProfessions: { value: Profession; label: string }[] = [
+  { value: "student", label: "ASLP student / intern" },
+  { value: "audiologist", label: "Audiologist (not claiming CRE)" },
+  { value: "speech_language_pathologist", label: "Speech-language pathologist (not claiming CRE)" },
+  { value: "allied_health", label: "Doctor / allied health professional" },
+  { value: "clinical_psychologist", label: "Psychologist" },
+  { value: "special_educator", label: "Special educator" },
+  { value: "occupational_therapist", label: "Occupational therapist" },
+  { value: "parent_caregiver", label: "Parent / caregiver" },
+  { value: "other", label: "Other" },
+];
+
+/** Every category the site accepts, from either form or the desk. */
+export const allProfessions: { value: Profession; label: string }[] = [
+  ...professions,
+  { value: "allied_health", label: "Doctor / allied health professional" },
+  { value: "parent_caregiver", label: "Parent / caregiver" },
+];
+
+export function isOnlineTrack(row: { source: string }): boolean {
+  return row.source === "online";
+}
 
 export function professionLabel(profession: Profession): string {
   switch (profession) {
@@ -177,6 +233,10 @@ export function professionLabel(profession: Profession): string {
       return "Other";
     case "student":
       return "Student";
+    case "allied_health":
+      return "Doctor / allied health professional";
+    case "parent_caregiver":
+      return "Parent / caregiver";
     default: {
       const unknown: never = profession;
       return unknown;
@@ -196,6 +256,8 @@ export function sourceLabel(source: ArrivalSource): string {
       return "Direct";
     case "desk":
       return "Added by a coordinator";
+    case "online":
+      return "Regular online programme (non-RCI)";
     default: {
       const unknown: never = source;
       return unknown;

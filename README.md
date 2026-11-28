@@ -31,6 +31,7 @@ Open http://127.0.0.1:3457. Without those two variables the public site still ru
 | `/faculty` | Resource persons |
 | `/department` | Organising department, services, and current staff |
 | `/registration` | Pay first, then register with payment ID + receipt (+ optional CRR certificate, RCI mail) |
+| `/online` | Regular online programme (non-RCI): separate registration for students, professionals not on the CRR, allied professionals, parents and caregivers |
 | `/registration/rci` | Upload the RCI confirmation mail later (claiming CRE points) |
 | `/registration/status` | Look up status with reference + email; download / WhatsApp the acknowledgement PDF |
 | `/registration/update` | Older registrations add title, CRR, receipt or files |
@@ -64,6 +65,16 @@ The desk can:
 - Site switches: number of CRE places, registration open/closed.
 - Coordinator guide: `public/guides/coordinator-desk-guide.pdf` (screenshots use sample data), linked from the desk.
 
+## Regular online programme (non-RCI track)
+
+For everyone not claiming RCI CRE points — ASLP students, professionals not registered with RCI, doctors and allied professionals, parents and caregivers. Same day, same Webex session and same fee (₹354 on Razorpay) as the RCI track.
+
+- Registration at `/online` (form posts to `/api/register/online`). No CRE question and no CRR number; the server saves every such registration as not claiming CRE, with source `online`. It has its own switch (desk → Settings → Online programme) and closes by itself after `onlineProgramme.closesAt` (17 December 2026), whatever the RCI-track switch says. Settings live in `onlineProgramme` in `lib/programme.ts`.
+- Desk: an "Online programme (non-RCI)" view and chip; "Add a registration" has a Programme track choice. Online registrations are not listed on the public Participants page (it is the RCI list with CRR numbers).
+- Acknowledgement and emails say "Regular Online Programme … does not carry RCI CRE points" in place of the RCI approval line.
+- Certificates: same design with both logos, the wording "has participated in the regular online programme", the line "This certificate does not carry RCI CRE points", and their own number series (`YMC/ASLP/ONL/2026/0001` …).
+- Brochure: `public/brochure/online-programme.pdf` (+ `-1.png`, `-2.png`), with the registration link and a QR code to `https://yenepoya-cre.vercel.app/online`. Rebuild with `python3 scripts/build-posters.py online`.
+
 ## Confirmation emails (free, through Gmail)
 
 Set `GMAIL_USER` (the sending Gmail — hemarajanayaka@gmail.com) and `GMAIL_APP_PASSWORD` (a Google App Password: 2-Step Verification on, then myaccount.google.com → Security → App passwords) in Vercel and redeploy. Participants then get: registration received (acknowledgement PDF attached), payment confirmed, and RCI registration confirmed — each once. Replies go to the conference address (yenepoyaaslpconference@gmail.com), and copies stay in the sending account's Sent folder. The desk shows whether email is on, a "Send pending emails" button for people who registered earlier, and "Resend confirmation" per participant. Gmail allows about 500 emails a day. Without the two variables nothing is sent and nothing fails.
@@ -74,7 +85,8 @@ If the university's Razorpay account can provide API keys, set `RAZORPAY_KEY_ID`
 
 ## E-certificates
 
-- **Participants** — Certificate of Participation for every registration whose payment is confirmed. Coordinators press **Release certificates** on the desk (Exports tab) from 19 December; until then participants see "will appear here after the programme" and a coordinator's preview is a SPECIMEN. Releasing numbers everyone in order of registration (`YMC/ASLP/CRE/2026/0001` …); a number never changes. Participants download from their status page (digital or print edition), share it, add it to LinkedIn, and get it by email (**Email certificates**, a dozen per press). The QR code opens `/verify/<reference>`, which confirms the certificate without showing contact or payment details.
+- **Participants** — Certificate of Participation for every registration whose payment is confirmed, with the college and RCI logos on either side of the seal. There is no QR code; the certificate number and date run along the foot. **Save certificates now** (desk → Exports, any day) numbers everyone eligible in order of registration (`YMC/ASLP/CRE/2026/0001` …, `YMC/ASLP/ONL/2026/0001` … for the online programme); a number never changes, and every certificate is dated the programme day. Participants see theirs only after **Release certificates** on 19 December; then they download from their status page (digital or print edition), share it, add it to LinkedIn, and get it by email (**Email certificates**, a dozen per press). `/verify/<reference>` (linked from the status page) confirms a certificate without showing contact or payment details.
+- **E-signatures in PowerPoint** — desk → Exports → "RCI CRE certificates — PowerPoint" / "Online programme certificates — PowerPoint" (`/api/admin/export/certificates-pptx?track=rci|online`): one A4 slide per participant. The certificate design is a picture on the slide master (`assets/certificate-templates/`), and the name, workplace and number line are editable text boxes. Add each signature once on the slide master (View → Slide Master → Insert → Pictures, just above its line) and it appears on every slide; then File → Save As → PDF. Slide notes carry each participant's reference and email. After changing the certificate design or wording, rebuild the pictures with `npx tsx scripts/build-certificate-templates.ts`.
 - **Resource persons** — Certificate of Appreciation for each speaker, from `sessions` in `lib/programme.ts` (RP-01 … RP-04). Desk → Exports → Resource persons.
 - **Editions** — *digital*: ivory sheet in a navy frame, scanned signatures where present. *print*: white paper area, frame inside the printer's safe margin, CMYK, empty signature lines for ink. Print at actual size on A4 certificate card (200–300 gsm).
 - **Signatures** — order and names in `certificateSignatories` (`lib/programme.ts`). Scanned signatures go in `public/brand/signatures/<key>.png` (transparent PNG, about 600 × 200 px): `swathi`, `rachana`, `shwetha`, `dean`.

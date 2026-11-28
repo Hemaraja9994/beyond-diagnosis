@@ -1,10 +1,21 @@
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 import fontkit from "@pdf-lib/fontkit";
-import { PDFDocument, cmyk, degrees, rgb, type Color, type PDFFont, type PDFImage, type PDFPage } from "pdf-lib";
-import QRCode from "qrcode";
-import { certificateNumberText, participantName, type IssuedCertificate } from "@/lib/certificates";
-import { certificateSignatories, programme, sessions } from "@/lib/programme";
+import {
+  PDFDocument,
+  cmyk,
+  concatTransformationMatrix,
+  degrees,
+  popGraphicsState,
+  pushGraphicsState,
+  rgb,
+  type Color,
+  type PDFFont,
+  type PDFImage,
+  type PDFPage,
+} from "pdf-lib";
+import { certificateIssueDate, certificateNumberText, participantName, rowCertificateNumber, type IssuedCertificate } from "@/lib/certificates";
+import { certificateSignatories, isOnlineTrack, onlineProgramme, programme, sessions } from "@/lib/programme";
 import type { Registration } from "@/lib/store";
 
 /**
@@ -15,8 +26,12 @@ import type { Registration } from "@/lib/store";
  *  print   – white paper area, frame kept inside the printer's safe margin, CMYK colours, empty signature
  *            lines for ink; print on 200–300 gsm cream or white certificate card at 100% (actual size)
  *
+ * Every certificate carries the college and RCI logos. The regular online programme (non-RCI track) has its own
+ * wording: no CRE approval line, and a line saying it carries no RCI CRE points. There is no QR code; the
+ * certificate number is printed along the foot.
+ *
  * Shared design: guilloche (security-print) border, corner rosettes, the university shield as a watermark,
- * a gold seal with ribbons, and a QR code. Type is Fraunces and Outfit — the website's own families — embedded
+ * and a gold seal with ribbons between the two logos. Type is Fraunces and Outfit — the website's own families — embedded
  * and subset. Everything except the logos is vector, so it prints sharply at any size.
  */
 const W = 841.89;
@@ -112,29 +127,73 @@ function loadAssets() {
 type Spec = {
   kind: Kind;
   edition: Edition;
+  /** "online" is the regular online programme (non-RCI): no CRE approval line. */
+  track: "rci" | "online";
   name: string;
   affiliation: string;
   number: string;
-  specimen: boolean;
   issuedAt: string;
-  qrUrl: string;
-  qrCaption: string;
   session?: string;
 };
 
-/** A participant's Certificate of Participation. Number 0 prints a SPECIMEN for desk previews. */
-export function certificatePdf(row: Registration, issued: IssuedCertificate, verifyUrl: string, edition: Edition = "digital"): Promise<Uint8Array> {
-  return render({
+export function participantAffiliation(row: Registration): string {
+  return [row.designation, row.institution].map((part) => part.trim()).filter(Boolean).join(", ");
+}
+
+/** A participant's Certificate of Participation. */
+/** The third argument (the old QR verification link) is no longer printed; it is kept so callers need not change. */
+export async function certificatePdf(row: Registration, issued: IssuedCertificate, _verifyUrl: string, edition: Edition = "digital"): Promise<Uint8Array> {
+  const result = await render({
     kind: "participation",
     edition,
+    track: isOnlineTrack(row) ? "online" : "rci",
     name: participantName(row),
-    affiliation: [row.designation, row.institution].map((part) => part.trim()).filter(Boolean).join(", "),
-    number: certificateNumberText(issued.number),
-    specimen: issued.number === 0,
-    issuedAt: issued.issuedAt,
-    qrUrl: verifyUrl,
-    qrCaption: "SCAN TO VERIFY",
+    affiliation: participantAffiliation(row),
+    number: rowCertificateNumber(row, issued),
+    issuedAt: certificateIssueDate(issued),
   });
+  return result.bytes;
+}
+
+/** The line along the foot of every certificate: its number and date (the PowerPoint export uses the same line). */
+export function certificateFooter(number: string, issuedAt: string, electronic: boolean): string {
+  return [`Certificate No. ${number}`, `Issued ${istDate(issuedAt)}`, electronic ? "Electronically issued" : ""].filter(Boolean).join("  ·  ");
+}
+
+/**
+ * Where the per-person parts sit on the page, in PDF points from the bottom-left (A4 landscape, 841.89 × 595.28).
+ * The PowerPoint export lays its editable text boxes over a picture of the template at these positions.
+ */
+export type CertificateLayout = {
+  width: number;
+  height: number;
+  nameBaseline: number;
+  nameMaxWidth: number;
+  nameStartSize: number;
+  nameMinSize: number;
+  affiliationBaseline: number;
+  affiliationMaxWidth: number;
+  footerBaseline: number;
+  signatures: { key: string; name: string; centre: number; lineY: number; width: number }[];
+};
+
+/**
+ * The participation certificate with every per-person part left out (name, workplace, number and date line,
+ * scanned signatures): the picture behind each slide of the PowerPoint export, and the layout to place them.
+ */
+export function certificateTemplatePdf(track: "rci" | "online", edition: Edition = "digital"): Promise<{ bytes: Uint8Array; layout: CertificateLayout }> {
+  return render(
+    {
+      kind: "participation",
+      edition,
+      track,
+      name: "",
+      affiliation: "",
+      number: "",
+      issuedAt: programme.sessionsOpenAt,
+    },
+    "template",
+  );
 }
 
 /** Resource persons, in session order: RP-01 … RP-04. */
@@ -146,23 +205,24 @@ export const resourcePersons = sessions.map((session, index) => ({
   time: `${session.time} ${session.meridiem}`,
 }));
 
-/** A resource person's Certificate of Appreciation. The QR opens the programme page that lists the session. */
-export function resourceCertificatePdf(person: (typeof resourcePersons)[number], origin: string, edition: Edition = "print"): Promise<Uint8Array> {
-  return render({
+/** A resource person's Certificate of Appreciation. */
+export async function resourceCertificatePdf(person: (typeof resourcePersons)[number], _origin: string, edition: Edition = "print"): Promise<Uint8Array> {
+  const result = await render({
     kind: "resource",
     edition,
+    track: "rci",
     name: person.name,
     affiliation: person.designation,
     number: `${certificateNumberText(1).replace(/0001$/, "")}${person.key}`,
-    specimen: false,
     issuedAt: `${programme.sessionsOpenAt.slice(0, 10)}T12:00:00+05:30`,
-    qrUrl: `${origin}/programme`,
-    qrCaption: "VIEW PROGRAMME",
     session: person.title,
   });
+  return result.bytes;
 }
 
-async function render(spec: Spec): Promise<Uint8Array> {
+async function render(spec: Spec, mode: "full" | "template" = "full"): Promise<{ bytes: Uint8Array; layout: CertificateLayout }> {
+  const template = mode === "template";
+  const online = spec.track === "online";
   const files = await loadAssets();
   const pdf = await PDFDocument.create();
   pdf.registerFontkit(fontkit);
@@ -181,10 +241,7 @@ async function render(spec: Spec): Promise<Uint8Array> {
   const rciLogo = await pdf.embedPng(files.rci);
   const shield = await pdf.embedPng(files.shield);
   const signatures =
-    spec.edition === "print" ? certificateSignatories.map(() => null) : await Promise.all(files.signatures.map((bytes) => (bytes ? pdf.embedPng(bytes).catch(() => null) : null)));
-  const qr = await pdf.embedPng(
-    await QRCode.toBuffer(spec.qrUrl, { type: "png", margin: 0, width: 360, errorCorrectionLevel: "M", color: { dark: "#0F214Aff", light: "#00000000" } }),
-  );
+    spec.edition === "print" || template ? certificateSignatories.map(() => null) : await Promise.all(files.signatures.map((bytes) => (bytes ? pdf.embedPng(bytes).catch(() => null) : null)));
 
   // Everything from here to save() is synchronous, so the palette cannot change mid-drawing.
   applyPalette(spec.edition);
@@ -192,24 +249,26 @@ async function render(spec: Spec): Promise<Uint8Array> {
   drawFrame(page);
   page.drawImage(shield, { x: W / 2 - 118, y: H / 2 - 168, width: 236, height: (shield.height / shield.width) * 236, opacity: spec.edition === "print" ? 0.06 : 0.075 });
 
-  // Header: college logo and the RCI logo side by side, then department and university
-  const logoW = 118;
+  // Header: the college logo on the left and the RCI logo on the right, level with the gold seal between them,
+  // then the department and university
+  const headCy = H - 100;
+  const sideX = 162;
+  const logoW = 124;
   const logoH = (logo.height / logo.width) * logoW;
-  const rciH = logoH * 0.92;
+  const rciH = 74;
   const rciW = (rciLogo.width / rciLogo.height) * rciH;
-  const gap = 26;
-  const pairW = logoW + gap + rciW;
-  const left = W / 2 - pairW / 2;
-  page.drawImage(logo, { x: left, y: H - 64 - logoH, width: logoW, height: logoH });
-  page.drawLine({ start: { x: left + logoW + gap / 2, y: H - 64 - logoH + 6 }, end: { x: left + logoW + gap / 2, y: H - 64 - 6 }, thickness: 0.6, color: gold });
-  page.drawImage(rciLogo, { x: left + logoW + gap, y: H - 64 - logoH + (logoH - rciH) / 2, width: rciW, height: rciH });
-  let y = H - 64 - logoH - 15;
+  page.drawImage(logo, { x: sideX - logoW / 2, y: headCy - logoH / 2, width: logoW, height: logoH });
+  page.drawImage(rciLogo, { x: W - sideX - rciW / 2, y: headCy - rciH / 2, width: rciW, height: rciH });
+  page.pushOperators(pushGraphicsState(), concatTransformationMatrix(0.75, 0, 0, 0.75, (W / 2) * 0.25, headCy * 0.25));
+  seal(page, W / 2, headCy, fonts);
+  page.pushOperators(popGraphicsState());
+  let y = headCy - 56;
   spaced(page, programme.organiser.toUpperCase(), W / 2, y, fonts.sansSemibold, 8.4, 1.5, navy);
   y -= 12.5;
   centre(page, `${programme.hospital} · ${programme.university}, ${programme.city}`, y, fonts.sans, 8.4, muted);
 
   // Title
-  y -= 42;
+  y -= 38;
   spaced(page, "CERTIFICATE", W / 2, y, fonts.displaySemibold, 34, 8.5, navy);
   y -= 27;
   centre(page, spec.kind === "resource" ? "of Appreciation" : "of Participation", y, fonts.displayItalic, 23, orange);
@@ -220,16 +279,19 @@ async function render(spec: Spec): Promise<Uint8Array> {
   y -= 24;
   centre(page, spec.kind === "resource" ? "This certificate is gratefully presented to" : "This is to certify that", y, fonts.textItalic, 12.5, muted);
   y -= 41;
+  const nameBaseline = y;
   const nameSize = fitSize(fonts.displayItalic, spec.name, 40, 580, 24);
-  centre(page, spec.name, y, fonts.displayItalic, nameSize, navy);
-  const nameWidth = Math.max(fonts.displayItalic.widthOfTextAtSize(spec.name, nameSize) + 56, 300);
+  if (!template) centre(page, spec.name, y, fonts.displayItalic, nameSize, navy);
+  // The template has no name, so its rule is drawn at a width that suits most names.
+  const nameWidth = template ? 440 : Math.max(fonts.displayItalic.widthOfTextAtSize(spec.name, nameSize) + 56, 300);
   y -= 11;
   page.drawLine({ start: { x: W / 2 - nameWidth / 2, y }, end: { x: W / 2 + nameWidth / 2, y }, thickness: 0.7, color: gold });
   diamond(page, W / 2 - nameWidth / 2, y, 2.6, gold);
   diamond(page, W / 2 + nameWidth / 2, y, 2.6, gold);
   diamond(page, W / 2, y, 3.4, orange);
   y -= 15;
-  if (spec.affiliation) centre(page, clip(fonts.sans, spec.affiliation, 9.6, 600), y, fonts.sans, 9.6, muted);
+  const affiliationBaseline = y;
+  if (spec.affiliation && !template) centre(page, clip(fonts.sans, spec.affiliation, 9.6, 600), y, fonts.sans, 9.6, muted);
 
   // Citation
   const body = fonts.text;
@@ -258,7 +320,15 @@ async function render(spec: Spec): Promise<Uint8Array> {
     y -= 6;
   } else {
     y -= 22;
-    y = richCentred(page, [[{ text: "has participated in the Zonal Continuing Rehabilitation Education (CRE) programme", font: body }]], y, 11.3, 16, 640, ink);
+    y = richCentred(
+      page,
+      [[{ text: online ? `has participated in the ${onlineProgramme.name.toLowerCase()}` : "has participated in the Zonal Continuing Rehabilitation Education (CRE) programme", font: body }]],
+      y,
+      11.3,
+      16,
+      640,
+      ink,
+    );
     y = richCentred(page, [[{ text: programmeName, font: strong }]], y, 11.3, 16, 600, navy);
     y = richCentred(
       page,
@@ -276,51 +346,43 @@ async function render(spec: Spec): Promise<Uint8Array> {
     );
   }
 
-  // RCI approval of the programme
+  // RCI approval of the programme (the online programme instead says it carries no CRE points)
   y -= 16;
   centre(
     page,
-    `Approved by the Rehabilitation Council of India  ·  Letter F. No. ${programme.rciFileNo}  ·  ${programme.level} CRE, ${programme.rciHours} hours  ·  Institute code ${programme.instituteCode}`,
+    online
+      ? `${onlineProgramme.name} (non-RCI)  ·  This certificate does not carry RCI CRE points  ·  ${programme.mode}, ${programme.language}`
+      : `Approved by the Rehabilitation Council of India  ·  Letter F. No. ${programme.rciFileNo}  ·  ${programme.level} CRE, ${programme.rciHours} hours  ·  Institute code ${programme.instituteCode}`,
     y,
     fonts.sansSemibold,
     8.4,
     navy,
   );
 
-  // Seal and QR flank the header; the signatures run along the bottom
-  seal(page, 152, 466, fonts);
-  verification(page, W - 152, 436, qr, spec.number, spec.qrCaption, fonts);
+  // The signatures run along the bottom
   const span = W - 2 * 92;
   const column = span / certificateSignatories.length;
   certificateSignatories.forEach((person, index) => {
     signatureBlock(page, 92 + column * (index + 0.5), 106, signatures[index], person, column - 26, fonts);
   });
+  const layout: CertificateLayout = {
+    width: W,
+    height: H,
+    nameBaseline,
+    nameMaxWidth: 580,
+    nameStartSize: 40,
+    nameMinSize: 24,
+    affiliationBaseline,
+    affiliationMaxWidth: 600,
+    footerBaseline: 57,
+    signatures: certificateSignatories.map((person, index) => ({ key: person.key, name: person.name, centre: 92 + column * (index + 0.5), lineY: 106, width: column - 26 })),
+  };
+  if (template) return { bytes: await pdf.save(), layout };
 
   // Footer microtext, inside the frame
-  const footer = [
-    `Certificate No. ${spec.number}`,
-    `Issued ${istDate(spec.issuedAt)}`,
-    spec.kind === "participation" ? (spec.edition === "print" ? "Verify with the QR code" : "Electronically issued; verify with the QR code") : "",
-  ].filter(Boolean);
-  centre(page, footer.join("  ·  "), 57, fonts.sans, 6.6, muted);
+  centre(page, certificateFooter(spec.number, spec.issuedAt, spec.kind === "participation" && spec.edition === "digital"), 57, fonts.sans, 7, muted);
 
-  if (spec.specimen) {
-    const word = "SPECIMEN";
-    const size = 120;
-    const width = fonts.displaySemibold.widthOfTextAtSize(word, size);
-    const rad = Math.atan2(H, W);
-    page.drawText(word, {
-      x: W / 2 - (width / 2) * Math.cos(rad) + (size / 3) * Math.sin(rad),
-      y: H / 2 - (width / 2) * Math.sin(rad) - (size / 3) * Math.cos(rad),
-      size,
-      font: fonts.displaySemibold,
-      color: orange,
-      opacity: 0.12,
-      rotate: degrees((rad * 180) / Math.PI),
-    });
-  }
-
-  return pdf.save();
+  return { bytes: await pdf.save(), layout };
 }
 
 /* ------------------------------------------------------------------ */
@@ -486,13 +548,6 @@ function signatureBlock(
   centreAt(page, person.place, cx, lineY - 37, fonts.sans, 8, muted);
 }
 
-function verification(page: PDFPage, cx: number, bottom: number, qr: PDFImage, number: string, caption: string, fonts: Fonts) {
-  const size = 62;
-  page.drawRectangle({ x: cx - size / 2 - 5, y: bottom - 5, width: size + 10, height: size + 10, borderColor: goldLight, borderWidth: 0.6, color: paper });
-  page.drawImage(qr, { x: cx - size / 2, y: bottom, width: size, height: size });
-  centreAt(page, caption, cx, bottom - 17, fonts.sansSemibold, 6.8, navy, 1.2);
-  centreAt(page, number, cx, bottom - 28, fonts.sans, 7.4, muted);
-}
 
 /* ------------------------------------------------------------------ */
 /* Type helpers                                                         */

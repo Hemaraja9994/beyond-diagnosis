@@ -1262,3 +1262,144 @@ body {
 .poster .foot {
   padding-top: 26px;
 }
+
+/* Regular online programme brochure: registration link and QR code */
+.reg-strip {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 24px;
+  margin: 20px 0 0;
+  border-radius: 22px;
+  background: var(--navy);
+  color: #fff;
+  padding: 18px 26px;
+}
+
+.reg-strip .qr {
+  width: 132px;
+  height: 132px;
+  border-radius: 12px;
+  background: #fff;
+  padding: 6px;
+}
+
+.reg-strip .kicker {
+  color: var(--gold);
+  font-family: "Oswald", sans-serif;
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.reg-strip .link {
+  margin-top: 4px;
+  font-family: "Oswald", sans-serif;
+  font-size: 40px;
+  font-weight: 700;
+  line-height: 1.05;
+  letter-spacing: 0.01em;
+}
+
+.reg-strip .link b {
+  color: var(--gold);
+}
+
+.reg-strip .note {
+  margin-top: 8px;
+  color: rgba(255, 255, 255, 0.86);
+  font-size: 15px;
+  line-height: 1.45;
+}
+
+.reg-strip .note b {
+  color: #fff;
+}
+
+.info .small-note {
+  margin-top: 14px;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+/* Online brochure fit: room for the registration strip */
+.online .reg-strip {
+  gap: 20px;
+  margin-top: 16px;
+  padding: 12px 22px;
+}
+
+.online .reg-strip .qr {
+  width: 108px;
+  height: 108px;
+}
+
+.online .reg-strip .kicker {
+  font-size: 16px;
+}
+
+.online .reg-strip .link {
+  font-size: 34px;
+}
+
+.online .reg-strip .note {
+  margin-top: 4px;
+  font-size: 14px;
+}
+
+.online .sessions {
+  gap: 12px;
+}
+
+.online.team .team-row {
+  margin-top: 18px;
+}
+
+.online.team .team-row .face {
+  width: 136px;
+  height: 136px;
+}
+
+.online .info .in {
+  min-height: 0;
+  padding: 18px 24px 20px;
+}
+
+.online .info .big {
+  font-size: 28px;
+}
+
+/* Online (non-RCI) brochure colours: deep teal, rose and sunflower, so it is never mistaken for the RCI flyer */
+.sheet.online {
+  --navy: #06302c;
+  --navy-2: #0e6157;
+  --orange: #c2185b;
+  --flare: #ec407a;
+  --gold: #fdd835;
+  --teal: #00897b;
+  --paper: #f1faf7;
+}
+
+.sheet.online .reg-strip {
+  background: linear-gradient(120deg, #06302c 0%, #0e6157 100%);
+  outline: 3px solid var(--gold);
+  outline-offset: -3px;
+}
+
+.sheet.online .badge-nonrci {
+  position: absolute;
+  top: 196px;
+  right: 44px;
+  border-radius: 999px;
+  background: var(--gold);
+  color: #06302c;
+  font-family: "Oswald", sans-serif;
+  font-size: 19px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  padding: 8px 20px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+  z-index: 5;
+}

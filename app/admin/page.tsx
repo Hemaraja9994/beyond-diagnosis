@@ -7,11 +7,11 @@ import { adminReady, currentAdmin, deskUser, participantToken, type DeskUser } f
 import { mailSetup } from "@/lib/mail";
 import { mailsDue } from "@/lib/notify";
 import { rciReminderDue } from "@/lib/rci-reminder";
-import { afterSessionsOpen, deskAccounts, deskCoordinatorLine, professionLabel, programme, sourceLabel, type ArrivalSource, type Profession } from "@/lib/programme";
+import { afterSessionsOpen, deskAccounts, deskCoordinatorLine, isOnlineTrack, onlineProgramme, professionLabel, programme, sourceLabel, type ArrivalSource, type Profession } from "@/lib/programme";
 import { docLabels, type DocKind } from "@/lib/proof";
 import { paymentState, paymentText, rciState, rciText } from "@/lib/status";
 import { deskNumbers, type DeskNumbers } from "@/lib/seats";
-import { creSeatLimit, registrationOpen } from "@/lib/settings";
+import { creSeatLimit, onlineRegistrationOpen, registrationOpen } from "@/lib/settings";
 import { certificateEligible, certificateNumberText, certificatesSwitchOn } from "@/lib/certificates";
 import { getDeskPasswordHash, getMeetingUrl, listQueries, listRegistrations, storageMode, type Registration } from "@/lib/store";
 import { statusLabel, type VerificationStatus } from "@/lib/verify-types";
@@ -20,7 +20,7 @@ export const metadata: Metadata = { title: "Coordinator desk", robots: { index: 
 export const dynamic = "force-dynamic";
 
 type Tab = "registrations" | "exports" | "bulk" | "queries" | "settings";
-type View = "all" | "attention" | "confirmed" | "cre" | "rci-awaited";
+type View = "all" | "attention" | "confirmed" | "cre" | "rci-awaited" | "online";
 
 const tabs: { id: Tab; label: string }[] = [
   { id: "registrations", label: "Registrations" },
@@ -36,6 +36,7 @@ const views: { id: View; label: string }[] = [
   { id: "confirmed", label: "Payment confirmed" },
   { id: "cre", label: "Claiming CRE" },
   { id: "rci-awaited", label: "RCI awaited" },
+  { id: "online", label: "Online programme (non-RCI)" },
 ];
 
 /** Automatic-check badge colours. */
@@ -57,7 +58,7 @@ const chip = "inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-s
 const smallButton = "inline-flex min-h-9 items-center rounded-full border border-line px-3 text-xs font-semibold";
 
 function needsAttention(row: Registration): boolean {
-  return paymentState(row) !== "confirmed" || rciState(row) === "submitted" || row.creClaim === "";
+  return paymentState(row) !== "confirmed" || rciState(row) === "submitted" || (row.creClaim === "" && !isOnlineTrack(row));
 }
 
 function inView(row: Registration, view: View): boolean {
@@ -70,6 +71,8 @@ function inView(row: Registration, view: View): boolean {
       return row.creClaim === "yes";
     case "rci-awaited":
       return rciState(row) === "awaited" || rciState(row) === "submitted";
+    case "online":
+      return isOnlineTrack(row);
     default:
       return true;
   }
@@ -107,7 +110,7 @@ export default async function AdminPage({
   const view: View = views.some((item) => item.id === params.view) ? (params.view as View) : "all";
   const q = params.q ?? "";
 
-  const [registrations, queries, meeting, passwordsSet, seatLimit, isOpen, certificatesOn] = await Promise.all([
+  const [registrations, queries, meeting, passwordsSet, seatLimit, isOpen, certificatesOn, onlineOpen] = await Promise.all([
     listRegistrations(),
     listQueries(),
     getMeetingUrl(),
@@ -115,6 +118,7 @@ export default async function AdminPage({
     creSeatLimit(),
     registrationOpen(),
     certificatesSwitchOn(),
+    onlineRegistrationOpen(),
   ]);
   const mail = mailSetup();
   const ownIndex = deskAccounts.findIndex((account) => user.id === `user:${account.username}`);
@@ -134,7 +138,10 @@ export default async function AdminPage({
               Coordinator guide (PDF)
             </a>
             <a className={`${chip} ${isOpen ? tone.ok : tone.stop}`} href={deskHref("settings")}>
-              Registration {isOpen ? "open" : "closed"}
+              RCI registration {isOpen ? "open" : "closed"}
+            </a>
+            <a className={`${chip} ${onlineOpen ? tone.ok : tone.stop}`} href={deskHref("settings")}>
+              Online programme {onlineOpen ? `open until ${onlineProgramme.closesLabel}` : "closed"}
             </a>
             <a className={`${chip} ${tone.ok}`} href={programme.rciCalendarUrl} target="_blank" rel="noopener noreferrer" title="Open the RCI CRE calendar">
               Approved by RCI · F. No. {programme.rciFileNo} · {programme.rciHours} hours
@@ -205,7 +212,7 @@ export default async function AdminPage({
         {tab === "bulk" ? <BulkTab message={params.bulk} /> : null}
         {tab === "queries" ? <QueriesTab queries={queries} /> : null}
         {tab === "settings" ? (
-          <SettingsTab user={user} passwordsSet={passwordsSet} message={params.password} meeting={meeting} mail={mail} seatLimit={seatLimit} isOpen={isOpen} />
+          <SettingsTab user={user} passwordsSet={passwordsSet} message={params.password} meeting={meeting} mail={mail} seatLimit={seatLimit} isOpen={isOpen} onlineOpen={onlineOpen} />
         ) : null}
       </div>
     </div>
@@ -242,7 +249,7 @@ function RegistrationsTab({
 
   return (
     <section id="registrations" className="grid gap-4" aria-label="Registrations">
-      <ul className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-5">
+      <ul className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-6">
         {views.map((item) => {
           const count = registrations.filter((row) => inView(row, item.id)).length;
           const active = item.id === view;
@@ -398,6 +405,8 @@ function CertificatesPanel({ registrations, switchOn, mailOn }: { registrations:
   const live = switchOn && dayOpen;
   const eligible = registrations.filter(certificateEligible);
   const numbered = eligible.filter((row) => row.deskReview?.certificate).length;
+  const onlineEligible = eligible.filter(isOnlineTrack).length;
+  const rciEligible = eligible.length - onlineEligible;
   const emailed = eligible.filter((row) => row.deskReview?.mailed?.certificate).length;
   const sample = eligible[0];
   const button = "min-h-11 rounded-full px-5 font-semibold";
@@ -408,11 +417,15 @@ function CertificatesPanel({ registrations, switchOn, mailOn }: { registrations:
           <h2 className="font-display text-2xl text-navy">E-certificates</h2>
           <p className="mt-1 max-w-3xl text-sm leading-6 text-muted">
             A Certificate of Participation for everyone whose payment is confirmed, signed by the organising secretaries, the organising chairperson and the
-            Principal &amp; Dean. Each has its own number and a QR code that confirms it online.
+            Principal &amp; Dean, with the college and RCI logos. Each has its own number, printed along the foot.
           </p>
           <p className="mt-1 max-w-3xl text-sm font-semibold leading-6 text-navy">
-            Carries the RCI logo and the approval: Approved by the Rehabilitation Council of India, letter F. No. {programme.rciFileNo}, {programme.level.toLowerCase()} CRE,{" "}
-            {programme.rciHours} hours, institute code {programme.instituteCode}.
+            RCI CRE track: carries the RCI logo and the approval — Approved by the Rehabilitation Council of India, letter F. No. {programme.rciFileNo},{" "}
+            {programme.level.toLowerCase()} CRE, {programme.rciHours} hours, institute code {programme.instituteCode}.
+          </p>
+          <p className="mt-1 max-w-3xl text-sm leading-6 text-muted">
+            {onlineProgramme.name} (non-RCI): no RCI logo, its own number series ({certificateNumberText(1, true)} onwards) and the line “This certificate does not
+            carry RCI CRE points”.
           </p>
         </div>
         <span className={`${chip} ${live ? tone.ok : tone.wait}`}>{live ? "Released to participants" : switchOn ? `Releases on ${programme.dateLabel}` : "Not released"}</span>
@@ -420,7 +433,7 @@ function CertificatesPanel({ registrations, switchOn, mailOn }: { registrations:
       <dl className="mt-4 grid grid-cols-3 gap-3 text-center sm:max-w-lg">
         {[
           ["Eligible", eligible.length],
-          ["Numbered", numbered],
+          ["Saved", numbered],
           ["Emailed", emailed],
         ].map(([label, value]) => (
           <div key={label} className="rounded-2xl bg-navy/5 px-3 py-2">
@@ -430,6 +443,12 @@ function CertificatesPanel({ registrations, switchOn, mailOn }: { registrations:
         ))}
       </dl>
       <div className="mt-4 flex flex-wrap items-center gap-3">
+        <form action="/api/admin/certificates" method="post">
+          <input type="hidden" name="action" value="save" />
+          <button className={`${button} bg-navy text-white disabled:opacity-50`} type="submit" disabled={eligible.length === 0 || numbered >= eligible.length}>
+            {numbered >= eligible.length && eligible.length > 0 ? "All certificates saved" : `Save certificates now${eligible.length > numbered ? ` (${eligible.length - numbered})` : ""}`}
+          </button>
+        </form>
         {sample ? (
           <a className={`${button} inline-flex items-center border border-line`} href={`/api/certificate/${sample.reference}`} target="_blank" rel="noopener noreferrer">
             Preview a certificate
@@ -448,21 +467,36 @@ function CertificatesPanel({ registrations, switchOn, mailOn }: { registrations:
           </button>
         </form>
       </div>
-      {live ? (
-        <p className="mt-3 flex flex-wrap gap-4 text-sm font-semibold">
+      <div className="mt-4 grid gap-3 rounded-2xl bg-navy/5 p-4">
+        <h3 className="font-semibold text-navy">For e-signatures — PowerPoint</h3>
+        <p className="text-sm leading-6 text-muted">
+          One A4 slide per participant, in certificate-number order. Open in PowerPoint → <strong>View → Slide Master</strong> → click the top (master) slide →{" "}
+          <strong>Insert → Pictures</strong> and place each signature (transparent PNG) just above its line: it then appears on every certificate in the file. Close
+          the master view, check a few slides, then <strong>File → Save As → PDF</strong>. Names and workplaces are editable text boxes; the reference and email of
+          each participant are in the slide notes.
+        </p>
+        <p className="flex flex-wrap gap-4 text-sm font-semibold">
+          <a className={`text-green underline ${rciEligible === 0 ? "pointer-events-none opacity-50" : ""}`} href="/api/admin/export/certificates-pptx?track=rci">
+            RCI CRE certificates — PowerPoint ({rciEligible}) ↓
+          </a>
+          <a className={`text-green underline ${onlineEligible === 0 ? "pointer-events-none opacity-50" : ""}`} href="/api/admin/export/certificates-pptx?track=online">
+            Online programme certificates — PowerPoint ({onlineEligible}) ↓
+          </a>
+        </p>
+        <p className="flex flex-wrap gap-4 text-sm font-semibold">
           <a className="text-green underline" href="/api/admin/export/certificates">
-            Download all — digital (ZIP)
+            All — digital PDFs (ZIP)
           </a>
           <a className="text-green underline" href="/api/admin/export/certificates?edition=print">
-            Download all — print edition (ZIP)
+            All — print edition PDFs (ZIP)
           </a>
         </p>
-      ) : (
-        <p className="mt-3 text-xs leading-5 text-muted">
-          Before release, “Preview” shows a SPECIMEN and uses no number. Releasing numbers everyone eligible in order of registration
-          ({certificateNumberText(1)} onwards); people confirmed later get the next number. Emails go out about a dozen at a time — press again until done.
-        </p>
-      )}
+      </div>
+      <p className="mt-3 text-xs leading-5 text-muted">
+        “Save certificates now” gives everyone eligible a fixed number in order of registration ({certificateNumberText(1)} onwards; {certificateNumberText(1, true)} for the
+        online programme) and dates every certificate {programme.dateLabel.replace(/^\w+, /, "")}. Participants can download only after “Release certificates” on the programme day.
+        People confirmed later get the next number — export again to include them. Emails go out about a dozen at a time — press again until done.
+      </p>
       <div className="mt-5 border-t border-line pt-4">
         <h3 className="font-semibold text-navy">Resource persons — Certificates of Appreciation</h3>
         <p className="mt-1 text-sm leading-6 text-muted">One page for each speaker, in session order, with the RCI logo and approval letter number. Print the print edition on A4 certificate card at actual size and sign in ink.</p>
@@ -554,6 +588,7 @@ function SettingsTab({
   mail,
   seatLimit,
   isOpen,
+  onlineOpen,
 }: {
   user: DeskUser;
   passwordsSet: boolean[];
@@ -562,6 +597,7 @@ function SettingsTab({
   mail: ReturnType<typeof mailSetup>;
   seatLimit: number;
   isOpen: boolean;
+  onlineOpen: boolean;
 }) {
   return (
     <div className="grid gap-4">
@@ -576,9 +612,16 @@ function SettingsTab({
             <input className="field w-28" name="creSeats" type="number" min={0} max={2000} defaultValue={seatLimit} />
           </label>
           <label className="grid gap-1 text-sm font-semibold text-navy">
-            Registration
+            RCI CRE registration
             <select className="field" name="registrationOpen" defaultValue={isOpen ? "yes" : "no"}>
               <option value="yes">Open</option>
+              <option value="no">Closed</option>
+            </select>
+          </label>
+          <label className="grid gap-1 text-sm font-semibold text-navy">
+            Online programme (non-RCI)
+            <select className="field" name="onlineRegistrationOpen" defaultValue={onlineOpen ? "yes" : "no"}>
+              <option value="yes">Open (until {onlineProgramme.closesLabel})</option>
               <option value="no">Closed</option>
             </select>
           </label>
@@ -695,6 +738,8 @@ function RegistrationCard({ row, token }: { row: Registration; token: string | n
               <span className={`${chip} ${rci === "confirmed" ? tone.ok : rci === "rejected" ? tone.stop : tone.wait}`}>
                 CRE · {rci === "confirmed" ? "RCI confirmed" : rci === "rejected" ? "RCI rejected" : rci === "submitted" ? "RCI to review" : "RCI awaited"}
               </span>
+            ) : isOnlineTrack(row) ? (
+              <span className={`${chip} bg-teal-100 text-teal-900`}>Online programme · non-RCI</span>
             ) : (
               <span className={`${chip} ${row.creClaim === "" ? tone.wait : tone.none}`}>{row.creClaim === "no" ? "Not claiming CRE" : "CRE not stated"}</span>
             )}

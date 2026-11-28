@@ -1,15 +1,15 @@
 import type { Metadata } from "next";
 import { PageBanner } from "@/components/page-banner";
 import { certificateCodeOk } from "@/lib/admin";
-import { certificateEligible, certificateNumberText, certificatesReleased, participantName } from "@/lib/certificates";
-import { certificateSignatories, programme } from "@/lib/programme";
+import { certificateEligible, certificateIssueDate, rowCertificateNumber, certificatesReleased, participantName } from "@/lib/certificates";
+import { certificateSignatories, isOnlineTrack, onlineProgramme, programme } from "@/lib/programme";
 import { getRegistration } from "@/lib/store";
 
 export const metadata: Metadata = { title: "Verify a certificate", robots: { index: false, follow: false } };
 export const dynamic = "force-dynamic";
 
 /**
- * Opened from the QR code on an e-certificate. Confirms that the certificate was issued by the department
+ * Opened from the verification link shared with an e-certificate. Confirms that the certificate was issued by the department
  * and shows only what is printed on it — never the participant's email, phone or payment.
  */
 export default async function VerifyPage({
@@ -32,7 +32,7 @@ export default async function VerifyPage({
         <PageBanner kicker="Certificate check" title="Not" accent="verified" lede="This link does not match a certificate issued for this programme." />
         <div className="mx-auto max-w-3xl px-4 py-10 text-sm leading-6 text-muted">
           <p>
-            Scan the QR code on the certificate again, or write to{" "}
+            Open the verification link from your status page again, or write to{" "}
             <a className="font-semibold text-green underline" href={`mailto:${programme.email}`}>
               {programme.email}
             </a>{" "}
@@ -45,13 +45,13 @@ export default async function VerifyPage({
 
   const rows: [string, string][] = [
     ["Awarded to", participantName(row)],
-    ["Certificate No.", certificateNumberText(issued.number)],
+    ["Certificate No.", rowCertificateNumber(row, issued)],
     ["Certificate", "Participation"],
     ["Programme", `${programme.title}: ${programme.subtitle}`],
-    ["Type", `${programme.level} Continuing Rehabilitation Education (CRE), online`],
+    ["Type", isOnlineTrack(row) ? `${onlineProgramme.name} (non-RCI) — ${onlineProgramme.noCreLine}` : `${programme.level} Continuing Rehabilitation Education (CRE), online`],
     ["Held on", programme.dateLabel],
     ["Issued by", `${programme.organiser}, ${programme.hospital}, ${programme.university}`],
-    ["Issued on", new Date(issued.issuedAt).toLocaleDateString("en-IN", { timeZone: "Asia/Kolkata", day: "numeric", month: "long", year: "numeric" })],
+    ["Issued on", new Date(certificateIssueDate(issued)).toLocaleDateString("en-IN", { timeZone: "Asia/Kolkata", day: "numeric", month: "long", year: "numeric" })],
     ["Signed by", certificateSignatories.map((person) => `${person.name} (${person.role})`).join(" · ")],
   ];
 

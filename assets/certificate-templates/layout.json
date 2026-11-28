@@ -1,0 +1,41 @@
+{
+  "width": 841.89,
+  "height": 595.28,
+  "nameBaseline": 281.78,
+  "nameMaxWidth": 580,
+  "nameStartSize": 40,
+  "nameMinSize": 24,
+  "affiliationBaseline": 255.77999999999997,
+  "affiliationMaxWidth": 600,
+  "footerBaseline": 57,
+  "signatures": [
+    {
+      "key": "swathi",
+      "name": "Ms. Swathi Chinnasamy",
+      "centre": 174.23624999999998,
+      "lineY": 106,
+      "width": 138.4725
+    },
+    {
+      "key": "rachana",
+      "name": "Ms. Rachana R Uchil",
+      "centre": 338.70875,
+      "lineY": 106,
+      "width": 138.4725
+    },
+    {
+      "key": "shwetha",
+      "name": "Dr. Shwetha Prabhu",
+      "centre": 503.18125,
+      "lineY": 106,
+      "width": 138.4725
+    },
+    {
+      "key": "dean",
+      "name": "Dr. Prakash R Saldanha",
+      "centre": 667.65375,
+      "lineY": 106,
+      "width": 138.4725
+    }
+  ]
+}

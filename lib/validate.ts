@@ -1,4 +1,4 @@
-import { professions, states, titles, type ArrivalSource, type CreClaim, type Profession, type Title } from "@/lib/programme";
+import { allProfessions, states, titles, type ArrivalSource, type CreClaim, type Profession, type Title } from "@/lib/programme";
 
 export type RegistrationDraft = {
   title: Title;
@@ -25,9 +25,9 @@ export type QueryDraft = {
   message: string;
 };
 
-const professionValues = new Set<string>(professions.map((item) => item.value));
+const professionValues = new Set<string>(allProfessions.map((item) => item.value));
 const stateValues = new Set<string>(states);
-const sources = new Set<string>(["rci", "site", "join", "direct", "desk"]);
+const sources = new Set<string>(["rci", "site", "join", "direct", "desk", "online"]);
 const titleValues = new Set<string>(titles);
 
 /** Turn the text fields of a multipart form into a plain record (files are read separately). */
@@ -128,7 +128,7 @@ export function parseRegistration(body: unknown): { value: RegistrationDraft } |
   }
   if (accessNeeds.length > 500) return { error: "Shorten the note on access needs to 500 characters." };
   if (!sources.has(sourceRaw)) return { error: "The registration source was not recognised." };
-  if (!consent) return { error: "Confirm that the details may be kept for this CRE programme." };
+  if (!consent) return { error: "Confirm that the details may be kept for this programme." };
 
   const profession = professionRaw as Profession;
   const source = sourceRaw as ArrivalSource;
@@ -151,6 +151,16 @@ export function parseRegistration(body: unknown): { value: RegistrationDraft } |
       consent,
     },
   };
+}
+
+/**
+ * The regular online programme form: the same checks, with no RCI CRE claim and no CRR number. The track is
+ * fixed here on the server, so the form cannot place anyone on the RCI list.
+ */
+export function parseOnlineRegistration(body: unknown): { value: RegistrationDraft } | { error: string } {
+  const record = asRecord(body);
+  if (!record) return { error: "The registration could not be read." };
+  return parseRegistration({ ...record, creClaim: "no", crrNumber: "", source: "online" });
 }
 
 export function parseQuery(body: unknown): { value: QueryDraft } | { error: string } {

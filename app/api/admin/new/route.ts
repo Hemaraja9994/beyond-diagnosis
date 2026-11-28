@@ -25,6 +25,8 @@ export async function POST(request: Request) {
   const parsed = parseDeskEdit(formRecord(form));
   if ("error" in parsed) return back(parsed.error);
   if (parsed.value.title === "") return back("Choose a title.");
+  const online = form.get("track") === "online";
+  if (online) parsed.value.creClaim = "no";
   if (parsed.value.creClaim === "") return back("Choose whether CRE points are claimed.");
   const uploads = await readUploads(form);
   if ("error" in uploads) return back(uploads.error);
@@ -33,7 +35,7 @@ export async function POST(request: Request) {
     ...parsed.value,
     title: parsed.value.title,
     creClaim: parsed.value.creClaim,
-    source: "desk",
+    source: online ? "online" : "desk",
     consent: true,
   };
   const created = await createRegistration(draft, uploads.value, { allowDuplicatePayment: form.get("allowDuplicatePayment") === "on" });

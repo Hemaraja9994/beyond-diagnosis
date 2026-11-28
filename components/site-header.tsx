@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { AnnouncementRail } from "@/components/announcement-rail";
-import { nav, programme } from "@/lib/programme";
+import { nav, onlineProgramme, programme } from "@/lib/programme";
 
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
@@ -94,9 +94,20 @@ export function SiteHeader() {
           className="block bg-red-700 px-4 py-2 text-center text-sm font-bold uppercase tracking-[0.08em] text-white hover:bg-red-800 sm:text-base"
           role="status"
         >
-          Registrations closed
+          RCI CRE registrations closed
           <span className="ml-2 font-semibold normal-case tracking-normal text-white/85">
             · the webinar link will reach registered participants · check your status ›
+          </span>
+        </Link>
+      ) : null}
+      {programme.registrationClosed ? (
+        <Link
+          href={onlineProgramme.path}
+          className="block bg-[#0e9f8e] px-4 py-2 text-center text-sm font-bold uppercase tracking-[0.08em] text-white hover:bg-[#0b8577] sm:text-base"
+        >
+          Non-RCI CRE registration open
+          <span className="ml-2 font-semibold normal-case tracking-normal text-white/90">
+            · regular online programme for students, allied professionals, parents · until {onlineProgramme.closesLabel} ›
           </span>
         </Link>
       ) : null}

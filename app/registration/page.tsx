@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { PageBanner } from "@/components/page-banner";
 import { RegisterForm } from "@/components/register-form";
 import { RegistrationLinks } from "@/components/registration-links";
-import { programme, type ArrivalSource } from "@/lib/programme";
+import { onlineProgramme, programme, type ArrivalSource } from "@/lib/programme";
 import { creSeatsLeft } from "@/lib/seats";
 import { creSeatLimit, registrationOpen } from "@/lib/settings";
 
@@ -47,6 +47,16 @@ export default async function RegistrationPage({
               webinar link. Already registered? Use the links here to check your status, add your RCI confirmation or download your
               acknowledgement. For anything else, write to {programme.email}.
             </p>
+            <div className="mt-5 rounded-2xl bg-navy/5 p-4">
+              <p className="font-semibold text-navy">Not claiming RCI CRE points?</p>
+              <p className="mt-1 text-sm leading-6 text-muted">
+                ASLP students, professionals not registered with RCI, allied professionals, parents and caregivers can still register for the{" "}
+                {onlineProgramme.name.toLowerCase()} until {onlineProgramme.closesLabel}. {onlineProgramme.noCreLine}
+              </p>
+              <a className="pill pill-solid mt-3" href={onlineProgramme.path}>
+                Non-RCI CRE registration
+              </a>
+            </div>
           </section>
         )}
         <aside className="info-card accent-1 h-fit lg:sticky lg:top-32">

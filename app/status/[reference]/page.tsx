@@ -10,7 +10,7 @@ import { creJourney, creStamp, participationStamp, paymentState, paymentText, rc
 import {
   certificateEligible,
   certificateFileName,
-  certificateNumberText,
+  rowCertificateNumber,
   certificatesReleased,
   certificateVerifyUrl,
   ensureCertificate,
@@ -167,10 +167,10 @@ function CertificateSection({
         <p className="text-xs font-semibold uppercase tracking-[0.14em] text-green">Ready</p>
         <h2 className="font-display text-2xl text-navy">Your e-certificate</h2>
       </div>
-      <CertificatePreview name={participantName(row)} number={certificateNumberText(issued.number)} />
+      <CertificatePreview name={participantName(row)} number={rowCertificateNumber(row, issued)} />
       <CertificateActions pdfUrl={pdfUrl} fileName={certificateFileName(row, issued)} verifyUrl={verifyUrl} linkedInUrl={linkedInAddUrl(row, issued, verifyUrl)} />
       <p className="text-xs leading-5 text-muted">
-        Keep the PDF safe: its QR code opens a page confirming the certificate is genuine. Need a copy to print?{" "}
+        Keep the PDF safe: the verification link above confirms the certificate is genuine. Need a copy to print?{" "}
         <a className="font-semibold text-green underline" href={`${pdfUrl}&edition=print&download=1`}>
           Download the print edition
         </a>{" "}

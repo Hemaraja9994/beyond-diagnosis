@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { PageBanner } from "@/components/page-banner";
 import { participantName } from "@/lib/certificates";
-import { programme } from "@/lib/programme";
+import { isOnlineTrack, programme } from "@/lib/programme";
 import { holdsCrePlace } from "@/lib/seats";
 import { paymentState } from "@/lib/status";
 import { listRegistrations } from "@/lib/store";
@@ -18,11 +18,12 @@ export const revalidate = 300;
 /**
  * Public list of registered participants for the RCI webinar.
  * Shows only the name, the CRR number and whether the person holds an RCI CRE place —
- * never the email, phone, payment or uploaded documents.
+ * never the email, phone, payment or uploaded documents. People on the regular online programme (non-RCI:
+ * students, parents and others without a CRR number) are not listed.
  */
 export default async function ParticipantsPage() {
   const rows = (await listRegistrations())
-    .filter((row) => paymentState(row) !== "rejected")
+    .filter((row) => paymentState(row) !== "rejected" && !isOnlineTrack(row))
     .sort((a, b) => a.createdAt.localeCompare(b.createdAt));
   const claimants = rows.filter(holdsCrePlace).length;
   const updated = new Date().toLocaleString("en-IN", {

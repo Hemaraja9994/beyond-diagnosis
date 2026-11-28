@@ -13,6 +13,7 @@ const batch = 12;
 
 /**
  * Desk actions for e-certificates:
+ *  save     – numbers every eligible certificate now (any day), for export and e-signatures; not visible to participants
  *  release  – participants can download from their status page (from the programme day); numbers are given in registration order
  *  withhold – hides the download again (numbers already given stay)
  *  email    – emails the next batch of participants who have not had theirs
@@ -27,6 +28,17 @@ export async function POST(request: Request) {
   const back = (message: string) => Response.redirect(new URL(`/admin?tab=exports&note=${encodeURIComponent(message)}#certificates`, request.url), 303);
   const origin = new URL(request.url).origin;
 
+  if (action === "save") {
+    // Saving gives every eligible participant a fixed number now, so the desk can export and e-sign the
+    // certificates before the programme. Participants still download only after release.
+    const numbered = await numberAllEligible(await listRegistrations());
+    console.log(`desk: certificates saved by ${user.name}; ${numbered} newly numbered`);
+    return back(
+      numbered
+        ? `Saved by ${user.name}: ${numbered} certificate${numbered === 1 ? "" : "s"} numbered and ready to export for e-signatures.`
+        : "All eligible certificates were already saved.",
+    );
+  }
   if (action === "release") {
     if (!afterSessionsOpen()) return back(`Certificates can be released from ${programme.dateLabel}.`);
     const numbered = await numberAllEligible(await listRegistrations());

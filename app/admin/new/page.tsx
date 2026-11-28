@@ -31,6 +31,14 @@ export default async function NewRegistrationPage({ searchParams }: { searchPara
           </p>
         ) : null}
         <form className="card grid gap-4 p-5" action="/api/admin/new" method="post" encType="multipart/form-data">
+          <label className="grid gap-1 text-sm font-semibold text-navy sm:max-w-md">
+            Programme track
+            <select className="field" name="track" defaultValue="rci">
+              <option value="rci">RCI CRE programme</option>
+              <option value="online">Regular online programme (non-RCI, no CRE points)</option>
+            </select>
+            <span className="font-normal text-muted">The online track is always saved as not claiming CRE.</span>
+          </label>
           <DeskFields />
           <h3 className="font-semibold text-navy">Documents (optional)</h3>
           <DeskUploads />

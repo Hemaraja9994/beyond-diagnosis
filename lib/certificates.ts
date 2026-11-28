@@ -1,5 +1,5 @@
 import { certificateCode, participantToken } from "@/lib/admin";
-import { afterSessionsOpen, programme } from "@/lib/programme";
+import { afterSessionsOpen, isOnlineTrack, onlineProgramme, programme } from "@/lib/programme";
 import { paymentState } from "@/lib/status";
 import { getRegistration, getSetting, saveDeskReview, setSetting, type Registration } from "@/lib/store";
 
@@ -7,15 +7,32 @@ import { getRegistration, getSetting, saveDeskReview, setSetting, type Registrat
  * E-certificates of participation.
  *  – Who: every registration whose payment is confirmed (by the automatic check or a coordinator).
  *  – When: from the programme day, once a coordinator releases them on the desk.
- *  – Number: fixed the first time a certificate is issued (YMC/ASLP/CRE/2026/0001, …) and never reused.
+ *  – Number: fixed the first time a certificate is issued (YMC/ASLP/CRE/2026/0001, …) and never reused. The
+ *    regular online programme (non-RCI) has its own series (YMC/ASLP/ONL/2026/0001, …).
+ *  – Coordinators can save (number) certificates on the desk before the programme day, to add e-signatures;
+ *    participants can download only after release.
  */
 export type IssuedCertificate = { number: number; issuedAt: string };
 
 export const certificatePrefix = "YMC/ASLP/CRE/2026/";
 
-/** Number 0 is a desk preview: printed as SPECIMEN and never given to a participant. */
-export function certificateNumberText(number: number): string {
-  return number > 0 ? `${certificatePrefix}${String(number).padStart(4, "0")}` : `${certificatePrefix}SPECIMEN`;
+export function certificateNumberText(number: number, online = false): string {
+  return `${online ? onlineProgramme.certificatePrefix : certificatePrefix}${String(Math.max(number, 0)).padStart(4, "0")}`;
+}
+
+/**
+ * The date printed on the certificate. Certificates saved on the desk before the programme (to add e-signatures)
+ * still show the programme day, never a date before it.
+ */
+export function certificateIssueDate(issued: IssuedCertificate): string {
+  const day = Date.parse(programme.sessionsOpenAt);
+  const at = Date.parse(issued.issuedAt);
+  return Number.isFinite(at) && at >= day ? issued.issuedAt : `${programme.sessionsOpenAt.slice(0, 10)}T12:00:00+05:30`;
+}
+
+/** The certificate number as printed for this registration (online-programme rows use the ONL series). */
+export function rowCertificateNumber(row: Registration, issued: IssuedCertificate): string {
+  return certificateNumberText(issued.number, isOnlineTrack(row));
 }
 
 export function certificateEligible(row: Registration): boolean {
@@ -45,9 +62,10 @@ export async function certificateAvailable(row: Registration): Promise<boolean> 
 export async function ensureCertificate(row: Registration): Promise<IssuedCertificate> {
   const existing = row.deskReview?.certificate;
   if (existing && Number.isInteger(existing.number) && existing.number > 0) return existing;
-  const saved = Number(await getSetting("certificate_seq").catch(() => null));
+  const sequence = isOnlineTrack(row) ? "certificate_seq_online" : "certificate_seq";
+  const saved = Number(await getSetting(sequence).catch(() => null));
   const next = (Number.isInteger(saved) && saved > 0 ? saved : 0) + 1;
-  await setSetting("certificate_seq", String(next));
+  await setSetting(sequence, String(next));
   const issued: IssuedCertificate = { number: next, issuedAt: new Date().toISOString() };
   const fresh = (await getRegistration(row.reference)) ?? row;
   if (fresh.deskReview?.certificate) return fresh.deskReview.certificate;
@@ -79,12 +97,12 @@ export function certificatePdfUrl(reference: string): string | null {
 export function linkedInAddUrl(row: Registration, issued: IssuedCertificate, verifyUrl: string): string {
   const params = new URLSearchParams({
     startTask: "CERTIFICATION_NAME",
-    name: `${programme.title}: ${programme.subtitle} (Zonal CRE)`,
+    name: `${programme.title}: ${programme.subtitle} (${isOnlineTrack(row) ? onlineProgramme.name : "Zonal CRE"})`,
     organizationName: `${programme.university}`,
     issueYear: "2026",
     issueMonth: "12",
     certUrl: verifyUrl,
-    certId: certificateNumberText(issued.number),
+    certId: rowCertificateNumber(row, issued),
   });
   return `https://www.linkedin.com/profile/add?${params.toString()}`;
 }
@@ -100,5 +118,5 @@ export function certificateFileName(row: Registration, issued: IssuedCertificate
     .trim()
     .replace(/\s+/g, "-")
     .slice(0, 40);
-  return `Certificate-${String(issued.number).padStart(4, "0")}-${name || row.reference}.pdf`;
+  return `Certificate-${isOnlineTrack(row) ? "ONL-" : ""}${String(issued.number).padStart(4, "0")}-${name || row.reference}.pdf`;
 }

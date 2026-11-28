@@ -13,7 +13,9 @@ const nextConfig: NextConfig = {
       "./public/brand/yenepoya-medical-college-clear.png",
       "./public/brand/yenepoya-shield-watermark.png",
       "./public/brand/signatures/**",
+      "./public/brand/rci-clear.png",
       "./assets/certificate-fonts/**",
+      "./assets/certificate-templates/**",
     ],
   },
   async headers() {

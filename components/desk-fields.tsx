@@ -1,4 +1,4 @@
-import { professions, states, titles } from "@/lib/programme";
+import { allProfessions, states, titles } from "@/lib/programme";
 import type { Registration } from "@/lib/store";
 
 /** The full set of registration fields for the coordinator desk (edit and add). Plain HTML: no script needed. */
@@ -32,7 +32,7 @@ export function DeskFields({ row }: { row?: Registration }) {
           <option value="" disabled>
             Choose one
           </option>
-          {professions.map((item) => (
+          {allProfessions.map((item) => (
             <option key={item.value} value={item.value}>
               {item.label}
             </option>

@@ -1,4 +1,4 @@
-import { programme } from "@/lib/programme";
+import { onlineProgramme, programme } from "@/lib/programme";
 import { getSetting, setSetting } from "@/lib/store";
 
 /** Switches the coordinators change from the desk, without touching code. */
@@ -21,4 +21,18 @@ export async function setCreSeatLimit(value: number): Promise<void> {
 
 export async function setRegistrationOpen(open: boolean): Promise<void> {
   await setSetting("registration_open", open ? "yes" : "no");
+}
+
+/** The regular online programme (non-RCI) closes on its own date, and the desk can close it earlier. */
+export function onlineRegistrationPastClose(now = Date.now()): boolean {
+  return now > Date.parse(onlineProgramme.closesAt);
+}
+
+export async function onlineRegistrationOpen(): Promise<boolean> {
+  if (onlineRegistrationPastClose()) return false;
+  return (await getSetting("online_registration_open").catch(() => null)) !== "no";
+}
+
+export async function setOnlineRegistrationOpen(open: boolean): Promise<void> {
+  await setSetting("online_registration_open", open ? "yes" : "no");
 }

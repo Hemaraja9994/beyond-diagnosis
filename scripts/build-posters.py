@@ -7,9 +7,12 @@ Outputs, in public/brochure/:
   block-the-date.png / .pdf          one-page poster
   beyond-the-diagnosis-1.png / -2.png two flyer pages
   beyond-the-diagnosis.pdf           both flyer pages
+  online-programme-1.png / -2.png    regular online programme (non-RCI) brochure, two pages
+  online-programme.pdf               both pages, with the registration link and QR code
 
-Run:  python3 scripts/build-posters.py
-Needs: pip install playwright pillow, and Chrome or Chromium.
+Run:  python3 scripts/build-posters.py            (everything)
+      python3 scripts/build-posters.py online     (only the named outputs: poster, flyer, online)
+Needs: pip install playwright pillow, Chrome or Chromium, and the site's node_modules (for the QR code).
 """
 
 from __future__ import annotations
@@ -18,6 +21,8 @@ import html
 import io
 import os
 import shutil
+import subprocess
+import sys
 import tempfile
 from pathlib import Path
 
@@ -335,6 +340,127 @@ def flyer_team(build: Path) -> str:
     </section>"""
 
 
+SITE = "yenepoya-cre.vercel.app"
+ONLINE_PATH = "/online"
+ONLINE_URL = f"https://{SITE}{ONLINE_PATH}"
+ONLINE_CLOSES = "17 December 2026"
+ONLINE_AUDIENCE = [
+    "ASLP students (BASLP, MASLP, interns)",
+    "Professionals not registered with RCI",
+    "Doctors & allied health professionals",
+    "Psychologists & special educators",
+    "Therapists",
+    "Parents & caregivers",
+]
+
+
+def qr_png(build: Path, url: str) -> str:
+    """A QR code for the registration link, drawn with the site's own qrcode package."""
+    target = build / "qr-online.png"
+    script = (
+        "require('qrcode').toFile(process.argv[1], process.argv[2],"
+        " {margin: 1, width: 720, errorCorrectionLevel: 'M', color: {dark: '#0b1f3aff', light: '#ffffffff'}})"
+        ".catch(e => { console.error(e); process.exit(1); })"
+    )
+    subprocess.run(["node", "-e", script, str(target), url], cwd=ROOT, check=True)
+    return target.name
+
+
+def register_strip(build: Path) -> str:
+    return f"""
+    <div class="reg-strip">
+      <a href="{ONLINE_URL}"><img class="qr" src="{qr_png(build, ONLINE_URL)}" alt=""></a>
+      <div>
+        <p class="kicker">Non-RCI registration · open until {ONLINE_CLOSES}</p>
+        <p class="link"><a href="{ONLINE_URL}" style="color:inherit;text-decoration:none">{SITE}<b>{ONLINE_PATH}</b></a></p>
+        <p class="note">Scan the code or type the link · Pay ₹354 on Razorpay, then register with the payment ID and receipt
+          · e-certificate of participation · <b>This programme does not carry RCI CRE points.</b></p>
+      </div>
+    </div>"""
+
+
+def online_cover(build: Path) -> str:
+    sessions = "".join(
+        f"""<article class="session {COLOURS[i]}">
+          <div class="tab"><b>{t['time']}</b><span>{t['meridiem']}</span><small>Session {i + 1}</small></div>
+          {face(build, t['photo'], COLOURS[i])}
+          <div class="text">
+            <h3>{esc(t['title'])}</h3>
+            <p class="by"><b>{esc(t['person'])}</b><br>{esc(t['role'])}</p>
+          </div>
+        </article>"""
+        for i, t in enumerate(TALKS)
+    )
+    return f"""
+    <section class="sheet flyer online">
+      <div class="badge-nonrci">NON-RCI CRE REGISTRATION</div>
+      <div class="hero">
+        {logo_strip()}
+        <div class="hero-row">
+          <div>
+            <p class="eyebrow">Regular Online Programme</p>
+            <h1 class="headline display">
+              <span class="lead">Beyond <span class="script">the</span></span>
+              <span class="big">Diagnosis</span>
+            </h1>
+            <p class="sub">{SUBTITLE}</p>
+            <div class="facts"><span class="hot">Students · professionals · parents</span><span>Four live sessions</span><span>Online · English</span></div>
+          </div>
+          <div class="mini-date">{date_tab()}</div>
+        </div>
+      </div>
+      <div class="body">
+        <p class="section-title">The <em>programme</em></p>
+        <div class="sessions">{sessions}</div>
+        {register_strip(build)}
+      </div>
+      {footer("Page 1 of 2")}
+    </section>"""
+
+
+def online_details(build: Path) -> str:
+    team = "".join(
+        f"""<div>{face(build, p['photo'], COLOURS[i])}<span class="pill pill-solid">{esc(p['role'])}</span>
+        <h3>{esc(p['name'])}</h3><span>{p['detail']}</span></div>"""
+        for i, p in enumerate(TEAM)
+    )
+    tags = "".join(f"<span>{esc(a)}</span>" for a in ONLINE_AUDIENCE)
+    return f"""
+    <section class="sheet flyer team online">
+      <div class="badge-nonrci">NON-RCI CRE REGISTRATION</div>
+      <div class="hero">
+        {logo_strip()}
+        <div class="team-title">
+          <p class="eyebrow">Non-RCI Registration · 19 December 2026</p>
+          <h2>Organising <em>team</em></h2>
+        </div>
+        <div class="team-row">{team}</div>
+      </div>
+      <div class="body">
+        <div class="info-grid">
+          <div class="info c2"><h4>Who can join</h4><div class="in"><div class="tags">{tags}</div>
+            <p class="small-note">The same live sessions as the RCI-approved CRE programme, for everyone who is not claiming RCI CRE points.</p></div></div>
+          <div class="info c1"><h4>How to register</h4><div class="in"><ol>
+            <li><b>1</b><span>Pay <strong>₹354</strong> on Razorpay (link on the registration page).</span></li>
+            <li><b>2</b><span>Open <a href="{ONLINE_URL}" style="color:inherit"><strong style="white-space:nowrap">{SITE}{ONLINE_PATH}</strong></a> and fill the form with your payment ID and receipt.</span></li>
+            <li><b>3</b><span>Keep your YDU- reference; the Webex link reaches you before the day.</span></li>
+          </ol></div></div>
+          <div class="info c4"><h4>Contact</h4><div class="in"><div class="lines">
+            <div><small>Email</small>{EMAIL}</div>
+            <div><small>Phone</small>{PHONE}</div>
+            <div><small>Department</small>aslp@yenepoya.edu.in</div>
+          </div></div></div>
+          <div class="info c3"><h4>Certificate &amp; venue</h4><div class="in">
+            <p class="big">Online on<br>Cisco Webex</p>
+            <p>E-certificate of participation after the programme. <b>This programme does not carry RCI CRE points.</b> Registration closes on {ONLINE_CLOSES}.</p>
+          </div></div>
+        </div>
+        {register_strip(build)}
+      </div>
+      {footer("Page 2 of 2")}
+    </section>"""
+
+
 def document(build: Path, body: str) -> Path:
     page = f"""<!doctype html><html><head><meta charset="utf-8">
     <link rel="stylesheet" href="poster.css">
@@ -359,10 +485,13 @@ def build() -> None:
         shutil.copy(KIT / "poster.css", work / "poster.css")
         shutil.copytree(KIT / "fonts", work / "fonts")
 
-        jobs = {
-            "block-the-date": [poster(work)],
-            "beyond-the-diagnosis": [flyer_cover(work), flyer_team(work)],
+        builders = {
+            "poster": ("block-the-date", lambda: [poster(work)]),
+            "flyer": ("beyond-the-diagnosis", lambda: [flyer_cover(work), flyer_team(work)]),
+            "online": ("online-programme", lambda: [online_cover(work), online_details(work)]),
         }
+        wanted = sys.argv[1:] or list(builders)
+        jobs = {builders[key][0]: builders[key][1]() for key in wanted}
 
         with sync_playwright() as play:
             path = chrome()

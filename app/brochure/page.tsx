@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { BrochureActions } from "@/components/brochure-actions";
 import { PageBanner } from "@/components/page-banner";
-import { programme } from "@/lib/programme";
+import { onlineProgramme, programme } from "@/lib/programme";
 
 export const metadata: Metadata = { title: "Brochure" };
 
@@ -36,6 +36,36 @@ export default function BrochurePage() {
             </p>
             <div className="mt-5">
               <BrochureActions />
+            </div>
+          </div>
+        </div>
+        <div id="online" className="grid scroll-mt-32 items-start gap-6 border-t border-line pt-10 lg:grid-cols-[auto_1fr]">
+          <div className="grid max-w-xl grid-cols-2 gap-4">
+            <img
+              src={onlineProgramme.brochureImage}
+              alt="Online programme brochure page 1: the four sessions and the registration link with a QR code."
+              className="w-full rounded-2xl shadow-lg ring-1 ring-line"
+            />
+            <img
+              src={onlineProgramme.brochureImageBack}
+              alt="Online programme brochure page 2: who can join, how to register, contact and certificate."
+              className="w-full rounded-2xl shadow-lg ring-1 ring-line"
+            />
+          </div>
+          <div>
+            <p className="text-sm font-semibold uppercase tracking-[0.16em] text-[#0e6157]">Non-RCI CRE registration · {onlineProgramme.name}</p>
+            <h2 className="mt-2 font-display text-2xl text-navy sm:text-3xl">For students, allied professionals and parents</h2>
+            <p className="mt-3 max-w-md leading-7 text-muted">
+              A separate two-page brochure with the registration link and QR code, for everyone not claiming RCI CRE points. Registration is open until{" "}
+              {onlineProgramme.closesLabel}. {onlineProgramme.noCreLine}
+            </p>
+            <div className="mt-5 flex flex-wrap gap-3">
+              <a className="pill pill-solid" href={onlineProgramme.brochurePdf} target="_blank" rel="noopener noreferrer">
+                Download the non-RCI brochure (PDF)
+              </a>
+              <a className="pill pill-navy" href={onlineProgramme.path}>
+                Non-RCI CRE registration
+              </a>
             </div>
           </div>
         </div>

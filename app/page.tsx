@@ -5,7 +5,7 @@ import { Face } from "@/components/face";
 import { OfficialMarks } from "@/components/official-marks";
 import { PassCard } from "@/components/pass-card";
 import { departmentUrl } from "@/lib/department";
-import { audience, invitation, objectives, programme, sessionTickId, sessions, speakers } from "@/lib/programme";
+import { audience, invitation, objectives, onlineProgramme, programme, sessionTickId, sessions, speakers } from "@/lib/programme";
 
 const team = [
   { role: "Organising chairperson", name: "Dr. Shwetha Prabhu", detail: "Professor, Department of Audiology and Speech Language Pathology, Yenepoya University", photo: "/department/shwetha-prabhu.jpg", initials: "SP" },
@@ -41,6 +41,9 @@ export default function HomePage() {
             <div className="mt-7 flex flex-wrap gap-3">
               <Link id="register" href={programme.registrationClosed ? "/registration/status" : "/registration"} className="pill pill-solid">
                 {programme.registrationClosed ? "Registration closed · my status" : "Register today"}
+              </Link>
+              <Link href={onlineProgramme.path} className="pill pill-ghost">
+                Non-RCI CRE registration
               </Link>
               <Link id="webex" href="/join" className="pill pill-ghost">
                 Join on Webex

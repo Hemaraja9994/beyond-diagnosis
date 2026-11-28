@@ -3,7 +3,7 @@ import { certificatePdf } from "@/lib/certificate-pdf";
 import {
   certificateEligible,
   certificateFileName,
-  certificateNumberText,
+  rowCertificateNumber,
   certificatesReleased,
   certificateVerifyUrl,
   ensureCertificate,
@@ -28,7 +28,7 @@ export async function mailCertificate(reference: string, origin: string, force =
   const statusUrl = token ? `${origin}/status/${row.reference}?t=${encodeURIComponent(token)}` : null;
   const linkedIn = linkedInAddUrl(row, issued, verifyUrl);
   const name = participantName(row);
-  const number = certificateNumberText(issued.number);
+  const number = rowCertificateNumber(row, issued);
   const pdf = Buffer.from(await certificatePdf(row, issued, verifyUrl));
 
   const result = await sendMail({

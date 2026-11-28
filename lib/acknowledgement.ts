@@ -2,7 +2,7 @@ import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { PDFDocument, StandardFonts, rgb, type PDFFont, type PDFPage, type RGB } from "pdf-lib";
 import QRCode from "qrcode";
-import { committee, professionLabel, programme, rciApprovalLine, type Profession } from "@/lib/programme";
+import { committee, isOnlineTrack, onlineProgramme, professionLabel, programme, rciApprovalLine, type Profession } from "@/lib/programme";
 import { creStamp, participationStamp, paymentState, paymentText, rciState, rciText, type Stamp } from "@/lib/status";
 import type { Registration } from "@/lib/store";
 
@@ -64,7 +64,9 @@ export async function acknowledgementPdf(row: Registration, statusUrl: string): 
   );
   y = text(
     page,
-    `${rciApprovalLine} · Institute code ${programme.instituteCode}`,
+    isOnlineTrack(row)
+      ? `${onlineProgramme.name} (non-RCI track) · ${onlineProgramme.noCreLine}`
+      : `${rciApprovalLine} · Institute code ${programme.instituteCode}`,
     left,
     y - 1,
     regular,
@@ -104,8 +106,8 @@ export async function acknowledgementPdf(row: Registration, statusUrl: string): 
     ["Registration", "Registered", green],
     [`Payment (Rs. ${programme.feeRupees})`, paymentText[pay] + payBy, pay === "confirmed" ? green : pay === "rejected" ? red : orange],
     [
-      "RCI CRE points",
-      rciText[rci] + rciBy,
+      isOnlineTrack(row) ? "Programme track" : "RCI CRE points",
+      isOnlineTrack(row) ? `${onlineProgramme.name} · no CRE points` : rciText[rci] + rciBy,
       rci === "confirmed" ? green : rci === "rejected" ? red : rci === "awaited" || rci === "submitted" ? orange : muted,
     ],
   ];

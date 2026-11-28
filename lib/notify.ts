@@ -1,7 +1,7 @@
 import { participantToken } from "@/lib/admin";
 import { acknowledgementPdf } from "@/lib/acknowledgement";
 import { mailReady, sendMail } from "@/lib/mail";
-import { programme } from "@/lib/programme";
+import { isOnlineTrack, onlineProgramme, programme } from "@/lib/programme";
 import { creStamp, participationStamp, paymentState, paymentText, rciState, rciText } from "@/lib/status";
 import { getRegistration, saveDeskReview, type Registration } from "@/lib/store";
 
@@ -84,7 +84,7 @@ async function registrationMail(row: Registration, links: Links): Promise<boolea
   const lines = [
     `Registration reference: ${row.reference}`,
     `Payment: ${paymentText[paymentState(row)]}`,
-    `RCI CRE points: ${rciText[rciState(row)]}`,
+    isOnlineTrack(row) ? `Programme: ${onlineProgramme.name} (non-RCI). ${onlineProgramme.noCreLine}` : `RCI CRE points: ${rciText[rciState(row)]}`,
   ];
   const attachments = links.status
     ? [{ filename: `Acknowledgement-${row.reference}.pdf`, content: Buffer.from(await acknowledgementPdf(row, links.status)), contentType: "application/pdf" }]
@@ -119,7 +119,7 @@ async function registrationMail(row: Registration, links: Links): Promise<boolea
          ["Reference", row.reference],
          ["Participation", `${first.word.toLowerCase()}`],
          ["Payment", paymentText[paymentState(row)]],
-         ["RCI CRE points", rciText[rciState(row)]],
+         isOnlineTrack(row) ? ["Programme", `${onlineProgramme.name} (non-RCI) · no CRE points`] : ["RCI CRE points", rciText[rciState(row)]],
        ]
          .map(([label, value]) => `<tr><td style="padding:4px 14px 4px 0;color:#5c6678">${esc(label)}</td><td style="padding:4px 0;font-weight:600">${esc(value)}</td></tr>`)
          .join("")}</table>

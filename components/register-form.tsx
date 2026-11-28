@@ -5,27 +5,35 @@ import { useState } from "react";
 import { AckActions } from "@/components/ack-actions";
 import { DocumentInput } from "@/components/document-input";
 import { RegistrationLinks } from "@/components/registration-links";
-import { professions, programme, states, titles, type ArrivalSource } from "@/lib/programme";
+import { onlineProfessions, onlineProgramme, professions, programme, states, titles, type ArrivalSource } from "@/lib/programme";
 
-type Success = { reference: string; email: string; claiming: boolean; token: string | null; creMoved: boolean };
+type Success = { reference: string; email: string; claiming: boolean; token: string | null; creMoved: boolean; online: boolean };
 type FileField = "receipt" | "crrCertificate" | "rciConfirmation";
 
+/**
+ * The registration form. track="online" is the regular online programme (non-RCI): no CRE question, no CRR
+ * number, categories for students, allied professionals and parents, and it posts to its own endpoint.
+ */
 export function RegisterForm({
   source,
-  creSeatsLeft,
-  creSeatLimit,
+  creSeatsLeft = 0,
+  creSeatLimit = 0,
+  track = "rci",
 }: {
   source: ArrivalSource;
-  creSeatsLeft: number;
-  creSeatLimit: number;
+  creSeatsLeft?: number;
+  creSeatLimit?: number;
+  track?: "rci" | "online";
 }) {
+  const online = track === "online";
+  const categories = online ? onlineProfessions : professions;
   const [seatsLeft, setSeatsLeft] = useState(creSeatsLeft);
   const creFull = seatsLeft <= 0;
   const [pending, setPending] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState<Success | null>(null);
   const [profession, setProfession] = useState("");
-  const [claim, setClaim] = useState<"" | "yes" | "no">("");
+  const [claim, setClaim] = useState<"" | "yes" | "no">(online ? "no" : "");
   const [files, setFiles] = useState<Partial<Record<FileField, File>>>({});
   const [fileErrors, setFileErrors] = useState<Partial<Record<FileField, string>>>({});
 
@@ -56,7 +64,8 @@ export function RegisterForm({
     const form = new FormData(event.currentTarget);
     const body = new FormData();
     for (const [key, value] of form.entries()) if (typeof value === "string") body.set(key, value);
-    body.set("source", source);
+    body.set("source", online ? "online" : source);
+    if (online) body.set("creClaim", "no");
     body.set("receipt", files.receipt);
     if (claim === "yes" && files.crrCertificate) body.set("crrCertificate", files.crrCertificate);
     if (claim === "yes" && files.rciConfirmation) body.set("rciConfirmation", files.rciConfirmation);
@@ -64,7 +73,7 @@ export function RegisterForm({
 
     setPending(true);
     try {
-      const response = await fetch("/api/register", { method: "POST", body });
+      const response = await fetch(online ? "/api/register/online" : "/api/register", { method: "POST", body });
       const payload = (await response.json().catch(() => ({}))) as { reference?: string; token?: string | null; error?: string; creFull?: boolean; creMoved?: boolean };
       if (payload.creFull) {
         setSeatsLeft(0);
@@ -83,6 +92,7 @@ export function RegisterForm({
         claiming: claim === "yes" && !payload.creMoved,
         token: payload.token ?? null,
         creMoved: Boolean(payload.creMoved),
+        online,
       });
       window.scrollTo({ top: 0, behavior: "smooth" });
     } catch {
@@ -101,7 +111,9 @@ export function RegisterForm({
           <span className="mr-2 text-green">1</span>Pay {programme.feeLabel} on Razorpay
         </h2>
         <p className="mt-2 text-sm leading-6 text-muted">
-          One fee for everyone — professionals and students. Use the same name, email and mobile on Razorpay that you will enter below.
+          {online
+            ? "The same fee as the RCI programme, for students, professionals, parents and caregivers alike. Use the same name, email and mobile on Razorpay that you will enter below."
+            : "One fee for everyone — professionals and students. Use the same name, email and mobile on Razorpay that you will enter below."}
         </p>
         <ul className="mt-4 grid gap-2 text-sm leading-6">
           {[
@@ -142,7 +154,7 @@ export function RegisterForm({
                 ))}
               </select>
             </label>
-            <Field label="Full name, as on the CRR / certificate" name="fullName" autoComplete="name" required />
+            <Field label={online ? "Full name, as it should appear on the certificate" : "Full name, as on the CRR / certificate"} name="fullName" autoComplete="name" required />
           </div>
           <Field label="Email" name="email" type="email" autoComplete="email" required />
           <Field label="Mobile" name="mobile" type="tel" autoComplete="tel" required hint="10-digit Indian mobile number" />
@@ -152,7 +164,7 @@ export function RegisterForm({
               <option value="" disabled>
                 Choose one
               </option>
-              {professions.map((item) => (
+              {categories.map((item) => (
                 <option key={item.value} value={item.value}>
                   {item.label}
                 </option>
@@ -164,6 +176,12 @@ export function RegisterForm({
           ) : null}
         </fieldset>
 
+        {online ? (
+          <p className="rounded-2xl bg-navy/5 px-4 py-3 text-sm leading-6 text-navy">
+            <strong>Regular online programme.</strong> {onlineProgramme.noCreLine} You attend the same live Webex session on {programme.dateLabel} and
+            receive an e-certificate of participation.
+          </p>
+        ) : (
         <fieldset className="card grid gap-4 p-5">
           <legend className="float-left mb-1 w-full font-display text-lg text-navy">RCI CRE points</legend>
           <p className="text-sm leading-6 text-muted">
@@ -201,11 +219,17 @@ export function RegisterForm({
             </div>
           ) : null}
         </fieldset>
+        )}
 
         <fieldset className="card grid gap-4 p-5">
-          <legend className="float-left mb-1 w-full font-display text-lg text-navy">Where you work</legend>
-          <Field label="Designation" name="designation" />
-          <Field label="Workplace" name="institution" required hint="A college, hospital, clinic, or private practice." />
+          <legend className="float-left mb-1 w-full font-display text-lg text-navy">{online ? "Where you study, work or live" : "Where you work"}</legend>
+          <Field label={online ? "Designation or course" : "Designation"} name="designation" hint={online ? "For example BASLP 3rd year, physiotherapist, or parent." : undefined} />
+          <Field
+            label={online ? "College, workplace or town" : "Workplace"}
+            name="institution"
+            required
+            hint={online ? "Students: your college. Professionals: your workplace. Parents and caregivers: your town or city." : "A college, hospital, clinic, or private practice."}
+          />
           <label className="grid gap-1 text-sm font-semibold text-navy">
             State or Union Territory
             <select className="field" name="stateName" required defaultValue="">
@@ -251,7 +275,7 @@ export function RegisterForm({
             <input className="mt-1 h-5 w-5 shrink-0" type="checkbox" name="consent" required />
             <span>
               I agree that the {programme.organiser}, {programme.university}, may keep these details and the uploaded documents for registration,
-              attendance, certification and RCI CRE reporting. The receipt and certificate are read automatically on the organisers&apos; own server
+              attendance{online ? " and certification" : ", certification and RCI CRE reporting"}. The receipt and certificate are read automatically on the organisers&apos; own server
               to check them against this form; they are not sent to any outside AI service.
             </span>
           </label>
@@ -283,6 +307,11 @@ function Confirmation({ success }: { success: Success }) {
       <p className="text-xs font-semibold uppercase tracking-[0.16em] text-green">Registration and payment received</p>
       <h2 className="mt-2 font-display text-4xl leading-none tracking-tight text-navy sm:text-5xl">{success.reference}</h2>
       <p className="mt-3 max-w-xl leading-7 text-muted">Please note this reference. Thank you — your seat is reserved for {success.email}.</p>
+      {success.online ? (
+        <p className="mt-3 max-w-xl rounded-2xl bg-navy/5 px-4 py-3 text-sm leading-6 text-navy">
+          {onlineProgramme.name} · {programme.dateLabel} · {programme.start} on Cisco Webex. {onlineProgramme.noCreLine}
+        </p>
+      ) : null}
       {success.creMoved ? (
         <p className="mt-3 max-w-xl rounded-2xl bg-red-50 px-4 py-3 text-sm leading-6 text-red-800">
           The last RCI CRE places were taken just before your registration, so you are registered to attend without CRE points. If a place
