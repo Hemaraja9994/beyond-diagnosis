@@ -84,7 +84,7 @@ async function registrationMail(row: Registration, links: Links): Promise<boolea
   const lines = [
     `Registration reference: ${row.reference}`,
     `Payment: ${paymentText[paymentState(row)]}`,
-    isOnlineTrack(row) ? `Programme: ${onlineProgramme.name}. ${onlineProgramme.noCreLine}` : `RCI CRE points: ${rciText[rciState(row)]}`,
+    isOnlineTrack(row) ? `Registration: ${onlineProgramme.name}. ${onlineProgramme.noCreLine}` : `RCI CRE points: ${rciText[rciState(row)]}`,
     isOnlineTrack(row) && row.attendance ? `Attendance: ${attendanceLabel(row.attendance)}` : "",
   ].filter(Boolean);
   const attachments = links.status
@@ -120,7 +120,7 @@ async function registrationMail(row: Registration, links: Links): Promise<boolea
          ["Reference", row.reference],
          ["Participation", `${first.word.toLowerCase()}`],
          ["Payment", paymentText[paymentState(row)]],
-         isOnlineTrack(row) ? ["Programme", `${onlineProgramme.name} · no CRE points`] : ["RCI CRE points", rciText[rciState(row)]],
+         isOnlineTrack(row) ? ["Registration", `${onlineProgramme.name} · no CRE points`] : ["RCI CRE points", rciText[rciState(row)]],
          ...(isOnlineTrack(row) && row.attendance ? [["Attendance", attendanceLabel(row.attendance)]] : []),
        ]
          .map(([label, value]) => `<tr><td style="padding:4px 14px 4px 0;color:#5c6678">${esc(label)}</td><td style="padding:4px 0;font-weight:600">${esc(value)}</td></tr>`)

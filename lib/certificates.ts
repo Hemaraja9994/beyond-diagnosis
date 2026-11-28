@@ -97,7 +97,7 @@ export function certificatePdfUrl(reference: string): string | null {
 export function linkedInAddUrl(row: Registration, issued: IssuedCertificate, verifyUrl: string): string {
   const params = new URLSearchParams({
     startTask: "CERTIFICATION_NAME",
-    name: `${programme.title}: ${programme.subtitle} (${isOnlineTrack(row) ? onlineProgramme.name : "Zonal CRE"})`,
+    name: `${programme.title}: ${programme.subtitle} (Zonal CRE)`,
     organizationName: `${programme.university}`,
     issueYear: "2026",
     issueMonth: "12",

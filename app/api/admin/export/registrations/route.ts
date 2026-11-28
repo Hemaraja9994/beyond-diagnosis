@@ -40,7 +40,7 @@ export async function GET(request: Request) {
       "CRE points credited",
       "Access needs",
       "Arrived from",
-      "Non-RCI attendance",
+      "Participant attendance (offline/online)",
     ],
     rows.map((row) => [
       row.reference,

@@ -22,7 +22,7 @@ export const maxDuration = 60;
 export async function POST(request: Request) {
   if (!sameOrigin(request)) return json({ error: "Submit the form from this website." }, 403);
   if (!(await onlineRegistrationOpen())) {
-    return json({ error: `Registration for the ${onlineProgramme.shortName.toLowerCase()} has closed. Please write to the organisers.` }, 403);
+    return json({ error: "Participant registration has closed. Please write to the organisers." }, 403);
   }
   const limited = tooMany(request, "register-online", 4, 10 * 60 * 1000);
   if (limited) return limited;
@@ -36,7 +36,7 @@ export async function POST(request: Request) {
   const parsed = parseOnlineRegistration(formRecord(form));
   if ("error" in parsed) return json({ error: parsed.error }, 400);
   if ((await onlineSeatsLeft()) <= 0) {
-    return json({ error: `All ${onlineProgramme.seats} seats of the ${onlineProgramme.shortName} are taken. Please write to the organisers.`, full: true }, 409);
+    return json({ error: `All ${onlineProgramme.seats} participant seats are taken. Please write to the organisers.`, full: true }, 409);
   }
   const uploads = await readUploads(form);
   if ("error" in uploads) return json({ error: uploads.error }, 400);

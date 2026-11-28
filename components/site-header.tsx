@@ -105,9 +105,9 @@ export function SiteHeader() {
           href={onlineProgramme.path}
           className="block bg-[#0e9f8e] px-4 py-2 text-center text-sm font-bold uppercase tracking-[0.08em] text-white hover:bg-[#0b8577] sm:text-base"
         >
-          Non-RCI CRE registration open
+          Participant registration open
           <span className="ml-2 font-semibold normal-case tracking-normal text-white/90">
-            · offline hands-on (Yenepoya colleges) and online · {onlineProgramme.seats} seats · until {onlineProgramme.closesLabel} ›
+            · RCI CRE places are full — others can still take part · offline hands-on (Yenepoya colleges) and online · until {onlineProgramme.closesLabel} ›
           </span>
         </Link>
       ) : null}

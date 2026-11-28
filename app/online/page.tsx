@@ -7,8 +7,8 @@ import { onlineSeatsLeft } from "@/lib/seats";
 import { onlineRegistrationOpen } from "@/lib/settings";
 
 export const metadata: Metadata = {
-  title: "Non-RCI CRE registration",
-  description: `Register for the ${onlineProgramme.name} of ${programme.title} on ${programme.dateLabel}: offline hands-on at Yenepoya (Yenepoya colleges only) or online (open to all). ${onlineProgramme.seats} seats, until ${onlineProgramme.closesLabel}. ${onlineProgramme.noCreLine}`,
+  title: "Participant registration",
+  description: `Participant registration for ${programme.title} on ${programme.dateLabel}: offline hands-on at Yenepoya (Yenepoya colleges only) or online (open to all). ${onlineProgramme.seats} seats, until ${onlineProgramme.closesLabel}. ${onlineProgramme.noCreLine}`,
 };
 export const dynamic = "force-dynamic";
 
@@ -22,15 +22,15 @@ export default async function OnlineProgrammePage() {
   return (
     <div id="register" className="pb-24 md:pb-10">
       <PageBanner
-        kicker={`Non-RCI CRE registration · ${onlineProgramme.name}`}
-        title={open ? "Offline hands-on" : "Non-RCI CRE"}
+        kicker="Participant registration · attend without CRE points"
+        title={open ? "Offline hands-on" : "Participant registration"}
         accent={open ? "and online" : full ? "seats full" : "registration closed"}
         lede={
           open
-            ? `The same four sessions on ${programme.dateLabel}, from ${programme.start} — attend offline, with hands-on practice, at Yenepoya Medical College (Yenepoya colleges only), or online on Cisco Webex (open to all). Pay ${programme.feeLabel} on Razorpay, then register below. ${seatsLeft} of ${onlineProgramme.seats} seats left · open until ${onlineProgramme.closesLabel}.`
+            ? `${onlineProgramme.reasonLine} The same four sessions on ${programme.dateLabel}, from ${programme.start} — attend offline, with hands-on practice, at Yenepoya Medical College (Yenepoya colleges only), or online on Cisco Webex (open to all). Pay ${programme.feeLabel} on Razorpay, then register below. ${seatsLeft} of ${onlineProgramme.seats} seats left · open until ${onlineProgramme.closesLabel}.`
             : full
-              ? `All ${onlineProgramme.seats} seats of the ${onlineProgramme.shortName} are taken. Registered participants will receive the details for the day.`
-              : `Registration for the ${onlineProgramme.shortName} has closed. Registered participants will receive the details for the day.`
+              ? `All ${onlineProgramme.seats} participant seats are taken. Registered participants will receive the details for the day.`
+              : `Participant registration has closed. Registered participants will receive the details for the day.`
         }
       />
       <div className="mx-auto grid max-w-6xl gap-8 px-4 py-10 lg:grid-cols-[1fr_18rem] lg:items-start">
@@ -42,7 +42,7 @@ export default async function OnlineProgrammePage() {
             <p className="mt-2 leading-7 text-muted">
               {full
                 ? `All ${onlineProgramme.seats} seats are taken.`
-                : `Registration for the ${onlineProgramme.shortName} closed on ${onlineProgramme.closesLabel}.`}{" "}
+                : `Participant registration closed on ${onlineProgramme.closesLabel}.`}{" "}
               Already registered? Check your status and
               download your acknowledgement on the{" "}
               <Link className="font-semibold text-green underline" href="/registration/status">

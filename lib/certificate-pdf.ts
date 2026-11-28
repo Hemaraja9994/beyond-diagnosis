@@ -351,7 +351,7 @@ async function render(spec: Spec, mode: "full" | "template" = "full"): Promise<{
   centre(
     page,
     online
-      ? `${onlineProgramme.name}  ·  This certificate does not carry RCI CRE points  ·  ${onlineProgramme.modeLine}, ${programme.language}`
+      ? `Certificate of participation  ·  This certificate does not carry RCI CRE points  ·  ${onlineProgramme.modeLine}, ${programme.language}`
       : `Approved by the Rehabilitation Council of India  ·  Letter F. No. ${programme.rciFileNo}  ·  ${programme.level} CRE, ${programme.rciHours} hours  ·  Institute code ${programme.instituteCode}`,
     y,
     fonts.sansSemibold,

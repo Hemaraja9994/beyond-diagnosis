@@ -72,19 +72,21 @@ export const programme = {
  * (Internally the track is still called "online": source = "online".)
  */
 export const onlineProgramme = {
-  name: "Non-RCI CRE Programme",
-  shortName: "Non-RCI CRE programme",
+  name: "Participant registration",
+  shortName: "participant registration",
   path: "/online",
   closesAt: "2026-12-10T23:59:59+05:30",
   closesLabel: "10 December 2026",
   /** Registrations taken in all, offline and online together. A rejected payment gives the seat back. */
   seats: 100,
-  brochurePdf: "/brochure/online-programme.pdf?v=2",
-  brochureImage: "/brochure/online-programme-1.png?v=2",
-  brochureImageBack: "/brochure/online-programme-2.png?v=2",
+  brochurePdf: "/brochure/online-programme.pdf?v=3",
+  brochureImage: "/brochure/online-programme-1.png?v=3",
+  brochureImageBack: "/brochure/online-programme-2.png?v=3",
   /** Separate number series, so no online certificate can be mistaken for a CRE one. */
   certificatePrefix: "YMC/ASLP/ONL/2026/",
-  certificateLine: "has participated in the Non-RCI CRE Programme (offline hands-on and online)",
+  certificateLine: "has participated in the Zonal Continuing Rehabilitation Education (CRE) programme (offline hands-on and online)",
+  /** One line for banners and the page: why this registration exists. */
+  reasonLine: "RCI CRE places are full. Students, professionals not claiming CRE, allied professionals and parents can still take part.",
   modeLine: "Offline hands-on and online",
   noCreLine: "This programme does not carry RCI CRE points.",
   /** Where the offline hands-on runs, on the programme day. */
@@ -297,7 +299,7 @@ export function sourceLabel(source: ArrivalSource): string {
     case "desk":
       return "Added by a coordinator";
     case "online":
-      return "Non-RCI CRE programme";
+      return "Participant registration (no CRE points)";
     default: {
       const unknown: never = source;
       return unknown;

@@ -36,7 +36,7 @@ const views: { id: View; label: string }[] = [
   { id: "confirmed", label: "Payment confirmed" },
   { id: "cre", label: "Claiming CRE" },
   { id: "rci-awaited", label: "RCI awaited" },
-  { id: "online", label: "Non-RCI CRE (offline + online)" },
+  { id: "online", label: "Participants, no CRE (offline + online)" },
 ];
 
 /** Automatic-check badge colours. */
@@ -142,10 +142,10 @@ export default async function AdminPage({
               RCI registration {isOpen ? "open" : "closed"}
             </a>
             <a className={`${chip} ${onlineOpen ? tone.ok : tone.stop}`} href={deskHref("settings")}>
-              Non-RCI CRE {onlineOpen ? `open until ${onlineProgramme.closesLabel}` : "closed"}
+              Participant registration {onlineOpen ? `open until ${onlineProgramme.closesLabel}` : "closed"}
             </a>
-            <a className={`${chip} ${onlineSeats.left > 0 ? tone.ok : tone.stop}`} href={deskHref("registrations", { view: "online" })} title="Seats held: every Non-RCI registration except rejected payments">
-              Non-RCI seats {onlineSeats.taken}/{onlineSeats.seats} · offline {onlineSeats.offline} · online {onlineSeats.online}
+            <a className={`${chip} ${onlineSeats.left > 0 ? tone.ok : tone.stop}`} href={deskHref("registrations", { view: "online" })} title="Seats held: every participant registration except rejected payments">
+              Participant seats {onlineSeats.taken}/{onlineSeats.seats} · offline {onlineSeats.offline} · online {onlineSeats.online}
             </a>
             <a className={`${chip} ${tone.ok}`} href={programme.rciCalendarUrl} target="_blank" rel="noopener noreferrer" title="Open the RCI CRE calendar">
               Approved by RCI · F. No. {programme.rciFileNo} · {programme.rciHours} hours
@@ -484,7 +484,7 @@ function CertificatesPanel({ registrations, switchOn, mailOn }: { registrations:
             RCI CRE certificates — PowerPoint ({rciEligible}) ↓
           </a>
           <a className={`text-green underline ${onlineEligible === 0 ? "pointer-events-none opacity-50" : ""}`} href="/api/admin/export/certificates-pptx?track=online">
-            Non-RCI CRE certificates — PowerPoint ({onlineEligible}) ↓
+            Participant certificates (no CRE) — PowerPoint ({onlineEligible}) ↓
           </a>
         </p>
         <p className="flex flex-wrap gap-4 text-sm font-semibold">
@@ -498,7 +498,7 @@ function CertificatesPanel({ registrations, switchOn, mailOn }: { registrations:
       </div>
       <p className="mt-3 text-xs leading-5 text-muted">
         “Save certificates now” gives everyone eligible a fixed number in order of registration ({certificateNumberText(1)} onwards; {certificateNumberText(1, true)} for the
-        Non-RCI CRE programme) and dates every certificate {programme.dateLabel.replace(/^\w+, /, "")}. Participants can download only after “Release certificates” on the programme day.
+        participant registrations) and dates every certificate {programme.dateLabel.replace(/^\w+, /, "")}. Participants can download only after “Release certificates” on the programme day.
         People confirmed later get the next number — export again to include them. Emails go out about a dozen at a time — press again until done.
       </p>
       <div className="mt-5 border-t border-line pt-4">
@@ -623,7 +623,7 @@ function SettingsTab({
             </select>
           </label>
           <label className="grid gap-1 text-sm font-semibold text-navy">
-            Non-RCI CRE programme (offline + online)
+            Participant registration (offline + online)
             <select className="field" name="onlineRegistrationOpen" defaultValue={onlineOpen ? "yes" : "no"}>
               <option value="yes">Open (until {onlineProgramme.closesLabel})</option>
               <option value="no">Closed</option>
@@ -743,7 +743,7 @@ function RegistrationCard({ row, token }: { row: Registration; token: string | n
                 CRE · {rci === "confirmed" ? "RCI confirmed" : rci === "rejected" ? "RCI rejected" : rci === "submitted" ? "RCI to review" : "RCI awaited"}
               </span>
             ) : isOnlineTrack(row) ? (
-              <span className={`${chip} bg-teal-100 text-teal-900`}>Non-RCI CRE · {attendanceLabel(row.attendance) || "attendance not stated"}</span>
+              <span className={`${chip} bg-teal-100 text-teal-900`}>Participant · no CRE · {attendanceLabel(row.attendance) || "attendance not stated"}</span>
             ) : (
               <span className={`${chip} ${row.creClaim === "" ? tone.wait : tone.none}`}>{row.creClaim === "no" ? "Not claiming CRE" : "CRE not stated"}</span>
             )}

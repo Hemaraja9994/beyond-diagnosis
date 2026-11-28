@@ -43,7 +43,7 @@ export default function HomePage() {
                 {programme.registrationClosed ? "Registration closed · my status" : "Register today"}
               </Link>
               <Link href={onlineProgramme.path} className="pill pill-ghost">
-                Non-RCI CRE registration
+                Participant registration (no CRE)
               </Link>
               <Link id="webex" href="/join" className="pill pill-ghost">
                 Join on Webex

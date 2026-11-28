@@ -43,17 +43,17 @@ export default function BrochurePage() {
           <div className="grid max-w-xl grid-cols-2 gap-4">
             <img
               src={onlineProgramme.brochureImage}
-              alt="Non-RCI CRE brochure page 1: offline hands-on and online attendance, the four sessions, and the registration link with a QR code."
+              alt="Participant registration brochure page 1: offline hands-on and online attendance, the four sessions, and the registration link with a QR code."
               className="w-full rounded-2xl shadow-lg ring-1 ring-line"
             />
             <img
               src={onlineProgramme.brochureImageBack}
-              alt="Non-RCI CRE brochure page 2: who can join, seats, how to register, contact and certificate."
+              alt="Participant registration brochure page 2: who can join, seats, how to register, contact and certificate."
               className="w-full rounded-2xl shadow-lg ring-1 ring-line"
             />
           </div>
           <div>
-            <p className="text-sm font-semibold uppercase tracking-[0.16em] text-[#0e6157]">Non-RCI CRE registration · {onlineProgramme.name}</p>
+            <p className="text-sm font-semibold uppercase tracking-[0.16em] text-[#0e6157]">Participant registration · attend without CRE points</p>
             <h2 className="mt-2 font-display text-2xl text-navy sm:text-3xl">Offline hands-on and online</h2>
             <p className="mt-3 max-w-md leading-7 text-muted">
               A separate two-page brochure with the registration link and QR code, for everyone not claiming RCI CRE points: offline hands-on at
@@ -62,10 +62,10 @@ export default function BrochurePage() {
             </p>
             <div className="mt-5 flex flex-wrap gap-3">
               <a className="pill pill-solid" href={onlineProgramme.brochurePdf} target="_blank" rel="noopener noreferrer">
-                Download the non-RCI brochure (PDF)
+                Download the participant brochure (PDF)
               </a>
               <a className="pill pill-navy" href={onlineProgramme.path}>
-                Non-RCI CRE registration
+                Participant registration
               </a>
             </div>
           </div>

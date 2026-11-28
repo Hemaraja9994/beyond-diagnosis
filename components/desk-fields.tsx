@@ -66,9 +66,9 @@ export function DeskFields({ row }: { row?: Registration }) {
       </label>
       {field("Payment ID", "paymentReference", row?.paymentReference, "pay_… or UPI transaction number; may be blank")}
       <label className="grid gap-1 text-sm font-semibold text-navy">
-        Attendance (Non-RCI CRE track)
+        Attendance (participant registration)
         <select className="field" name="attendance" defaultValue={row?.attendance ?? ""}>
-          <option value="">— (RCI track, online)</option>
+          <option value="">— (CRE claimant, online)</option>
           {attendanceModes.map((mode) => (
             <option key={mode.value} value={mode.value}>
               {mode.label}

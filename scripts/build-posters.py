@@ -7,7 +7,7 @@ Outputs, in public/brochure/:
   block-the-date.png / .pdf          one-page poster
   beyond-the-diagnosis-1.png / -2.png two flyer pages
   beyond-the-diagnosis.pdf           both flyer pages
-  online-programme-1.png / -2.png    Non-RCI CRE brochure (offline hands-on + online), two pages
+  online-programme-1.png / -2.png    participant registration brochure (offline hands-on + online), two pages
   online-programme.pdf               both pages, with the registration link and QR code
 
 Run:  python3 scripts/build-posters.py            (everything)
@@ -167,7 +167,7 @@ def logo_strip() -> str:
 
 
 def date_tab(rci: bool = False, hybrid: bool = False) -> str:
-    last = "Approved by RCI · 4 hours" if rci else ("Non-RCI · English" if hybrid else "Zonal CRE · English")
+    last = "Approved by RCI · 4 hours" if rci else "Zonal CRE · English"
     where = "Offline + Online (Webex)" if hybrid else "Online · Cisco Webex"
     return f"""
     <div class="datetab">
@@ -373,7 +373,7 @@ def register_strip(build: Path) -> str:
     <div class="reg-strip">
       <a href="{ONLINE_URL}"><img class="qr" src="{qr_png(build, ONLINE_URL)}" alt=""></a>
       <div>
-        <p class="kicker">Non-RCI registration · {ONLINE_SEATS} seats · last date {ONLINE_CLOSES}</p>
+        <p class="kicker">Participant registration · {ONLINE_SEATS} seats · last date {ONLINE_CLOSES}</p>
         <p class="link"><a href="{ONLINE_URL}" style="color:inherit;text-decoration:none">{SITE}<b>{ONLINE_PATH}</b></a></p>
         <p class="note">Scan the code or type the link · Pay ₹354 on Razorpay, choose offline or online, then register with the payment ID
           and receipt · <b>Offline hands-on: Yenepoya colleges only.</b> <b>No RCI CRE points.</b></p>
@@ -395,7 +395,7 @@ def online_cover(build: Path) -> str:
     )
     return f"""
     <section class="sheet flyer online">
-      <div class="badge-nonrci">NON-RCI CRE REGISTRATION</div>
+      <div class="badge-nonrci">PARTICIPANT REGISTRATION</div>
       <div class="hero">
         {logo_strip()}
         <div class="hero-row">
@@ -429,11 +429,11 @@ def online_details(build: Path) -> str:
     tags = "".join(f"<span>{esc(a)}</span>" for a in ONLINE_AUDIENCE)
     return f"""
     <section class="sheet flyer team online">
-      <div class="badge-nonrci">NON-RCI CRE REGISTRATION</div>
+      <div class="badge-nonrci">PARTICIPANT REGISTRATION</div>
       <div class="hero">
         {logo_strip()}
         <div class="team-title">
-          <p class="eyebrow">Non-RCI Registration · 19 December 2026</p>
+          <p class="eyebrow">Participant Registration · 19 December 2026</p>
           <h2>Organising <em>team</em></h2>
         </div>
         <div class="team-row">{team}</div>
@@ -441,7 +441,7 @@ def online_details(build: Path) -> str:
       <div class="body">
         <div class="info-grid">
           <div class="info c2"><h4>Who can join</h4><div class="in">
-            <p class="small-note" style="margin:0 0 10px"><b>Offline hands-on:</b> Yenepoya colleges only. <b>Online:</b> open to all —</p>
+            <p class="small-note" style="margin:0 0 10px">RCI CRE places are full — others can still take part. <b>Offline hands-on:</b> Yenepoya colleges only. <b>Online:</b> open to all.</p>
             <div class="tags">{tags}</div>
             <p class="small-note"><b>{ONLINE_SEATS} seats</b> in all (offline + online), first come, first served.</p></div></div>
           <div class="info c1"><h4>How to register</h4><div class="in"><ol>
