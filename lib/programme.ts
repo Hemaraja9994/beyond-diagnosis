@@ -79,9 +79,9 @@ export const onlineProgramme = {
   closesLabel: "10 December 2026",
   /** Registrations taken in all, offline and online together. A rejected payment gives the seat back. */
   seats: 100,
-  brochurePdf: "/brochure/online-programme.pdf?v=3",
-  brochureImage: "/brochure/online-programme-1.png?v=3",
-  brochureImageBack: "/brochure/online-programme-2.png?v=3",
+  brochurePdf: "/brochure/online-programme.pdf?v=4",
+  brochureImage: "/brochure/online-programme-1.png?v=4",
+  brochureImageBack: "/brochure/online-programme-2.png?v=4",
   /** Separate number series, so no online certificate can be mistaken for a CRE one. */
   certificatePrefix: "YMC/ASLP/ONL/2026/",
   certificateLine: "has participated in the Zonal Continuing Rehabilitation Education (CRE) programme (offline hands-on and online)",
@@ -90,7 +90,7 @@ export const onlineProgramme = {
   modeLine: "Offline hands-on and online",
   noCreLine: "This programme does not carry RCI CRE points.",
   /** Where the offline hands-on runs, on the programme day. */
-  venue: "Department of Audiology and Speech Language Pathology, Yenepoya Medical College, Deralakatte, Mangaluru",
+  venue: "4th floor, Academic Block, Yenepoya Medical College, Deralakatte, Mangaluru",
   offlineRule: "Offline hands-on is only for students and staff of Yenepoya (Deemed to be University) colleges.",
 } as const;
 
@@ -101,7 +101,7 @@ export const attendanceModes: { value: AttendanceMode; label: string; detail: st
   {
     value: "offline",
     label: "Offline hands-on at Yenepoya",
-    detail: "In person at the department, Yenepoya Medical College, Deralakatte. Yenepoya colleges only.",
+    detail: "In person at the 4th floor, Academic Block, Yenepoya Medical College. Yenepoya colleges only.",
   },
   { value: "online", label: "Online on Cisco Webex", detail: "Live from anywhere. Open to all." },
 ];

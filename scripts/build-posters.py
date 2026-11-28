@@ -456,7 +456,7 @@ def online_details(build: Path) -> str:
           </div></div></div>
           <div class="info c3"><h4>Certificate &amp; venue</h4><div class="in">
             <p class="big">Offline at Yenepoya<br>+ Online on Webex</p>
-            <p>Offline: Dept. of ASLP, Yenepoya Medical College, Deralakatte. E-certificate of participation. <b>No RCI CRE points.</b></p>
+            <p>Offline: 4th floor, Academic Block, Yenepoya Medical College (YMC). E-certificate of participation. <b>No RCI CRE points.</b></p>
           </div></div>
         </div>
         {register_strip(build)}
