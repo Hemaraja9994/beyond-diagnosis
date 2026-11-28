@@ -65,7 +65,7 @@ export const programme = {
 
 /**
  * The Non-RCI CRE programme for people who are not claiming RCI CRE points — ASLP students, professionals not
- * on the CRR, allied professionals, parents and caregivers. Same day and same fee as the RCI track, attended
+ * on the CRR, and above all doctors and allied health professionals who certify disability. Same day and same fee as the RCI track, attended
  * either offline (hands-on, in person at Yenepoya — Yenepoya colleges only) or online on Cisco Webex (open to
  * all). Its own brochure, registration page and certificate (participation, no CRE points). Registration stays
  * open on its own switch (desk → Settings) until closesAt or until `seats` registrations, whichever comes first.
@@ -79,14 +79,14 @@ export const onlineProgramme = {
   closesLabel: "10 December 2026",
   /** Registrations taken in all, offline and online together. A rejected payment gives the seat back. */
   seats: 100,
-  brochurePdf: "/brochure/online-programme.pdf?v=4",
-  brochureImage: "/brochure/online-programme-1.png?v=4",
-  brochureImageBack: "/brochure/online-programme-2.png?v=4",
+  brochurePdf: "/brochure/online-programme.pdf?v=5",
+  brochureImage: "/brochure/online-programme-1.png?v=5",
+  brochureImageBack: "/brochure/online-programme-2.png?v=5",
   /** Separate number series, so no online certificate can be mistaken for a CRE one. */
   certificatePrefix: "YMC/ASLP/ONL/2026/",
   certificateLine: "has participated in the Zonal Continuing Rehabilitation Education (CRE) programme (offline hands-on and online)",
   /** One line for banners and the page: why this registration exists. */
-  reasonLine: "RCI CRE places are full. Students, professionals not claiming CRE, allied professionals and parents can still take part.",
+  reasonLine: "RCI CRE places are full. Doctors and allied health professionals who certify disability — psychologists, neurologists, psychiatrists, paediatricians and others — and students can still take part.",
   modeLine: "Offline hands-on and online",
   noCreLine: "This programme does not carry RCI CRE points.",
   /** Where the offline hands-on runs, on the programme day. */
@@ -126,10 +126,11 @@ export function isYenepoyaInstitution(text: string): boolean {
 export const onlineAudience = [
   "Offline hands-on: students and staff of Yenepoya colleges",
   "Online: open to all",
+  "Psychologists and other professionals who certify disability",
+  "Doctors: neurologists, psychiatrists, paediatricians, ENT, PMR and others",
+  "Allied health professionals, therapists and special educators",
+  "ASLP professionals not claiming CRE",
   "ASLP students (BASLP, MASLP, interns)",
-  "Professionals not registered with RCI",
-  "Doctors, therapists, special educators and psychologists",
-  "Parents and caregivers of persons with disabilities",
 ] as const;
 
 export const committee = [
@@ -212,7 +213,8 @@ export type Profession =
   | "other"
   | "student"
   | "allied_health"
-  | "parent_caregiver";
+  | "parent_caregiver"
+  | "doctor";
 
 /** "online" marks the regular online programme (non-RCI track); every other value is the RCI CRE track. */
 export type ArrivalSource = "rci" | "site" | "join" | "direct" | "desk" | "online";
@@ -235,20 +237,21 @@ export const professions: { value: Profession; label: string }[] = [
 
 /** Categories offered on the regular online programme form. */
 export const onlineProfessions: { value: Profession; label: string }[] = [
-  { value: "student", label: "ASLP student / intern" },
+  { value: "clinical_psychologist", label: "Psychologist" },
+  { value: "doctor", label: "Doctor (neurologist, psychiatrist, paediatrician, ENT, PMR…)" },
+  { value: "allied_health", label: "Allied health professional" },
+  { value: "occupational_therapist", label: "Occupational therapist" },
+  { value: "special_educator", label: "Special educator" },
   { value: "audiologist", label: "Audiologist (not claiming CRE)" },
   { value: "speech_language_pathologist", label: "Speech-language pathologist (not claiming CRE)" },
-  { value: "allied_health", label: "Doctor / allied health professional" },
-  { value: "clinical_psychologist", label: "Psychologist" },
-  { value: "special_educator", label: "Special educator" },
-  { value: "occupational_therapist", label: "Occupational therapist" },
-  { value: "parent_caregiver", label: "Parent / caregiver" },
+  { value: "student", label: "ASLP student / intern" },
   { value: "other", label: "Other" },
 ];
 
 /** Every category the site accepts, from either form or the desk. */
 export const allProfessions: { value: Profession; label: string }[] = [
   ...professions,
+  { value: "doctor", label: "Doctor (neurologist, psychiatrist, paediatrician, ENT, PMR…)" },
   { value: "allied_health", label: "Doctor / allied health professional" },
   { value: "parent_caregiver", label: "Parent / caregiver" },
 ];
@@ -279,6 +282,8 @@ export function professionLabel(profession: Profession): string {
       return "Doctor / allied health professional";
     case "parent_caregiver":
       return "Parent / caregiver";
+    case "doctor":
+      return "Doctor";
     default: {
       const unknown: never = profession;
       return unknown;

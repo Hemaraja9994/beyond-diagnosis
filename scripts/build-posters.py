@@ -347,12 +347,14 @@ ONLINE_URL = f"https://{SITE}{ONLINE_PATH}"
 ONLINE_CLOSES = "10 December 2026"
 ONLINE_SEATS = 100
 ONLINE_AUDIENCE = [
-    "ASLP students & interns",
-    "Professionals not on RCI",
-    "Doctors & allied health",
-    "Psychologists & special educators",
-    "Therapists",
-    "Parents & caregivers",
+    "Psychologists",
+    "Neurologists",
+    "Psychiatrists",
+    "Paediatricians",
+    "ENT & PMR doctors",
+    "Allied health",
+    "Special educators",
+    "ASLP & students",
 ]
 
 
@@ -441,7 +443,7 @@ def online_details(build: Path) -> str:
       <div class="body">
         <div class="info-grid">
           <div class="info c2"><h4>Who can join</h4><div class="in">
-            <p class="small-note" style="margin:0 0 10px">RCI CRE places are full — others can still take part. <b>Offline hands-on:</b> Yenepoya colleges only. <b>Online:</b> open to all.</p>
+            <p class="small-note" style="margin:0 0 10px">RCI CRE places are full — certifying professionals can still take part. <b>Offline hands-on:</b> Yenepoya colleges only. <b>Online:</b> open to all.</p>
             <div class="tags">{tags}</div>
             <p class="small-note"><b>{ONLINE_SEATS} seats</b> in all (offline + online), first come, first served.</p></div></div>
           <div class="info c1"><h4>How to register</h4><div class="in"><ol>

@@ -23,7 +23,7 @@ type FileField = "receipt" | "crrCertificate" | "rciConfirmation";
 
 /**
  * The registration form. track="online" is the Non-RCI CRE programme: no CRE question, no CRR number, a choice of
- * offline hands-on (Yenepoya colleges only) or online, categories for students, allied professionals and parents,
+ * offline hands-on (Yenepoya colleges only) or online, categories for certifying doctors, psychologists, allied professionals and students,
  * and it posts to its own endpoint.
  */
 export function RegisterForm({
@@ -136,7 +136,7 @@ export function RegisterForm({
         </h2>
         <p className="mt-2 text-sm leading-6 text-muted">
           {online
-            ? "The same fee as the RCI programme, for students, professionals, parents and caregivers alike. Use the same name, email and mobile on Razorpay that you will enter below."
+            ? "The same fee as the RCI programme, for doctors, psychologists, allied professionals and students alike. Use the same name, email and mobile on Razorpay that you will enter below."
             : "One fee for everyone — professionals and students. Use the same name, email and mobile on Razorpay that you will enter below."}
         </p>
         <ul className="mt-4 grid gap-2 text-sm leading-6">
@@ -263,7 +263,7 @@ export function RegisterForm({
 
         <fieldset className="card grid gap-4 p-5">
           <legend className="float-left mb-1 w-full font-display text-lg text-navy">{online ? "Where you study, work or live" : "Where you work"}</legend>
-          <Field label={online ? "Designation or course" : "Designation"} name="designation" hint={online ? "For example BASLP 3rd year, physiotherapist, or parent." : undefined} />
+          <Field label={online ? "Designation or course" : "Designation"} name="designation" hint={online ? "For example consultant neurologist, clinical psychologist, or BASLP 3rd year." : undefined} />
           <label className="grid gap-1 text-sm font-semibold text-navy">
             {online ? (attendance === "offline" ? "Your Yenepoya college" : "College, workplace or town") : "Workplace"}
             <input className="field" name="institution" required value={institution} onChange={(event) => setInstitution(event.target.value)} />
@@ -273,7 +273,7 @@ export function RegisterForm({
                 : online
                   ? attendance === "offline"
                     ? "The Yenepoya college where you study or work."
-                    : "Students: your college. Professionals: your workplace. Parents and caregivers: your town or city."
+                    : "Professionals: your hospital, clinic or workplace. Students: your college."
                   : "A college, hospital, clinic, or private practice."}
             </span>
           </label>

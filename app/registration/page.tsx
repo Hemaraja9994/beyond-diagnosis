@@ -50,8 +50,7 @@ export default async function RegistrationPage({
             <div className="mt-5 rounded-2xl bg-navy/5 p-4">
               <p className="font-semibold text-navy">Not claiming RCI CRE points?</p>
               <p className="mt-1 text-sm leading-6 text-muted">
-                ASLP students, professionals not registered with RCI, allied professionals, parents and caregivers can still register for the{" "}
-                participant registration — offline hands-on at Yenepoya (Yenepoya colleges only) or online — until {onlineProgramme.closesLabel},{" "}
+                Psychologists, neurologists and other doctors and allied health professionals who certify disability, and students, can still register as participants — offline hands-on at Yenepoya (Yenepoya colleges only) or online — until {onlineProgramme.closesLabel},{" "}
                 {onlineProgramme.seats} seats in all. {onlineProgramme.noCreLine}
               </p>
               <a className="pill pill-solid mt-3" href={onlineProgramme.path}>
