@@ -1,7 +1,7 @@
 import { createHash, randomBytes, randomUUID } from "node:crypto";
 import { del, get, list, put } from "@vercel/blob";
 import { sql, storageMode } from "@/lib/db";
-import type { ArrivalSource, CreClaim, Profession, Title } from "@/lib/programme";
+import type { ArrivalSource, AttendanceMode, CreClaim, Profession, Title } from "@/lib/programme";
 import { isDocKind, isProofKind, type DocKind, type ProofFile } from "@/lib/proof";
 import type { QueryDraft, RegistrationDraft, UpdateDraft } from "@/lib/validate";
 import type { DeskReview, Verification } from "@/lib/verify-types";
@@ -31,6 +31,8 @@ export type Registration = {
   deskReview: DeskReview | null;
   accessNeeds: string;
   source: ArrivalSource;
+  /** Non-RCI CRE track only: offline hands-on at Yenepoya, or online. "" for the RCI track. */
+  attendance: AttendanceMode | "";
   consent: boolean;
 };
 
@@ -171,6 +173,7 @@ export type DeskEdit = Pick<
   | "stateName"
   | "paymentReference"
   | "accessNeeds"
+  | "attendance"
 >;
 
 const deskColumns: [keyof DeskEdit, string][] = [
@@ -187,6 +190,7 @@ const deskColumns: [keyof DeskEdit, string][] = [
   ["stateName", "state_name"],
   ["paymentReference", "payment_reference"],
   ["accessNeeds", "access_needs"],
+  ["attendance", "attendance"],
 ];
 
 /** A coordinator's edit of any field. Returns which fields changed, for the change log. */
@@ -379,7 +383,7 @@ async function saveDocument(reference: string, upload: DocumentUpload): Promise<
 }
 
 const registrationColumns =
-  "id, reference, created_at, title, cre_claim, full_name, email, mobile, crr_number, profession, profession_detail, designation, institution, state_name, payment_reference, payment_proof, documents, verification, desk_review, access_needs, source, consent";
+  "id, reference, created_at, title, cre_claim, full_name, email, mobile, crr_number, profession, profession_detail, designation, institution, state_name, payment_reference, payment_proof, documents, verification, desk_review, access_needs, source, attendance, consent";
 
 async function ensureColumns(): Promise<void> {
   if (columnsReady || storageMode() === "blob") return;
@@ -391,6 +395,7 @@ async function ensureColumns(): Promise<void> {
   await sql("alter table registrations add column if not exists documents text not null default ''");
   await sql("alter table registrations add column if not exists verification text not null default ''");
   await sql("alter table registrations add column if not exists desk_review text not null default ''");
+  await sql("alter table registrations add column if not exists attendance text not null default ''");
   await sql(
     `create table if not exists registration_files (
       reference text not null, kind text not null, content_type text not null, data text not null,
@@ -410,8 +415,8 @@ async function createRegistrationSql(draft: RegistrationDraft): Promise<{ refere
     await sql(
       `insert into registrations (
         id, reference, created_at, title, cre_claim, full_name, email, mobile, crr_number, profession, profession_detail,
-        designation, institution, state_name, payment_reference, access_needs, source, consent
-      ) values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18)`,
+        designation, institution, state_name, payment_reference, access_needs, source, consent, attendance
+      ) values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19)`,
       [
         record.id,
         record.reference,
@@ -431,6 +436,7 @@ async function createRegistrationSql(draft: RegistrationDraft): Promise<{ refere
         record.accessNeeds,
         record.source,
         record.consent,
+        record.attendance,
       ],
     );
   } catch (error) {
@@ -614,8 +620,13 @@ function registrationFromRow(row: Record<string, unknown>): Registration {
     deskReview: parseDeskReview(String(row.desk_review ?? "")),
     accessNeeds: String(row.access_needs ?? ""),
     source: String(row.source) as ArrivalSource,
+    attendance: attendanceValue(row.attendance),
     consent: row.consent === true || row.consent === "t" || row.consent === "true",
   };
+}
+
+function attendanceValue(value: unknown): AttendanceMode | "" {
+  return value === "offline" || value === "online" ? value : "";
 }
 
 function parseVerification(text: string): Verification | null {
@@ -646,6 +657,7 @@ function parseRegistration(value: unknown): Registration | null {
   if (typeof row.professionDetail !== "string") row.professionDetail = "";
   if (typeof row.title !== "string") row.title = "";
   if (typeof row.creClaim !== "string") row.creClaim = "";
+  row.attendance = attendanceValue(row.attendance);
   row.documents = Array.isArray(row.documents) ? row.documents.filter((kind) => isDocKind(String(kind))) : [];
   if (typeof row.verification !== "object") row.verification = null;
   if (typeof row.deskReview !== "object") row.deskReview = null;

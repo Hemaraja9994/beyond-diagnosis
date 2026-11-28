@@ -322,7 +322,7 @@ async function render(spec: Spec, mode: "full" | "template" = "full"): Promise<{
     y -= 22;
     y = richCentred(
       page,
-      [[{ text: online ? `has participated in the ${onlineProgramme.name.toLowerCase()}` : "has participated in the Zonal Continuing Rehabilitation Education (CRE) programme", font: body }]],
+      [[{ text: online ? onlineProgramme.certificateLine : "has participated in the Zonal Continuing Rehabilitation Education (CRE) programme", font: body }]],
       y,
       11.3,
       16,
@@ -334,7 +334,7 @@ async function render(spec: Spec, mode: "full" | "template" = "full"): Promise<{
       page,
       [
         [
-          { text: `organised by the ${programme.organiser}, ${programme.hospital}, ${programme.city}, held online on`, font: body },
+          { text: `organised by the ${programme.organiser}, ${programme.hospital}, ${programme.city}, held ${online ? "in person and online" : "online"} on`, font: body },
           { text: `${programme.dateLabel}.`, font: strong },
         ],
       ],
@@ -351,7 +351,7 @@ async function render(spec: Spec, mode: "full" | "template" = "full"): Promise<{
   centre(
     page,
     online
-      ? `${onlineProgramme.name} (non-RCI)  ·  This certificate does not carry RCI CRE points  ·  ${programme.mode}, ${programme.language}`
+      ? `${onlineProgramme.name}  ·  This certificate does not carry RCI CRE points  ·  ${onlineProgramme.modeLine}, ${programme.language}`
       : `Approved by the Rehabilitation Council of India  ·  Letter F. No. ${programme.rciFileNo}  ·  ${programme.level} CRE, ${programme.rciHours} hours  ·  Institute code ${programme.instituteCode}`,
     y,
     fonts.sansSemibold,

@@ -48,7 +48,7 @@ export default async function VerifyPage({
     ["Certificate No.", rowCertificateNumber(row, issued)],
     ["Certificate", "Participation"],
     ["Programme", `${programme.title}: ${programme.subtitle}`],
-    ["Type", isOnlineTrack(row) ? `${onlineProgramme.name} (non-RCI) — ${onlineProgramme.noCreLine}` : `${programme.level} Continuing Rehabilitation Education (CRE), online`],
+    ["Type", isOnlineTrack(row) ? `${onlineProgramme.name} — ${onlineProgramme.noCreLine}` : `${programme.level} Continuing Rehabilitation Education (CRE), online`],
     ["Held on", programme.dateLabel],
     ["Issued by", `${programme.organiser}, ${programme.hospital}, ${programme.university}`],
     ["Issued on", new Date(certificateIssueDate(issued)).toLocaleDateString("en-IN", { timeZone: "Asia/Kolkata", day: "numeric", month: "long", year: "numeric" })],

@@ -1,7 +1,7 @@
 import { participantToken } from "@/lib/admin";
 import { acknowledgementPdf } from "@/lib/acknowledgement";
 import { mailReady, sendMail } from "@/lib/mail";
-import { isOnlineTrack, onlineProgramme, programme } from "@/lib/programme";
+import { attendanceLabel, attendanceWhere, isOnlineTrack, onlineProgramme, programme } from "@/lib/programme";
 import { creStamp, participationStamp, paymentState, paymentText, rciState, rciText } from "@/lib/status";
 import { getRegistration, saveDeskReview, type Registration } from "@/lib/store";
 
@@ -84,8 +84,9 @@ async function registrationMail(row: Registration, links: Links): Promise<boolea
   const lines = [
     `Registration reference: ${row.reference}`,
     `Payment: ${paymentText[paymentState(row)]}`,
-    isOnlineTrack(row) ? `Programme: ${onlineProgramme.name} (non-RCI). ${onlineProgramme.noCreLine}` : `RCI CRE points: ${rciText[rciState(row)]}`,
-  ];
+    isOnlineTrack(row) ? `Programme: ${onlineProgramme.name}. ${onlineProgramme.noCreLine}` : `RCI CRE points: ${rciText[rciState(row)]}`,
+    isOnlineTrack(row) && row.attendance ? `Attendance: ${attendanceLabel(row.attendance)}` : "",
+  ].filter(Boolean);
   const attachments = links.status
     ? [{ filename: `Acknowledgement-${row.reference}.pdf`, content: Buffer.from(await acknowledgementPdf(row, links.status)), contentType: "application/pdf" }]
     : [];
@@ -95,7 +96,7 @@ async function registrationMail(row: Registration, links: Links): Promise<boolea
     text: [
       `Dear ${name},`,
       "",
-      `Thank you for registering for ${programme.title}: ${programme.subtitle}, ${programme.dateLabel}, from ${programme.start}, online on Cisco Webex.`,
+      `Thank you for registering for ${programme.title}: ${programme.subtitle}, ${programme.dateLabel}, from ${programme.start}, ${attendanceWhere(row)}.`,
       "",
       ...lines,
       "",
@@ -114,12 +115,13 @@ async function registrationMail(row: Registration, links: Links): Promise<boolea
       .join("\n"),
     html: shell(
       `<p>Dear ${esc(name)},</p>
-       <p>Thank you for registering for <strong>${esc(programme.title)}</strong>: ${esc(programme.subtitle)} — ${esc(programme.dateLabel)}, from ${esc(programme.start)}, online on Cisco Webex.</p>
+       <p>Thank you for registering for <strong>${esc(programme.title)}</strong>: ${esc(programme.subtitle)} — ${esc(programme.dateLabel)}, from ${esc(programme.start)}, ${esc(attendanceWhere(row))}.</p>
        <table style="border-collapse:collapse;margin:12px 0">${[
          ["Reference", row.reference],
          ["Participation", `${first.word.toLowerCase()}`],
          ["Payment", paymentText[paymentState(row)]],
-         isOnlineTrack(row) ? ["Programme", `${onlineProgramme.name} (non-RCI) · no CRE points`] : ["RCI CRE points", rciText[rciState(row)]],
+         isOnlineTrack(row) ? ["Programme", `${onlineProgramme.name} · no CRE points`] : ["RCI CRE points", rciText[rciState(row)]],
+         ...(isOnlineTrack(row) && row.attendance ? [["Attendance", attendanceLabel(row.attendance)]] : []),
        ]
          .map(([label, value]) => `<tr><td style="padding:4px 14px 4px 0;color:#5c6678">${esc(label)}</td><td style="padding:4px 0;font-weight:600">${esc(value)}</td></tr>`)
          .join("")}</table>

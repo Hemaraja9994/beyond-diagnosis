@@ -35,9 +35,9 @@ export default async function NewRegistrationPage({ searchParams }: { searchPara
             Programme track
             <select className="field" name="track" defaultValue="rci">
               <option value="rci">RCI CRE programme</option>
-              <option value="online">Regular online programme (non-RCI, no CRE points)</option>
+              <option value="online">Non-RCI CRE programme (offline hands-on or online, no CRE points)</option>
             </select>
-            <span className="font-normal text-muted">The online track is always saved as not claiming CRE.</span>
+            <span className="font-normal text-muted">The Non-RCI track is always saved as not claiming CRE. Set its attendance (offline or online) below.</span>
           </label>
           <DeskFields />
           <h3 className="font-semibold text-navy">Documents (optional)</h3>

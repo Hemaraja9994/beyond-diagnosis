@@ -109,7 +109,7 @@ export async function certificatesPptx(items: Item[], track: "rci" | "online"): 
       [
         `${number} · ${row.reference}`,
         `${name} · ${row.email}`,
-        onlineRow ? `${onlineProgramme.name} (non-RCI): no CRE points.` : "RCI CRE programme.",
+        onlineRow ? `${onlineProgramme.name}: no CRE points.` : "RCI CRE programme.",
         `Signatures (left to right): ${signers}. Add each once on the slide master (View → Slide Master) above its line; it then appears on every slide.`,
       ].join("\n"),
     );

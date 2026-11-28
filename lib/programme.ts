@@ -64,26 +64,66 @@ export const programme = {
 } as const;
 
 /**
- * The regular online programme for people who are not claiming RCI CRE points — ASLP students, professionals
- * not on the CRR, allied professionals, parents and caregivers. Same day, same Webex session and same fee as
- * the RCI track, with its own brochure, registration page and certificate (participation, no CRE points).
- * Registration stays open on its own switch (desk → Settings) until closesAt, whatever the RCI track shows.
+ * The Non-RCI CRE programme for people who are not claiming RCI CRE points — ASLP students, professionals not
+ * on the CRR, allied professionals, parents and caregivers. Same day and same fee as the RCI track, attended
+ * either offline (hands-on, in person at Yenepoya — Yenepoya colleges only) or online on Cisco Webex (open to
+ * all). Its own brochure, registration page and certificate (participation, no CRE points). Registration stays
+ * open on its own switch (desk → Settings) until closesAt or until `seats` registrations, whichever comes first.
+ * (Internally the track is still called "online": source = "online".)
  */
 export const onlineProgramme = {
-  name: "Regular Online Programme",
-  shortName: "Online programme",
+  name: "Non-RCI CRE Programme",
+  shortName: "Non-RCI CRE programme",
   path: "/online",
-  closesAt: "2026-12-17T23:59:59+05:30",
-  closesLabel: "17 December 2026",
-  brochurePdf: "/brochure/online-programme.pdf?v=1",
-  brochureImage: "/brochure/online-programme-1.png?v=1",
-  brochureImageBack: "/brochure/online-programme-2.png?v=1",
+  closesAt: "2026-12-10T23:59:59+05:30",
+  closesLabel: "10 December 2026",
+  /** Registrations taken in all, offline and online together. A rejected payment gives the seat back. */
+  seats: 100,
+  brochurePdf: "/brochure/online-programme.pdf?v=2",
+  brochureImage: "/brochure/online-programme-1.png?v=2",
+  brochureImageBack: "/brochure/online-programme-2.png?v=2",
   /** Separate number series, so no online certificate can be mistaken for a CRE one. */
   certificatePrefix: "YMC/ASLP/ONL/2026/",
+  certificateLine: "has participated in the Non-RCI CRE Programme (offline hands-on and online)",
+  modeLine: "Offline hands-on and online",
   noCreLine: "This programme does not carry RCI CRE points.",
+  /** Where the offline hands-on runs, on the programme day. */
+  venue: "Department of Audiology and Speech Language Pathology, Yenepoya Medical College, Deralakatte, Mangaluru",
+  offlineRule: "Offline hands-on is only for students and staff of Yenepoya (Deemed to be University) colleges.",
 } as const;
 
+/** How a Non-RCI CRE participant attends. "" for RCI-track rows (always online). */
+export type AttendanceMode = "offline" | "online";
+
+export const attendanceModes: { value: AttendanceMode; label: string; detail: string }[] = [
+  {
+    value: "offline",
+    label: "Offline hands-on at Yenepoya",
+    detail: "In person at the department, Yenepoya Medical College, Deralakatte. Yenepoya colleges only.",
+  },
+  { value: "online", label: "Online on Cisco Webex", detail: "Live from anywhere. Open to all." },
+];
+
+export function attendanceLabel(mode: string): string {
+  if (mode === "offline") return "Offline hands-on (Yenepoya)";
+  if (mode === "online") return "Online (Cisco Webex)";
+  return "";
+}
+
+/** Where and how a participant attends, for emails and the acknowledgement. */
+export function attendanceWhere(row: { source: string; attendance?: string }): string {
+  if (row.source === "online" && row.attendance === "offline") return `offline hands-on, in person at the ${onlineProgramme.venue}`;
+  return "online on Cisco Webex";
+}
+
+/** Offline hands-on places are for Yenepoya (Deemed to be University) colleges: the college named must say Yenepoya. */
+export function isYenepoyaInstitution(text: string): boolean {
+  return /yenepoya/i.test(text);
+}
+
 export const onlineAudience = [
+  "Offline hands-on: students and staff of Yenepoya colleges",
+  "Online: open to all",
   "ASLP students (BASLP, MASLP, interns)",
   "Professionals not registered with RCI",
   "Doctors, therapists, special educators and psychologists",
@@ -257,7 +297,7 @@ export function sourceLabel(source: ArrivalSource): string {
     case "desk":
       return "Added by a coordinator";
     case "online":
-      return "Regular online programme (non-RCI)";
+      return "Non-RCI CRE programme";
     default: {
       const unknown: never = source;
       return unknown;

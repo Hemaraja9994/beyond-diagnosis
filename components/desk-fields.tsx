@@ -1,4 +1,4 @@
-import { allProfessions, states, titles } from "@/lib/programme";
+import { allProfessions, attendanceModes, states, titles } from "@/lib/programme";
 import type { Registration } from "@/lib/store";
 
 /** The full set of registration fields for the coordinator desk (edit and add). Plain HTML: no script needed. */
@@ -65,6 +65,18 @@ export function DeskFields({ row }: { row?: Registration }) {
         </select>
       </label>
       {field("Payment ID", "paymentReference", row?.paymentReference, "pay_… or UPI transaction number; may be blank")}
+      <label className="grid gap-1 text-sm font-semibold text-navy">
+        Attendance (Non-RCI CRE track)
+        <select className="field" name="attendance" defaultValue={row?.attendance ?? ""}>
+          <option value="">— (RCI track, online)</option>
+          {attendanceModes.map((mode) => (
+            <option key={mode.value} value={mode.value}>
+              {mode.label}
+            </option>
+          ))}
+        </select>
+        <span className="font-normal text-muted">Offline hands-on is for Yenepoya colleges; the desk may admit others.</span>
+      </label>
       <label className="grid gap-1 text-sm font-semibold text-navy sm:col-span-2">
         Access needs
         <textarea className="field min-h-20" name="accessNeeds" defaultValue={row?.accessNeeds ?? ""} maxLength={500} />

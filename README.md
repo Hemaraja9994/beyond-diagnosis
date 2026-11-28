@@ -31,7 +31,7 @@ Open http://127.0.0.1:3457. Without those two variables the public site still ru
 | `/faculty` | Resource persons |
 | `/department` | Organising department, services, and current staff |
 | `/registration` | Pay first, then register with payment ID + receipt (+ optional CRR certificate, RCI mail) |
-| `/online` | Regular online programme (non-RCI): separate registration for students, professionals not on the CRR, allied professionals, parents and caregivers |
+| `/online` | Non-RCI CRE programme: offline hands-on at Yenepoya (Yenepoya colleges only) or online (open to all); 100 seats; until 10 December 2026 |
 | `/registration/rci` | Upload the RCI confirmation mail later (claiming CRE points) |
 | `/registration/status` | Look up status with reference + email; download / WhatsApp the acknowledgement PDF |
 | `/registration/update` | Older registrations add title, CRR, receipt or files |
@@ -65,14 +65,14 @@ The desk can:
 - Site switches: number of CRE places, registration open/closed.
 - Coordinator guide: `public/guides/coordinator-desk-guide.pdf` (screenshots use sample data), linked from the desk.
 
-## Regular online programme (non-RCI track)
+## Non-RCI CRE programme (offline hands-on + online)
 
 For everyone not claiming RCI CRE points — ASLP students, professionals not registered with RCI, doctors and allied professionals, parents and caregivers. Same day, same Webex session and same fee (₹354 on Razorpay) as the RCI track.
 
-- Registration at `/online` (form posts to `/api/register/online`). No CRE question and no CRR number; the server saves every such registration as not claiming CRE, with source `online`. It has its own switch (desk → Settings → Online programme) and closes by itself after `onlineProgramme.closesAt` (17 December 2026), whatever the RCI-track switch says. Settings live in `onlineProgramme` in `lib/programme.ts`.
+- Registration at `/online` (form posts to `/api/register/online`). No CRE question and no CRR number; the server saves every such registration as not claiming CRE, with source `online`. It has its own switch (desk → Settings → Online programme) and closes by itself after `onlineProgramme.closesAt` (10 December 2026) or once `onlineProgramme.seats` (100) registrations hold a seat (a rejected payment frees one), whatever the RCI-track switch says. Each registration records `attendance`: `offline` (hands-on at Yenepoya — the college must name Yenepoya) or `online` (migration `006_attendance.sql`); the desk can change it under Edit. Settings live in `onlineProgramme` in `lib/programme.ts`.
 - Desk: an "Online programme (non-RCI)" view and chip; "Add a registration" has a Programme track choice. Online registrations are not listed on the public Participants page (it is the RCI list with CRR numbers).
 - Acknowledgement and emails say "Regular Online Programme … does not carry RCI CRE points" in place of the RCI approval line.
-- Certificates: same design with both logos, the wording "has participated in the regular online programme", the line "This certificate does not carry RCI CRE points", and their own number series (`YMC/ASLP/ONL/2026/0001` …).
+- Certificates: same design with both logos, the wording "has participated in the Non-RCI CRE Programme (offline hands-on and online)" … "held in person and online", the line "This certificate does not carry RCI CRE points", and their own number series (`YMC/ASLP/ONL/2026/0001` …).
 - Brochure: `public/brochure/online-programme.pdf` (+ `-1.png`, `-2.png`), with the registration link and a QR code to `https://yenepoya-cre.vercel.app/online`. Rebuild with `python3 scripts/build-posters.py online`.
 
 ## Confirmation emails (free, through Gmail)

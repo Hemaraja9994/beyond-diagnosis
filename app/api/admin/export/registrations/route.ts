@@ -1,7 +1,7 @@
 import { adminFromRequest } from "@/lib/admin";
 import { csvResponse, toCsv } from "@/lib/csv";
 import { json } from "@/lib/http";
-import { professionLabel, programme, sourceLabel, type ArrivalSource, type Profession } from "@/lib/programme";
+import { attendanceLabel, professionLabel, programme, sourceLabel, type ArrivalSource, type Profession } from "@/lib/programme";
 import { listRegistrations } from "@/lib/store";
 import { paymentState, paymentText, rciState, rciText } from "@/lib/status";
 import { statusLabel } from "@/lib/verify-types";
@@ -40,6 +40,7 @@ export async function GET(request: Request) {
       "CRE points credited",
       "Access needs",
       "Arrived from",
+      "Non-RCI attendance",
     ],
     rows.map((row) => [
       row.reference,
@@ -69,6 +70,7 @@ export async function GET(request: Request) {
       row.deskReview?.points ? "Yes" : "",
       row.accessNeeds,
       sourceLabel(row.source as ArrivalSource),
+      attendanceLabel(row.attendance),
     ]),
   );
   return csvResponse(`registrations-${programme.acknowledgement}.csv`, csv);

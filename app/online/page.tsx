@@ -3,28 +3,34 @@ import Link from "next/link";
 import { PageBanner } from "@/components/page-banner";
 import { RegisterForm } from "@/components/register-form";
 import { onlineAudience, onlineProgramme, programme, sessions } from "@/lib/programme";
+import { onlineSeatsLeft } from "@/lib/seats";
 import { onlineRegistrationOpen } from "@/lib/settings";
 
 export const metadata: Metadata = {
   title: "Non-RCI CRE registration",
-  description: `Register for the regular online programme of ${programme.title} on ${programme.dateLabel}: open to ASLP students, professionals not registered with RCI, allied professionals, parents and caregivers. ${onlineProgramme.noCreLine}`,
+  description: `Register for the ${onlineProgramme.name} of ${programme.title} on ${programme.dateLabel}: offline hands-on at Yenepoya (Yenepoya colleges only) or online (open to all). ${onlineProgramme.seats} seats, until ${onlineProgramme.closesLabel}. ${onlineProgramme.noCreLine}`,
 };
 export const dynamic = "force-dynamic";
 
-/** The regular online programme: a separate registration page for people not claiming RCI CRE points. */
+/** The Non-RCI CRE programme: a separate registration page for people not claiming RCI CRE points. */
 export default async function OnlineProgrammePage() {
-  const open = await onlineRegistrationOpen().catch(() => false);
+  const switchOpen = await onlineRegistrationOpen().catch(() => false);
+  const seatsLeft = switchOpen ? await onlineSeatsLeft().catch(() => onlineProgramme.seats) : 0;
+  const full = switchOpen && seatsLeft <= 0;
+  const open = switchOpen && !full;
 
   return (
     <div id="register" className="pb-24 md:pb-10">
       <PageBanner
         kicker={`Non-RCI CRE registration · ${onlineProgramme.name}`}
-        title={open ? "Join the" : "Online programme"}
-        accent={open ? "online programme" : "registration closed"}
+        title={open ? "Offline hands-on" : "Non-RCI CRE"}
+        accent={open ? "and online" : full ? "seats full" : "registration closed"}
         lede={
           open
-            ? `For ASLP students, professionals not registered with RCI, allied professionals, parents and caregivers. The same four live sessions on ${programme.dateLabel}, ${programme.start}, on Cisco Webex. Pay ${programme.feeLabel} on Razorpay, then register below. Open until ${onlineProgramme.closesLabel}.`
-            : `Registration for the ${onlineProgramme.shortName.toLowerCase()} has closed. Registered participants will receive the webinar link.`
+            ? `The same four sessions on ${programme.dateLabel}, from ${programme.start} — attend offline, with hands-on practice, at Yenepoya Medical College (Yenepoya colleges only), or online on Cisco Webex (open to all). Pay ${programme.feeLabel} on Razorpay, then register below. ${seatsLeft} of ${onlineProgramme.seats} seats left · open until ${onlineProgramme.closesLabel}.`
+            : full
+              ? `All ${onlineProgramme.seats} seats of the ${onlineProgramme.shortName} are taken. Registered participants will receive the details for the day.`
+              : `Registration for the ${onlineProgramme.shortName} has closed. Registered participants will receive the details for the day.`
         }
       />
       <div className="mx-auto grid max-w-6xl gap-8 px-4 py-10 lg:grid-cols-[1fr_18rem] lg:items-start">
@@ -34,7 +40,10 @@ export default async function OnlineProgrammePage() {
           <section className="card p-6">
             <h2 className="font-display text-2xl text-navy">Registration is closed</h2>
             <p className="mt-2 leading-7 text-muted">
-              Registration for the {onlineProgramme.shortName.toLowerCase()} closed on {onlineProgramme.closesLabel}. Already registered? Check your status and
+              {full
+                ? `All ${onlineProgramme.seats} seats are taken.`
+                : `Registration for the ${onlineProgramme.shortName} closed on ${onlineProgramme.closesLabel}.`}{" "}
+              Already registered? Check your status and
               download your acknowledgement on the{" "}
               <Link className="font-semibold text-green underline" href="/registration/status">
                 status page
@@ -58,6 +67,10 @@ export default async function OnlineProgrammePage() {
                 ))}
               </ul>
               <p className="mt-4 rounded-2xl bg-navy/5 px-3 py-2 text-sm font-semibold leading-6 text-navy">{onlineProgramme.noCreLine}</p>
+              <p className="mt-2 text-sm leading-6 text-navy">
+                <strong>{onlineProgramme.seats} seats</strong> in all, offline and online together · last date {onlineProgramme.closesLabel}.
+              </p>
+              <p className="mt-2 text-xs leading-5 text-muted">Offline venue: {onlineProgramme.venue}.</p>
               <p className="mt-2 text-xs leading-5 text-muted">Participants receive an e-certificate of participation after the programme.</p>
             </div>
           </div>

@@ -1,4 +1,4 @@
-import { programme } from "@/lib/programme";
+import { isOnlineTrack, onlineProgramme, programme } from "@/lib/programme";
 import { creSeatLimit } from "@/lib/settings";
 import { paymentState, rciState } from "@/lib/status";
 import { listRegistrations, type Registration } from "@/lib/store";
@@ -9,6 +9,27 @@ import { listRegistrations, type Registration } from "@/lib/store";
  */
 export function holdsCrePlace(row: Registration): boolean {
   return row.creClaim === "yes" && paymentState(row) !== "rejected";
+}
+
+/** Non-RCI CRE seats (offline and online together): every registration on that track holds one unless its payment is rejected. */
+export function holdsOnlineSeat(row: Registration): boolean {
+  return isOnlineTrack(row) && paymentState(row) !== "rejected";
+}
+
+export function onlineSeatCounts(rows: Registration[]): { seats: number; taken: number; left: number; offline: number; online: number } {
+  const holders = rows.filter(holdsOnlineSeat);
+  const taken = holders.length;
+  return {
+    seats: onlineProgramme.seats,
+    taken,
+    left: Math.max(0, onlineProgramme.seats - taken),
+    offline: holders.filter((row) => row.attendance === "offline").length,
+    online: holders.filter((row) => row.attendance !== "offline").length,
+  };
+}
+
+export async function onlineSeatsLeft(rows?: Registration[]): Promise<number> {
+  return onlineSeatCounts(rows ?? (await listRegistrations())).left;
 }
 
 export async function creSeatsLeft(rows?: Registration[]): Promise<number> {

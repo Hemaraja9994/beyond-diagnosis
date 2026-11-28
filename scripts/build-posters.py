@@ -7,7 +7,7 @@ Outputs, in public/brochure/:
   block-the-date.png / .pdf          one-page poster
   beyond-the-diagnosis-1.png / -2.png two flyer pages
   beyond-the-diagnosis.pdf           both flyer pages
-  online-programme-1.png / -2.png    regular online programme (non-RCI) brochure, two pages
+  online-programme-1.png / -2.png    Non-RCI CRE brochure (offline hands-on + online), two pages
   online-programme.pdf               both pages, with the registration link and QR code
 
 Run:  python3 scripts/build-posters.py            (everything)
@@ -166,15 +166,16 @@ def logo_strip() -> str:
     </div>"""
 
 
-def date_tab(rci: bool = False) -> str:
-    last = "Approved by RCI · 4 hours" if rci else "Zonal CRE · English"
+def date_tab(rci: bool = False, hybrid: bool = False) -> str:
+    last = "Approved by RCI · 4 hours" if rci else ("Non-RCI · English" if hybrid else "Zonal CRE · English")
+    where = "Offline + Online (Webex)" if hybrid else "Online · Cisco Webex"
     return f"""
     <div class="datetab">
       <div class="block"><b>19</b><span>DEC</span></div>
       <div class="dinfo">
         <p class="day">Saturday · 2026</p>
         <p><i></i>10:00 AM IST onwards</p>
-        <p><i></i>Online · Cisco Webex</p>
+        <p><i></i>{where}</p>
         <p><i></i>{last}</p>
       </div>
     </div>"""
@@ -343,11 +344,12 @@ def flyer_team(build: Path) -> str:
 SITE = "yenepoya-cre.vercel.app"
 ONLINE_PATH = "/online"
 ONLINE_URL = f"https://{SITE}{ONLINE_PATH}"
-ONLINE_CLOSES = "17 December 2026"
+ONLINE_CLOSES = "10 December 2026"
+ONLINE_SEATS = 100
 ONLINE_AUDIENCE = [
-    "ASLP students (BASLP, MASLP, interns)",
-    "Professionals not registered with RCI",
-    "Doctors & allied health professionals",
+    "ASLP students & interns",
+    "Professionals not on RCI",
+    "Doctors & allied health",
     "Psychologists & special educators",
     "Therapists",
     "Parents & caregivers",
@@ -371,10 +373,10 @@ def register_strip(build: Path) -> str:
     <div class="reg-strip">
       <a href="{ONLINE_URL}"><img class="qr" src="{qr_png(build, ONLINE_URL)}" alt=""></a>
       <div>
-        <p class="kicker">Non-RCI registration · open until {ONLINE_CLOSES}</p>
+        <p class="kicker">Non-RCI registration · {ONLINE_SEATS} seats · last date {ONLINE_CLOSES}</p>
         <p class="link"><a href="{ONLINE_URL}" style="color:inherit;text-decoration:none">{SITE}<b>{ONLINE_PATH}</b></a></p>
-        <p class="note">Scan the code or type the link · Pay ₹354 on Razorpay, then register with the payment ID and receipt
-          · e-certificate of participation · <b>This programme does not carry RCI CRE points.</b></p>
+        <p class="note">Scan the code or type the link · Pay ₹354 on Razorpay, choose offline or online, then register with the payment ID
+          and receipt · <b>Offline hands-on: Yenepoya colleges only.</b> <b>No RCI CRE points.</b></p>
       </div>
     </div>"""
 
@@ -398,15 +400,15 @@ def online_cover(build: Path) -> str:
         {logo_strip()}
         <div class="hero-row">
           <div>
-            <p class="eyebrow">Regular Online Programme</p>
+            <p class="eyebrow">Offline hands-on &amp; Online</p>
             <h1 class="headline display">
               <span class="lead">Beyond <span class="script">the</span></span>
               <span class="big">Diagnosis</span>
             </h1>
             <p class="sub">{SUBTITLE}</p>
-            <div class="facts"><span class="hot">Students · professionals · parents</span><span>Four live sessions</span><span>Online · English</span></div>
+            <div class="facts"><span class="hot">Offline hands-on · Yenepoya colleges</span><span>Online · open to all</span><span>{ONLINE_SEATS} seats</span></div>
           </div>
-          <div class="mini-date">{date_tab()}</div>
+          <div class="mini-date">{date_tab(hybrid=True)}</div>
         </div>
       </div>
       <div class="body">
@@ -438,12 +440,14 @@ def online_details(build: Path) -> str:
       </div>
       <div class="body">
         <div class="info-grid">
-          <div class="info c2"><h4>Who can join</h4><div class="in"><div class="tags">{tags}</div>
-            <p class="small-note">The same live sessions as the RCI-approved CRE programme, for everyone who is not claiming RCI CRE points.</p></div></div>
+          <div class="info c2"><h4>Who can join</h4><div class="in">
+            <p class="small-note" style="margin:0 0 10px"><b>Offline hands-on:</b> Yenepoya colleges only. <b>Online:</b> open to all —</p>
+            <div class="tags">{tags}</div>
+            <p class="small-note"><b>{ONLINE_SEATS} seats</b> in all (offline + online), first come, first served.</p></div></div>
           <div class="info c1"><h4>How to register</h4><div class="in"><ol>
             <li><b>1</b><span>Pay <strong>₹354</strong> on Razorpay (link on the registration page).</span></li>
-            <li><b>2</b><span>Open <a href="{ONLINE_URL}" style="color:inherit"><strong style="white-space:nowrap">{SITE}{ONLINE_PATH}</strong></a> and fill the form with your payment ID and receipt.</span></li>
-            <li><b>3</b><span>Keep your YDU- reference; the Webex link reaches you before the day.</span></li>
+            <li><b>2</b><span>Open <a href="{ONLINE_URL}" style="color:inherit"><strong style="white-space:nowrap">{SITE}{ONLINE_PATH}</strong></a>, choose <strong>offline</strong> or <strong>online</strong>, and fill the form with your payment ID and receipt.</span></li>
+            <li><b>3</b><span>Register by <strong>{ONLINE_CLOSES}</strong> and keep your YDU- reference.</span></li>
           </ol></div></div>
           <div class="info c4"><h4>Contact</h4><div class="in"><div class="lines">
             <div><small>Email</small>{EMAIL}</div>
@@ -451,8 +455,8 @@ def online_details(build: Path) -> str:
             <div><small>Department</small>aslp@yenepoya.edu.in</div>
           </div></div></div>
           <div class="info c3"><h4>Certificate &amp; venue</h4><div class="in">
-            <p class="big">Online on<br>Cisco Webex</p>
-            <p>E-certificate of participation after the programme. <b>This programme does not carry RCI CRE points.</b> Registration closes on {ONLINE_CLOSES}.</p>
+            <p class="big">Offline at Yenepoya<br>+ Online on Webex</p>
+            <p>Offline: Dept. of ASLP, Yenepoya Medical College, Deralakatte. E-certificate of participation. <b>No RCI CRE points.</b></p>
           </div></div>
         </div>
         {register_strip(build)}

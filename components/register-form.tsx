@@ -5,14 +5,26 @@ import { useState } from "react";
 import { AckActions } from "@/components/ack-actions";
 import { DocumentInput } from "@/components/document-input";
 import { RegistrationLinks } from "@/components/registration-links";
-import { onlineProfessions, onlineProgramme, professions, programme, states, titles, type ArrivalSource } from "@/lib/programme";
+import {
+  attendanceModes,
+  isYenepoyaInstitution,
+  onlineProfessions,
+  onlineProgramme,
+  professions,
+  programme,
+  states,
+  titles,
+  type ArrivalSource,
+  type AttendanceMode,
+} from "@/lib/programme";
 
-type Success = { reference: string; email: string; claiming: boolean; token: string | null; creMoved: boolean; online: boolean };
+type Success = { reference: string; email: string; claiming: boolean; token: string | null; creMoved: boolean; online: boolean; attendance: AttendanceMode | "" };
 type FileField = "receipt" | "crrCertificate" | "rciConfirmation";
 
 /**
- * The registration form. track="online" is the regular online programme (non-RCI): no CRE question, no CRR
- * number, categories for students, allied professionals and parents, and it posts to its own endpoint.
+ * The registration form. track="online" is the Non-RCI CRE programme: no CRE question, no CRR number, a choice of
+ * offline hands-on (Yenepoya colleges only) or online, categories for students, allied professionals and parents,
+ * and it posts to its own endpoint.
  */
 export function RegisterForm({
   source,
@@ -34,6 +46,9 @@ export function RegisterForm({
   const [success, setSuccess] = useState<Success | null>(null);
   const [profession, setProfession] = useState("");
   const [claim, setClaim] = useState<"" | "yes" | "no">(online ? "no" : "");
+  const [attendance, setAttendance] = useState<AttendanceMode | "">("");
+  const [institution, setInstitution] = useState("");
+  const offlineNotYenepoya = online && attendance === "offline" && institution.trim().length > 2 && !isYenepoyaInstitution(institution);
   const [files, setFiles] = useState<Partial<Record<FileField, File>>>({});
   const [fileErrors, setFileErrors] = useState<Partial<Record<FileField, string>>>({});
 
@@ -55,6 +70,14 @@ export function RegisterForm({
     const problem = Object.values(fileErrors).find((value) => value);
     if (problem) {
       setError(problem);
+      return;
+    }
+    if (online && attendance === "") {
+      setError("Choose how you will attend: offline hands-on or online.");
+      return;
+    }
+    if (online && attendance === "offline" && !isYenepoyaInstitution(institution)) {
+      setError(`${onlineProgramme.offlineRule} Write your Yenepoya college name, or choose online.`);
       return;
     }
     if (!files.receipt) {
@@ -93,6 +116,7 @@ export function RegisterForm({
         token: payload.token ?? null,
         creMoved: Boolean(payload.creMoved),
         online,
+        attendance: online ? attendance : "",
       });
       window.scrollTo({ top: 0, behavior: "smooth" });
     } catch {
@@ -177,10 +201,26 @@ export function RegisterForm({
         </fieldset>
 
         {online ? (
-          <p className="rounded-2xl bg-navy/5 px-4 py-3 text-sm leading-6 text-navy">
-            <strong>Regular online programme.</strong> {onlineProgramme.noCreLine} You attend the same live Webex session on {programme.dateLabel} and
-            receive an e-certificate of participation.
-          </p>
+          <fieldset className="card grid gap-4 p-5">
+            <legend className="float-left mb-1 w-full font-display text-lg text-navy">How you will attend</legend>
+            <p className="text-sm leading-6 text-muted">
+              {programme.dateLabel}, from {programme.start}. {onlineProgramme.noCreLine} Seats are limited to {onlineProgramme.seats} in all, first
+              registered, first served. Everyone receives an e-certificate of participation.
+            </p>
+            <div className="grid gap-2 sm:grid-cols-2" role="radiogroup" aria-label="How you will attend">
+              {attendanceModes.map((mode) => (
+                <Choice key={mode.value} name="attendance" value={mode.value} checked={attendance === mode.value} onChange={() => setAttendance(mode.value)}>
+                  <strong className="block text-navy">{mode.label}</strong>
+                  <span className="text-muted">{mode.detail}</span>
+                </Choice>
+              ))}
+            </div>
+            {attendance === "offline" ? (
+              <p className="rounded-2xl bg-navy/5 px-4 py-2 text-sm leading-6 text-navy">
+                {onlineProgramme.offlineRule} Write your Yenepoya college below (for example, Yenepoya Medical College — BASLP).
+              </p>
+            ) : null}
+          </fieldset>
         ) : (
         <fieldset className="card grid gap-4 p-5">
           <legend className="float-left mb-1 w-full font-display text-lg text-navy">RCI CRE points</legend>
@@ -224,12 +264,19 @@ export function RegisterForm({
         <fieldset className="card grid gap-4 p-5">
           <legend className="float-left mb-1 w-full font-display text-lg text-navy">{online ? "Where you study, work or live" : "Where you work"}</legend>
           <Field label={online ? "Designation or course" : "Designation"} name="designation" hint={online ? "For example BASLP 3rd year, physiotherapist, or parent." : undefined} />
-          <Field
-            label={online ? "College, workplace or town" : "Workplace"}
-            name="institution"
-            required
-            hint={online ? "Students: your college. Professionals: your workplace. Parents and caregivers: your town or city." : "A college, hospital, clinic, or private practice."}
-          />
+          <label className="grid gap-1 text-sm font-semibold text-navy">
+            {online ? (attendance === "offline" ? "Your Yenepoya college" : "College, workplace or town") : "Workplace"}
+            <input className="field" name="institution" required value={institution} onChange={(event) => setInstitution(event.target.value)} />
+            <span className={`font-normal ${offlineNotYenepoya ? "text-red-800" : "text-muted"}`}>
+              {offlineNotYenepoya
+                ? "Offline hands-on is only for Yenepoya colleges. Write the Yenepoya college name, or choose online above."
+                : online
+                  ? attendance === "offline"
+                    ? "The Yenepoya college where you study or work."
+                    : "Students: your college. Professionals: your workplace. Parents and caregivers: your town or city."
+                  : "A college, hospital, clinic, or private practice."}
+            </span>
+          </label>
           <label className="grid gap-1 text-sm font-semibold text-navy">
             State or Union Territory
             <select className="field" name="stateName" required defaultValue="">
@@ -268,7 +315,7 @@ export function RegisterForm({
         <fieldset className="card grid gap-4 p-5">
           <legend className="float-left mb-1 w-full font-display text-lg text-navy">Access and consent</legend>
           <label className="grid gap-1 text-sm font-semibold text-navy">
-            Access needs for the online session
+            {online && attendance === "offline" ? "Access needs on the day" : "Access needs for the online session"}
             <textarea className="field min-h-24" name="accessNeeds" maxLength={500} />
           </label>
           <label className="flex items-start gap-3 text-sm leading-6">
@@ -309,7 +356,8 @@ function Confirmation({ success }: { success: Success }) {
       <p className="mt-3 max-w-xl leading-7 text-muted">Please note this reference. Thank you — your seat is reserved for {success.email}.</p>
       {success.online ? (
         <p className="mt-3 max-w-xl rounded-2xl bg-navy/5 px-4 py-3 text-sm leading-6 text-navy">
-          {onlineProgramme.name} · {programme.dateLabel} · {programme.start} on Cisco Webex. {onlineProgramme.noCreLine}
+          {onlineProgramme.name} · {programme.dateLabel} · {programme.start} ·{" "}
+          {success.attendance === "offline" ? `offline hands-on at the ${onlineProgramme.venue}` : "online on Cisco Webex"}. {onlineProgramme.noCreLine}
         </p>
       ) : null}
       {success.creMoved ? (

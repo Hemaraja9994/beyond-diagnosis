@@ -1,4 +1,15 @@
-import { allProfessions, states, titles, type ArrivalSource, type CreClaim, type Profession, type Title } from "@/lib/programme";
+import {
+  allProfessions,
+  isYenepoyaInstitution,
+  onlineProgramme,
+  states,
+  titles,
+  type ArrivalSource,
+  type AttendanceMode,
+  type CreClaim,
+  type Profession,
+  type Title,
+} from "@/lib/programme";
 
 export type RegistrationDraft = {
   title: Title;
@@ -15,6 +26,7 @@ export type RegistrationDraft = {
   paymentReference: string;
   accessNeeds: string;
   source: ArrivalSource;
+  attendance: AttendanceMode | "";
   consent: boolean;
 };
 
@@ -132,6 +144,16 @@ export function parseRegistration(body: unknown): { value: RegistrationDraft } |
 
   const profession = professionRaw as Profession;
   const source = sourceRaw as ArrivalSource;
+  // Offline hands-on or online: asked only on the Non-RCI CRE form. The RCI track is online.
+  const attendanceRaw = readString(record, "attendance");
+  let attendance: AttendanceMode | "" = "";
+  if (source === "online") {
+    if (attendanceRaw !== "offline" && attendanceRaw !== "online") return { error: "Choose how you will attend: offline hands-on or online." };
+    attendance = attendanceRaw;
+    if (attendance === "offline" && !isYenepoyaInstitution(institution)) {
+      return { error: `${onlineProgramme.offlineRule} Write your Yenepoya college name, or choose online.` };
+    }
+  }
   return {
     value: {
       title: titleRaw as Title,
@@ -148,6 +170,7 @@ export function parseRegistration(body: unknown): { value: RegistrationDraft } |
       paymentReference,
       accessNeeds,
       source,
+      attendance,
       consent,
     },
   };
@@ -260,6 +283,9 @@ export function parseDeskEdit(record: Record<string, unknown>):
   if (paymentReference === null) return { error: "The payment ID can use letters, numbers, and simple punctuation only." };
   const stateName = readString(record, "stateName");
   if (stateName !== "" && !stateValues.has(stateName)) return { error: "Choose a state or Union Territory." };
+  // The desk may set any mode (it can admit someone outside the Yenepoya rule); blank for the RCI track.
+  const attendance = readString(record, "attendance");
+  if (attendance !== "" && attendance !== "offline" && attendance !== "online") return { error: "Choose offline or online attendance." };
   return {
     value: {
       title: title as Title | "",
@@ -275,6 +301,7 @@ export function parseDeskEdit(record: Record<string, unknown>):
       stateName,
       paymentReference,
       accessNeeds: readString(record, "accessNeeds").slice(0, 500),
+      attendance: attendance as AttendanceMode | "",
     },
   };
 }

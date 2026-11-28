@@ -107,7 +107,7 @@ export function SiteHeader() {
         >
           Non-RCI CRE registration open
           <span className="ml-2 font-semibold normal-case tracking-normal text-white/90">
-            · regular online programme for students, allied professionals, parents · until {onlineProgramme.closesLabel} ›
+            · offline hands-on (Yenepoya colleges) and online · {onlineProgramme.seats} seats · until {onlineProgramme.closesLabel} ›
           </span>
         </Link>
       ) : null}

@@ -4,6 +4,7 @@ import { json } from "@/lib/http";
 import { tooMany } from "@/lib/limit";
 import { notifyParticipant } from "@/lib/notify";
 import { onlineProgramme } from "@/lib/programme";
+import { onlineSeatsLeft } from "@/lib/seats";
 import { onlineRegistrationOpen } from "@/lib/settings";
 import { createRegistration } from "@/lib/store";
 import { readUploads } from "@/lib/uploads";
@@ -15,7 +16,8 @@ export const maxDuration = 60;
 
 /**
  * Registration for the regular online programme (non-RCI track). Same fee, receipt check and emails as the RCI
- * track, but no CRE claim, no CRR number and no CRE place limit. It has its own open/closed switch and closing date.
+ * track, but no CRE claim and no CRR number. Offline hands-on (Yenepoya colleges only) or online, with one seat
+ * limit for both (onlineProgramme.seats). It has its own open/closed switch and closing date.
  */
 export async function POST(request: Request) {
   if (!sameOrigin(request)) return json({ error: "Submit the form from this website." }, 403);
@@ -33,6 +35,9 @@ export async function POST(request: Request) {
   }
   const parsed = parseOnlineRegistration(formRecord(form));
   if ("error" in parsed) return json({ error: parsed.error }, 400);
+  if ((await onlineSeatsLeft()) <= 0) {
+    return json({ error: `All ${onlineProgramme.seats} seats of the ${onlineProgramme.shortName} are taken. Please write to the organisers.`, full: true }, 409);
+  }
   const uploads = await readUploads(form);
   if ("error" in uploads) return json({ error: uploads.error }, 400);
   const files = uploads.value.filter((upload) => upload.kind === "payment");

@@ -27,6 +27,8 @@ export async function POST(request: Request) {
   if (parsed.value.title === "") return back("Choose a title.");
   const online = form.get("track") === "online";
   if (online) parsed.value.creClaim = "no";
+  if (online && parsed.value.attendance === "") parsed.value.attendance = "online";
+  if (!online) parsed.value.attendance = "";
   if (parsed.value.creClaim === "") return back("Choose whether CRE points are claimed.");
   const uploads = await readUploads(form);
   if ("error" in uploads) return back(uploads.error);

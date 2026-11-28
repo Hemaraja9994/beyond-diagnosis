@@ -7,10 +7,10 @@ import { adminReady, currentAdmin, deskUser, participantToken, type DeskUser } f
 import { mailSetup } from "@/lib/mail";
 import { mailsDue } from "@/lib/notify";
 import { rciReminderDue } from "@/lib/rci-reminder";
-import { afterSessionsOpen, deskAccounts, deskCoordinatorLine, isOnlineTrack, onlineProgramme, professionLabel, programme, sourceLabel, type ArrivalSource, type Profession } from "@/lib/programme";
+import { afterSessionsOpen, attendanceLabel, deskAccounts, deskCoordinatorLine, isOnlineTrack, onlineProgramme, professionLabel, programme, sourceLabel, type ArrivalSource, type Profession } from "@/lib/programme";
 import { docLabels, type DocKind } from "@/lib/proof";
 import { paymentState, paymentText, rciState, rciText } from "@/lib/status";
-import { deskNumbers, type DeskNumbers } from "@/lib/seats";
+import { deskNumbers, onlineSeatCounts, type DeskNumbers } from "@/lib/seats";
 import { creSeatLimit, onlineRegistrationOpen, registrationOpen } from "@/lib/settings";
 import { certificateEligible, certificateNumberText, certificatesSwitchOn } from "@/lib/certificates";
 import { getDeskPasswordHash, getMeetingUrl, listQueries, listRegistrations, storageMode, type Registration } from "@/lib/store";
@@ -36,7 +36,7 @@ const views: { id: View; label: string }[] = [
   { id: "confirmed", label: "Payment confirmed" },
   { id: "cre", label: "Claiming CRE" },
   { id: "rci-awaited", label: "RCI awaited" },
-  { id: "online", label: "Online programme (non-RCI)" },
+  { id: "online", label: "Non-RCI CRE (offline + online)" },
 ];
 
 /** Automatic-check badge colours. */
@@ -121,6 +121,7 @@ export default async function AdminPage({
     onlineRegistrationOpen(),
   ]);
   const mail = mailSetup();
+  const onlineSeats = onlineSeatCounts(registrations);
   const ownIndex = deskAccounts.findIndex((account) => user.id === `user:${account.username}`);
   const onStartingPassword = ownIndex >= 0 && !passwordsSet[ownIndex];
   const notice = params.note ?? params.mail ?? (params.checked ? `Checked ${params.checked} registration${params.checked === "1" ? "" : "s"} just now.` : undefined);
@@ -141,7 +142,10 @@ export default async function AdminPage({
               RCI registration {isOpen ? "open" : "closed"}
             </a>
             <a className={`${chip} ${onlineOpen ? tone.ok : tone.stop}`} href={deskHref("settings")}>
-              Online programme {onlineOpen ? `open until ${onlineProgramme.closesLabel}` : "closed"}
+              Non-RCI CRE {onlineOpen ? `open until ${onlineProgramme.closesLabel}` : "closed"}
+            </a>
+            <a className={`${chip} ${onlineSeats.left > 0 ? tone.ok : tone.stop}`} href={deskHref("registrations", { view: "online" })} title="Seats held: every Non-RCI registration except rejected payments">
+              Non-RCI seats {onlineSeats.taken}/{onlineSeats.seats} · offline {onlineSeats.offline} · online {onlineSeats.online}
             </a>
             <a className={`${chip} ${tone.ok}`} href={programme.rciCalendarUrl} target="_blank" rel="noopener noreferrer" title="Open the RCI CRE calendar">
               Approved by RCI · F. No. {programme.rciFileNo} · {programme.rciHours} hours
@@ -424,7 +428,7 @@ function CertificatesPanel({ registrations, switchOn, mailOn }: { registrations:
             {programme.level.toLowerCase()} CRE, {programme.rciHours} hours, institute code {programme.instituteCode}.
           </p>
           <p className="mt-1 max-w-3xl text-sm leading-6 text-muted">
-            {onlineProgramme.name} (non-RCI): no RCI logo, its own number series ({certificateNumberText(1, true)} onwards) and the line “This certificate does not
+            {onlineProgramme.name}: no RCI logo, its own number series ({certificateNumberText(1, true)} onwards) and the line “This certificate does not
             carry RCI CRE points”.
           </p>
         </div>
@@ -480,7 +484,7 @@ function CertificatesPanel({ registrations, switchOn, mailOn }: { registrations:
             RCI CRE certificates — PowerPoint ({rciEligible}) ↓
           </a>
           <a className={`text-green underline ${onlineEligible === 0 ? "pointer-events-none opacity-50" : ""}`} href="/api/admin/export/certificates-pptx?track=online">
-            Online programme certificates — PowerPoint ({onlineEligible}) ↓
+            Non-RCI CRE certificates — PowerPoint ({onlineEligible}) ↓
           </a>
         </p>
         <p className="flex flex-wrap gap-4 text-sm font-semibold">
@@ -494,7 +498,7 @@ function CertificatesPanel({ registrations, switchOn, mailOn }: { registrations:
       </div>
       <p className="mt-3 text-xs leading-5 text-muted">
         “Save certificates now” gives everyone eligible a fixed number in order of registration ({certificateNumberText(1)} onwards; {certificateNumberText(1, true)} for the
-        online programme) and dates every certificate {programme.dateLabel.replace(/^\w+, /, "")}. Participants can download only after “Release certificates” on the programme day.
+        Non-RCI CRE programme) and dates every certificate {programme.dateLabel.replace(/^\w+, /, "")}. Participants can download only after “Release certificates” on the programme day.
         People confirmed later get the next number — export again to include them. Emails go out about a dozen at a time — press again until done.
       </p>
       <div className="mt-5 border-t border-line pt-4">
@@ -619,7 +623,7 @@ function SettingsTab({
             </select>
           </label>
           <label className="grid gap-1 text-sm font-semibold text-navy">
-            Online programme (non-RCI)
+            Non-RCI CRE programme (offline + online)
             <select className="field" name="onlineRegistrationOpen" defaultValue={onlineOpen ? "yes" : "no"}>
               <option value="yes">Open (until {onlineProgramme.closesLabel})</option>
               <option value="no">Closed</option>
@@ -739,7 +743,7 @@ function RegistrationCard({ row, token }: { row: Registration; token: string | n
                 CRE · {rci === "confirmed" ? "RCI confirmed" : rci === "rejected" ? "RCI rejected" : rci === "submitted" ? "RCI to review" : "RCI awaited"}
               </span>
             ) : isOnlineTrack(row) ? (
-              <span className={`${chip} bg-teal-100 text-teal-900`}>Online programme · non-RCI</span>
+              <span className={`${chip} bg-teal-100 text-teal-900`}>Non-RCI CRE · {attendanceLabel(row.attendance) || "attendance not stated"}</span>
             ) : (
               <span className={`${chip} ${row.creClaim === "" ? tone.wait : tone.none}`}>{row.creClaim === "no" ? "Not claiming CRE" : "CRE not stated"}</span>
             )}

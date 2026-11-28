@@ -2,7 +2,7 @@ import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { PDFDocument, StandardFonts, rgb, type PDFFont, type PDFPage, type RGB } from "pdf-lib";
 import QRCode from "qrcode";
-import { committee, isOnlineTrack, onlineProgramme, professionLabel, programme, rciApprovalLine, type Profession } from "@/lib/programme";
+import { attendanceLabel, committee, isOnlineTrack, onlineProgramme, professionLabel, programme, rciApprovalLine, type Profession } from "@/lib/programme";
 import { creStamp, participationStamp, paymentState, paymentText, rciState, rciText, type Stamp } from "@/lib/status";
 import type { Registration } from "@/lib/store";
 
@@ -54,7 +54,9 @@ export async function acknowledgementPdf(row: Registration, statusUrl: string): 
   y = text(page, `${programme.title}: ${programme.subtitle}`, left, y, bold, 11, navy, right - left);
   y = text(
     page,
-    `${programme.level} Continuing Rehabilitation Education · ${programme.mode} (Cisco Webex) · ${programme.dateLabel}, from ${programme.start}`,
+    isOnlineTrack(row)
+      ? `${onlineProgramme.name} · ${attendanceLabel(row.attendance) || "Online (Cisco Webex)"} · ${programme.dateLabel}, from ${programme.start}`
+      : `${programme.level} Continuing Rehabilitation Education · ${programme.mode} (Cisco Webex) · ${programme.dateLabel}, from ${programme.start}`,
     left,
     y - 2,
     regular,
@@ -65,7 +67,7 @@ export async function acknowledgementPdf(row: Registration, statusUrl: string): 
   y = text(
     page,
     isOnlineTrack(row)
-      ? `${onlineProgramme.name} (non-RCI track) · ${onlineProgramme.noCreLine}`
+      ? `${onlineProgramme.name} · ${onlineProgramme.noCreLine}`
       : `${rciApprovalLine} · Institute code ${programme.instituteCode}`,
     left,
     y - 1,
@@ -107,7 +109,7 @@ export async function acknowledgementPdf(row: Registration, statusUrl: string): 
     [`Payment (Rs. ${programme.feeRupees})`, paymentText[pay] + payBy, pay === "confirmed" ? green : pay === "rejected" ? red : orange],
     [
       isOnlineTrack(row) ? "Programme track" : "RCI CRE points",
-      isOnlineTrack(row) ? `${onlineProgramme.name} · no CRE points` : rciText[rci] + rciBy,
+      isOnlineTrack(row) ? `${onlineProgramme.name} · ${attendanceLabel(row.attendance) || "online"} · no CRE points` : rciText[rci] + rciBy,
       rci === "confirmed" ? green : rci === "rejected" ? red : rci === "awaited" || rci === "submitted" ? orange : muted,
     ],
   ];

@@ -5,7 +5,7 @@ import { AckActions } from "@/components/ack-actions";
 import { CertificateActions } from "@/components/certificate-actions";
 import { PageBanner } from "@/components/page-banner";
 import { participantTokenOk } from "@/lib/admin";
-import { programme } from "@/lib/programme";
+import { attendanceWhere, isOnlineTrack, onlineProgramme, programme } from "@/lib/programme";
 import { creJourney, creStamp, participationStamp, paymentState, paymentText, rciState, rciText, type Stamp } from "@/lib/status";
 import {
   certificateEligible,
@@ -123,6 +123,11 @@ export default async function StatusPage({
                 RCI website
               </a>
               . This page shows what the organisers have recorded; your RCI profile is the official record.
+            </p>
+          ) : null}
+          {isOnlineTrack(row) ? (
+            <p className="rounded-2xl bg-navy/5 px-4 py-2 text-sm leading-6 text-navy">
+              {onlineProgramme.name}: {programme.dateLabel}, from {programme.start}, {attendanceWhere(row)}. {onlineProgramme.noCreLine}
             </p>
           ) : null}
           <a className="text-sm font-semibold text-green underline" href={programme.whatsappUrl} target="_blank" rel="noopener noreferrer">

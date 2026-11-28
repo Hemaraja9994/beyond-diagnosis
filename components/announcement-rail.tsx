@@ -8,7 +8,7 @@ const announcements = [
     : programme.creClosed
     ? { href: "/registration", label: `All ${programme.creSeats} RCI CRE places are filled · you can still register to attend`, alert: true }
     : { href: programme.rciCalendarUrl, label: `CRE points? Register on ${programme.rciPortal} too`, alert: true },
-  { href: onlineProgramme.path, label: `Non-RCI CRE registration · regular online programme · until ${onlineProgramme.closesLabel}`, alert: true },
+  { href: onlineProgramme.path, label: `Non-RCI CRE registration · offline hands-on (Yenepoya colleges) and online · ${onlineProgramme.seats} seats · until ${onlineProgramme.closesLabel}`, alert: true },
   { href: "/#brochure", label: "Block the date · 19 December", alert: false },
   { href: "/#date", label: programme.dateLabel, alert: false },
   { href: "/programme", label: `From ${programme.start} · Cisco Webex · ${programme.language}`, alert: false },
